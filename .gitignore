@@ -1,0 +1,46 @@
+# Bağımlılıklar
+node_modules
+
+# Next.js derleme çıktıları
+.next
+out
+build
+dist
+
+# Ortam değişkenleri (gizli bilgiler)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logları
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# macOS sistem dosyaları
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# IDE / Editör ayarları
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# TypeScript cache
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Test coverage
+coverage
