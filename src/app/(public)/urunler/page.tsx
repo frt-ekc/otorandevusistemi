@@ -40,17 +40,17 @@ export default async function UrunlerPage() {
   return (
     <div className="min-h-screen">
       <TopNav />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-12">
-        <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
-          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-10">
-            <div>
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 lg:py-12">
+        <section className="glass-card bg-haze overflow-hidden rounded-3xl p-1">
+          <div className="w-full rounded-[1.4rem] bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-6 backdrop-blur-sm border border-brand-gold/30 lg:p-12">
+            <div className="text-center lg:text-left">
               <p className="text-xs uppercase tracking-[0.3em] text-white">
                 Ürünler
               </p>
-              <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-                Öne Çıkan Ürün ve Paketler
+              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl leading-tight">
+                Kaliteli Ürünler, <span className="text-brand-gold">Uygun Fiyatlar.</span>
               </h1>
-              <p className="mt-4 text-base text-white leading-relaxed sm:text-lg">
+              <p className="mt-4 text-base text-white/80 leading-relaxed sm:text-lg">
                 Lastik, jant ve bakım ürünlerimizi inceleyebilir, ihtiyacınıza uygun paketi seçebilirsiniz.
               </p>
             </div>

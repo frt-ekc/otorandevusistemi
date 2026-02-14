@@ -24,39 +24,39 @@ export default async function HomePage() {
     <div className="min-h-screen">
       <TopNav />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 lg:gap-16 lg:py-12">
         <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
           <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm lg:p-8">
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex-1">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.3em] text-white">
+            <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex-1 text-center lg:text-left">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white">
                   Uzman lastik hizmetleri
                 </span>
-                <h1 className="mt-4 text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
-                  Yolculuğun Her Kilometresinde Ustalık ve Güven.
+                <h1 className="mt-4 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+                  Yolculuğun Her Kilometresinde <span className="text-brand-gold">Ustalık ve Güven.</span>
                 </h1>
-                <p className="mt-4 text-sm leading-relaxed text-white sm:text-base">
+                <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">
                   Fırat Oto Lastik olarak, 20 yılı aşkın tecrübemizi modern teknolojiyle birleştiriyoruz.
-                  Sadece lastik değişimi değil; profesyonel balans ayarı, güvenli lastik depolama ve
+                  Sadece lastik değişimi değil; profesyonel balans ayarı ve
                   uzman teknik destekle sürüş güvenliğinizi standartların üzerine taşıyoruz.
                 </p>
-                <div className="mt-8 flex flex-wrap gap-3">
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                   <Link
                     href="/randevu"
-                    className="rounded-full bg-brand-gold px-6 py-3 text-xs font-bold text-brand-dark shadow-soft transition-transform hover:scale-105"
+                    className="rounded-full bg-brand-gold px-10 py-4 text-sm font-black text-brand-dark shadow-xl transition-transform hover:scale-105 active:scale-95"
                   >
                     Hemen Randevu Al
                   </Link>
                   <Link
                     href="/hizmetler"
-                    className="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 hover:scale-105"
+                    className="rounded-full border border-white/20 bg-white/5 px-10 py-4 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 hover:scale-105 active:scale-95"
                   >
-                    Hizmetlerimizi Keşfedin
+                    Hizmetleri Keşfedin
                   </Link>
                 </div>
               </div>
 
-              <div className="relative aspect-square w-56 self-center lg:w-[320px]">
+              <div className="relative aspect-square w-full max-w-[280px] self-center lg:max-w-[400px]">
                 <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-brand-gold/40 to-transparent blur-2xl opacity-30" />
                 <Image
                   src="/ototakmasökme.png"
@@ -71,24 +71,24 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
-          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div>
+        <section className="glass-card bg-haze overflow-hidden rounded-3xl p-1">
+          <div className="w-full rounded-[1.4rem] bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-6 backdrop-blur-sm border border-brand-gold/30 lg:p-12">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="text-center lg:text-left">
                 <p className="text-xs uppercase tracking-[0.3em] text-white">Konum</p>
-                <h2 className="mt-2 text-2xl font-bold text-white">Bizi Ziyaret Edin</h2>
-                <p className="mt-2 text-white">
+                <h2 className="mt-2 text-3xl font-bold text-white">Bizi Ziyaret Edin</h2>
+                <p className="mt-3 text-white/80">
                   Haritada görüntüleyin, yol tarifi alın ve dükkanımıza kolayca ulaşın.
                 </p>
               </div>
               <Link
                 href="https://maps.google.com"
-                className="rounded-full bg-brand-gold px-8 py-3 text-sm font-bold text-brand-dark shadow-soft transition-transform hover:scale-105"
+                className="flex items-center justify-center rounded-full bg-brand-gold px-10 py-4 text-sm font-black text-brand-dark shadow-xl transition-transform hover:scale-105 active:scale-95"
               >
                 Haritayı Aç
               </Link>
             </div>
-            <div className="mt-8 h-80 rounded-xl overflow-hidden border border-white/10">
+            <div className="mt-8 h-80 rounded-2xl overflow-hidden border border-white/10 shadow-inner">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d787.9482594645065!2d38.31385462923506!3d38.35730500000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDIxJzI2LjMiTiAzOMKwMTgnNTEuMiJF!5e0!3m2!1str!2str!4v1707865000000!5m2!1str!2str"
                 width="100%"
@@ -103,41 +103,41 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section id="hizmetler" className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
-          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-8">
-            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <section id="hizmetler" className="glass-card bg-haze overflow-hidden rounded-3xl p-1">
+          <div className="w-full rounded-[1.4rem] bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-8 backdrop-blur-sm border border-brand-gold/30 lg:p-12">
+            <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white">Kategoriler</p>
-                <ul className="mt-4 space-y-2 text-white font-medium">
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold">Kategoriler</p>
+                <ul className="mt-6 space-y-3 text-white font-bold">
                   {categories.map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" /> {item}
+                    <li key={item} className="flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-brand-gold/50" /> {item}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white">Hizmetler</p>
-                <ul className="mt-4 space-y-2 text-white font-medium">
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold">Hizmetler</p>
+                <ul className="mt-6 space-y-3 text-white font-bold">
                   {serviceList.map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" /> {item}
+                    <li key={item} className="flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-brand-gold/50" /> {item}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white">Servis Saatleri</p>
-                <div className="mt-4 space-y-2 text-white font-medium">
-                  <div className="flex justify-between border-b border-white/5 pb-1">
-                    <span>Pzt - Cuma</span>
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold">Servis Saatleri</p>
+                <div className="mt-6 space-y-4 text-white font-bold md:max-w-[240px]">
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                    <span className="opacity-60">Pzt - Cuma</span>
                     <span>{ayarlar?.hafta_ici ?? "09:00 - 18:00"}</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-1">
-                    <span>Cumartesi</span>
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                    <span className="opacity-60">Cumartesi</span>
                     <span>{ayarlar?.cumartesi ?? "09:00 - 16:00"}</span>
                   </div>
-                  <div className="flex justify-between text-brand-gold font-bold">
+                  <div className="flex justify-between text-brand-gold">
                     <span>Pazar</span>
                     <span>{ayarlar?.pazar ?? "Kapalı"}</span>
                   </div>
