@@ -13,10 +13,11 @@ function hasFilters(params: SearchParams) {
 }
 
 export default async function RandevuSorgulaPage({
-    searchParams
+    searchParams: searchParamsPromise
 }: {
-    searchParams: SearchParams;
+    searchParams: Promise<SearchParams>;
 }) {
+    const searchParams = await searchParamsPromise;
     const filters = {
         ad: searchParams.ad ?? "",
         plaka: searchParams.plaka ?? ""
