@@ -101,23 +101,23 @@ export default async function RandevuPage() {
   return (
     <div className="min-h-screen">
       <TopNav />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-12">
-        <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
-          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-10">
-            <div className="flex flex-col gap-6">
-              <div>
-                <span className="rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 lg:py-12">
+        <section className="glass-card bg-haze overflow-hidden rounded-3xl p-1">
+          <div className="w-full rounded-[1.4rem] bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-6 backdrop-blur-sm border border-brand-gold/30 lg:p-12">
+            <div className="flex flex-col gap-8">
+              <div className="text-center lg:text-left">
+                <span className="rounded-full bg-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white/70">
                   Online Randevu
                 </span>
-                <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-                  Hızlı ve Güvenli Randevu
+                <h1 className="mt-6 text-3xl font-bold text-white sm:text-4xl lg:text-5xl leading-tight">
+                  <span className="text-brand-gold">Hızlı ve Güvenli</span> Randevu
                 </h1>
                 <p className="mt-4 text-base text-white/80 leading-relaxed sm:text-lg">
                   Tarih ve saat seçin, bilgilerinizi bırakın. Onay için sizinle iletişime geçeceğiz.
                 </p>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-4">
                 <RandevuStepper
                   action={createAppointment}
                   services={services}
