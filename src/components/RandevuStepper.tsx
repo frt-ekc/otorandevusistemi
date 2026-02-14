@@ -209,7 +209,7 @@ export default function RandevuStepper({
                     </p>
                     {service.duration ? (
                       <p className="mt-2 text-xs font-bold text-white uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">
-                        TAHMİNİ SÜRE: {service.duration}
+                        {service.duration}
                       </p>
                     ) : null}
                   </div>
