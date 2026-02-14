@@ -14,7 +14,7 @@ const menu = [
 export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Menü açıkken arka sayfanın kaymasını engeller (sadece mobil)
+  // Menü açıkken sayfanın kaymasını engelle
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -24,120 +24,131 @@ export default function TopNav() {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="flex items-center transition-transform active:scale-95">
-          <Image
-            src="/logo.svg"
-            alt="Fırat Oto Lastik logo"
-            width={160}
-            height={40}
-            className="h-9 w-auto object-contain sm:h-11"
-            priority
-          />
-        </Link>
+    <>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center transition-transform active:scale-95 shadow-lg shadow-black/20">
+            <Image
+              src="/logo.svg"
+              alt="Fırat Oto Lastik logo"
+              width={160}
+              height={40}
+              className="h-9 w-auto object-contain sm:h-11"
+              priority
+            />
+          </Link>
 
-        {/* MASAÜSTÜ MENÜ - DOKUNMUYORUZ, YAPISI AYNI KALIYOR */}
-        <nav className="hidden items-center gap-8 text-[13px] font-black tracking-[0.2em] text-white/90 uppercase lg:flex">
-          {menu.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="transition-colors hover:text-brand-gold"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {/* MASAÜSTÜ NAVİGASYON */}
+          <nav className="hidden items-center gap-8 text-[13px] font-black tracking-[0.2em] text-white/90 uppercase lg:flex">
+            {menu.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="transition-colors hover:text-brand-gold"
+              >
+                {item.label}
+              </Link>
+            ))}
 
-          <div className="group relative">
-            <Link href="/randevu" className="flex items-center gap-1 transition-colors hover:text-brand-gold">
-              Randevu <span className="text-[10px] text-brand-gold">▼</span>
-            </Link>
-            <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
-              <div className="rounded-xl border border-white/10 bg-brand-night/95 p-2 shadow-2xl backdrop-blur-xl">
-                <div className="flex flex-col gap-1 min-w-[180px]">
-                  <Link href="/randevu" className="rounded-lg px-4 py-3 text-xs tracking-widest hover:bg-white/5 hover:text-brand-gold">
-                    Randevu Al
-                  </Link>
-                  <Link href="/randevu-sorgula" className="rounded-lg px-4 py-3 text-xs tracking-widest hover:bg-white/5 hover:text-brand-gold">
-                    Randevu Sorgula
-                  </Link>
+            <div className="group relative">
+              <Link href="/randevu" className="flex items-center gap-1 transition-colors hover:text-brand-gold">
+                Randevu <span className="text-[10px] text-brand-gold">▼</span>
+              </Link>
+              {/* Masaüstü Alt Menü Geçişi Düzenlendi */}
+              <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+                <div className="rounded-xl border border-white/10 bg-brand-night/95 p-2 shadow-2xl backdrop-blur-xl">
+                  <div className="flex flex-col gap-1 min-w-[180px]">
+                    <Link href="/randevu" className="rounded-lg px-4 py-3 text-xs tracking-widest hover:bg-white/5 hover:text-brand-gold">
+                      Randevu Al
+                    </Link>
+                    <Link href="/randevu-sorgula" className="rounded-lg px-4 py-3 text-xs tracking-widest hover:bg-white/5 hover:text-brand-gold">
+                      Randevu Sorgula
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
+          </nav>
+
+          {/* MASAÜSTÜ SAĞ TARAF - WP İkonu Eklendi */}
+          <div className="hidden items-center gap-3 lg:flex">
+            <a href="tel:+905387061065" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
+              <PhoneIcon className="h-4 w-4 text-brand-gold" />
+              0 538 706 10 65
+            </a>
+            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center rounded-full bg-white/5 p-2 border border-white/10 hover:border-[#25D366]/50 transition-all active:scale-95 shadow-lg shadow-black/10">
+              <Image src="/wp.svg" alt="WhatsApp" width={20} height={20} />
+            </a>
           </div>
-        </nav>
 
-        {/* MASAÜSTÜ SAĞ TARAF - AYNI KALIYOR */}
-        <div className="hidden items-center gap-3 lg:flex">
-          <a href="tel:+905387061065" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
-            <PhoneIcon className="h-4 w-4 text-brand-gold" />
-            0 538 706 10 65
-          </a>
-          <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center rounded-full bg-white/5 p-2 border border-white/10 hover:border-green-500/50 transition-all active:scale-90">
-            <Image src="/wp.svg" alt="WhatsApp" width={18} height={18} />
-          </a>
+          {/* MOBİL ÜÇ ÇİZGİ BUTONU */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden shadow-lg shadow-black/20"
+            aria-label="Menü"
+          >
+            {isOpen ? (
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+              </svg>
+            )}
+          </button>
         </div>
+      </header>
 
-        {/* MOBİL ÜÇ ÇİZGİ BUTONU */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden"
-        >
-          {isOpen ? (
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-            </svg>
-          )}
-        </button>
-      </div>
-
-      {/* SADECE MOBİL İÇİN: TAM KAPALI, KOYU LACİVERT/SİYAH ARKA PLANLI MENÜ */}
+      {/* MOBİL MENÜ MODAL - TAM OPAK VE AYRI KATMAN */}
       <div
-        className={`fixed inset-0 z-[90] h-screen w-screen bg-[#070b14] transition-all duration-300 lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0"
+        className={`fixed inset-0 z-[60] h-screen w-screen bg-[#070b14] transition-all duration-300 ease-in-out lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0"
           }`}
       >
-        <div className="flex h-full flex-col px-8 pb-12 pt-32">
-          <nav className="flex flex-col space-y-2">
-            {[...menu, { label: "Randevu Al", href: "/randevu" }].map((item) => (
+        <div className="flex h-full flex-col px-8 pb-12 pt-32 text-center">
+          <nav className="flex flex-col space-y-3">
+            {menu.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 px-6 py-5 text-xl font-black uppercase tracking-[0.2em] text-white active:bg-brand-gold active:text-brand-dark"
+                className="rounded-2xl border border-white/5 bg-white/5 py-5 text-2xl font-black uppercase tracking-[0.2em] text-white shadow-lg transition-all active:bg-brand-gold active:text-brand-dark"
               >
                 {item.label}
-                <span className="text-brand-gold">→</span>
               </Link>
             ))}
 
             <Link
+              href="/randevu"
+              onClick={() => setIsOpen(false)}
+              className="rounded-2xl border border-white/5 bg-brand-gold/10 py-5 text-2xl font-black uppercase tracking-[0.2em] text-brand-gold shadow-lg transition-all active:bg-brand-gold active:text-brand-dark"
+            >
+              Randevu Al
+            </Link>
+
+            <Link
               href="/randevu-sorgula"
               onClick={() => setIsOpen(false)}
-              className="py-6 text-center text-xs font-bold uppercase tracking-[0.3em] text-white/30"
+              className="py-6 text-center text-xs font-bold uppercase tracking-[0.3em] text-white/20"
             >
               Randevu Durumu Sorgula
             </Link>
           </nav>
 
           <div className="mt-auto flex flex-col gap-4">
-            <div className="mb-2 text-center text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">Müşteri Destek Hattı</div>
-            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-3xl bg-white/5 py-6 text-lg font-black text-white active:bg-white/10">
+            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold mb-1">Hızlı İletişim Hattı</div>
+            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-3xl bg-white/5 py-6 text-lg font-black text-white shadow-xl active:scale-95 transition-transform">
               <PhoneIcon className="h-6 w-6 text-brand-gold" />
               0538 706 10 65
             </a>
-            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-3xl bg-green-600 py-6 text-lg font-black text-white shadow-2xl shadow-green-600/30 active:scale-95 transition-transform">
+            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-3xl bg-[#25D366] py-6 text-lg font-black text-white shadow-2xl shadow-[#25D366]/20 active:scale-95 transition-transform">
               <Image src="/wp.svg" alt="WA" width={26} height={26} className="brightness-200" />
               WHATSAPP DESTEK
             </a>
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }
 
