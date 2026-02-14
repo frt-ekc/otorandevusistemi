@@ -27,38 +27,42 @@ export default async function HizmetlerPage() {
   const services =
     hizmetler.length > 0
       ? hizmetler.map((hizmet) => ({
-          id: hizmet.id,
-          title: hizmet.name,
-          description: hizmet.description ?? "Açıklama eklenmemiş.",
-          image: hizmet.image_url ?? "",
-          duration: typeof hizmet.duration === "number" ? `${hizmet.duration} dk` : ""
-        }))
+        id: hizmet.id,
+        title: hizmet.name,
+        description: hizmet.description ?? "Açıklama eklenmemiş.",
+        image: hizmet.image_url ?? "",
+        duration: typeof hizmet.duration === "number" ? `${hizmet.duration} dk` : ""
+      }))
       : fallbackServices.map((item, index) => ({
-          id: `fallback-${index}`,
-          title: item.title,
-          description: item.description,
-          image: "",
-          duration: item.duration
-        }));
+        id: `fallback-${index}`,
+        title: item.title,
+        description: item.description,
+        image: "",
+        duration: item.duration
+      }));
 
   return (
     <div className="min-h-screen">
       <TopNav />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-12">
-        <section className="glass-card rounded-3xl px-8 py-10">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-              Hizmetler
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
-              Güvenli sürüş için uzman bakım
-            </h1>
-            <p className="mt-3 text-muted">
-              Hizmet güvenliği ve performansı için uyguluyoruz. Kısa açıklamalar aşağıda.
-            </p>
-          </div>
+        <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
+          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-10">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-white">
+                Hizmetler
+              </p>
+              <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+                Yolculuğun Her Kilometresinde Ustalık ve Güven.
+              </h1>
+              <p className="mt-4 text-base text-white leading-relaxed sm:text-lg">
+                Fırat Oto Lastik olarak sunduğumuz tüm profesyonel hizmetlerimize aşağıdan ulaşabilirsiniz.
+              </p>
+            </div>
 
-          <HizmetlerGrid services={services} />
+            <div className="mt-10">
+              <HizmetlerGrid services={services} />
+            </div>
+          </div>
         </section>
       </main>
     </div>

@@ -13,25 +13,59 @@ html {
 }
 
 body {
-  background: #0f172a url("/otolastik.png") center / cover no-repeat fixed !important;
   color: #ffffff;
   min-height: 100vh;
   font-family: "Inter", system-ui, -apple-system, sans-serif;
+  /* Reduced global shadow intensity for performance */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 h1 {
   font-weight: 800;
   letter-spacing: -0.02em;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.3), 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 h2 {
   font-weight: 700;
   letter-spacing: -0.02em;
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.2), 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-p {
-  font-size: 1rem;
-  line-height: 1.6;
+h3,
+h4,
+h5,
+h6 {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+p,
+a,
+button,
+input,
+select,
+textarea,
+label {
+  /* Removed heavy blur shadows for better scroll performance */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+span {
+  /* Only keep subtle glow for spans if needed */
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Koyu renkli metinler için gölgeyi temizle */
+.text-brand-dark,
+.text-black,
+.bg-brand-gold,
+.bg-brand-gold span {
+  text-shadow: none !important;
+}
+
+/* Gold butonlar için temiz bir derinlik ver */
+button.bg-brand-gold {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
 .bg-stars {
@@ -50,12 +84,22 @@ p {
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(14px);
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
 }
 
 .text-muted {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Parıltılı (glow) metin efekti - yoğun */
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(148, 163, 184, 0.2), 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Parıltılı (glow) metin efekti - hafif */
+.text-glow-soft {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(0, 0, 0, 0.6);
 }

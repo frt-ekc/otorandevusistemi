@@ -44,7 +44,7 @@ async function createAppointment(
     ad: String(formData.get("ad") ?? "").trim(),
     telefon: String(formData.get("telefon") ?? "").trim(),
     email: String(formData.get("email") ?? "").trim(),
-    plaka: String(formData.get("plaka") ?? "").trim(),
+    plaka: String(formData.get("plaka") ?? "").trim().toUpperCase(),
     hizmet: String(formData.get("hizmet") ?? "").trim(),
     tarih: String(formData.get("tarih") ?? "").trim(),
     saat: String(formData.get("saat") ?? "").trim(),
@@ -52,7 +52,32 @@ async function createAppointment(
     durum: "bekliyor"
   };
 
+  if (!payload.plaka || !payload.telefon) {
+    return { ok: false, message: "Plaka ve telefon alanları zorunludur." };
+  }
+
   const supabase = getSupabaseServerClient();
+
+  // Mevcut aktif randevu kontrolü (Aynı gün, aynı plaka kontrolü)
+  const { data: existing, error: checkError } = await supabase
+    .from("randevular")
+    .select("id")
+    .eq("plaka", payload.plaka)
+    .eq("tarih", payload.tarih)
+    .neq("durum", "iptal")
+    .limit(1);
+
+  if (checkError) {
+    return { ok: false, message: "Doğrulama hatası oluştu." };
+  }
+
+  if (existing && existing.length > 0) {
+    return {
+      ok: false,
+      message: "Bu plaka için bu tarihte zaten aktif bir randevu bulunmaktadır."
+    };
+  }
+
   const { error } = await supabase.from("randevular").insert([payload]);
   if (error) {
     return { ok: false, message: error.message };
@@ -65,9 +90,9 @@ export default async function RandevuPage() {
   const services =
     hizmetler.length > 0
       ? hizmetler.map((item) => ({
-          title: item.name,
-          duration: item.duration ? `Tahmini süre: ${item.duration} dakika` : ""
-        }))
+        title: item.name,
+        duration: item.duration ? `Tahmini süre: ${item.duration} dakika` : ""
+      }))
       : fallbackServices;
   const today = new Date();
   const maxDate = new Date();
@@ -77,29 +102,32 @@ export default async function RandevuPage() {
     <div className="min-h-screen">
       <TopNav />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-12">
-        <section className="glass-card rounded-3xl px-8 py-10">
-          <div className="flex flex-col gap-6">
-            <div>
-              <span className="rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70">
-                Online Randevu
-              </span>
-              <h1 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">
-                Lastik servisi için randevu alın
-              </h1>
-              <p className="mt-3 text-muted">
-                Tarih ve saat seçin, bilgilerinizi bırakın. Onay için sizinle
-                iletişime geçeceğiz.
-              </p>
-            </div>
+        <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
+          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-10">
+            <div className="flex flex-col gap-6">
+              <div>
+                <span className="rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70">
+                  Online Randevu
+                </span>
+                <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+                  Hızlı ve Güvenli Randevu
+                </h1>
+                <p className="mt-4 text-base text-white/80 leading-relaxed sm:text-lg">
+                  Tarih ve saat seçin, bilgilerinizi bırakın. Onay için sizinle iletişime geçeceğiz.
+                </p>
+              </div>
 
-            <RandevuStepper
-              action={createAppointment}
-              services={services}
-              steps={steps}
-              timeSlots={timeSlots}
-              minDate={toIsoDate(today)}
-              maxDate={toIsoDate(maxDate)}
-            />
+              <div className="mt-6">
+                <RandevuStepper
+                  action={createAppointment}
+                  services={services}
+                  steps={steps}
+                  timeSlots={timeSlots}
+                  minDate={toIsoDate(today)}
+                  maxDate={toIsoDate(maxDate)}
+                />
+              </div>
+            </div>
           </div>
         </section>
       </main>

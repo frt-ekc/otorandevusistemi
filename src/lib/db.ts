@@ -25,6 +25,8 @@ export type LastikRow = {
   marka: string | null;
   ozellik: string | null;
   durum: string | null;
+  image_url: string | null;
+  image_path: string | null;
 };
 
 export type RandevuRow = {
@@ -88,7 +90,7 @@ export async function getLastikler() {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from("lastikler")
-    .select("id, genislik, yanak, jant, marka, ozellik, durum");
+    .select("id, genislik, yanak, jant, marka, ozellik, durum, image_url, image_path");
   if (error) {
     return [];
   }
@@ -99,7 +101,7 @@ export async function searchLastikler(filters: LastikFilters) {
   const supabase = getSupabaseServerClient();
   let query = supabase
     .from("lastikler")
-    .select("id, genislik, yanak, jant, marka, ozellik, durum");
+    .select("id, genislik, yanak, jant, marka, ozellik, durum, image_url, image_path");
 
   if (filters.genislik) {
     query = query.eq("genislik", filters.genislik);
@@ -148,8 +150,8 @@ export async function searchRandevular(ad: string, plaka: string) {
     .select(
       "id, ad, telefon, email, plaka, hizmet, tarih, saat, not_metni, durum, created_at"
     )
-    .ilike("ad", ad.trim() ? ad.trim().toLowerCase() : "")
-    .ilike("plaka", plaka.trim() ? plaka.trim().toLowerCase() : "");
+    .ilike("ad", ad.trim())
+    .ilike("plaka", plaka.trim());
 
   if (error) {
     return [];
@@ -174,6 +176,27 @@ export async function getAyarlar() {
 export async function deleteRandevu(id: string) {
   const supabase = getSupabaseServerClient();
   const { error } = await supabase.from("randevular").delete().eq("id", id);
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+  return { ok: true };
+}
+
+export async function deleteLastik(id: string) {
+  const supabase = getSupabaseServerClient();
+  const { error } = await supabase.from("lastikler").delete().eq("id", id);
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+  return { ok: true };
+}
+
+export async function updateRandevuStatus(id: string, status: string) {
+  const supabase = getSupabaseServerClient();
+  const { error } = await supabase
+    .from("randevular")
+    .update({ durum: status })
+    .eq("id", id);
   if (error) {
     return { ok: false, message: error.message };
   }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Image from "next/image";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,7 +20,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${inter.className} text-white`}>
+      <body className={`${inter.className} relative min-h-screen text-white antialiased`}>
+        <div className="fixed inset-0 -z-10 bg-[#0f172a]">
+          <Image
+            src="/otolastik.png"
+            alt="Fırat Oto Lastik Background"
+            fill
+            priority
+            className="object-cover opacity-60"
+          />
+        </div>
         {children}
       </body>
     </html>

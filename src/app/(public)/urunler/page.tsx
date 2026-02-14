@@ -30,31 +30,35 @@ export default async function UrunlerPage() {
   const products =
     urunler.length > 0
       ? urunler.map((urun) => ({
-          id: urun.id,
-          title: urun.name,
-          description: "Açıklama eklenmemiş.",
-          price: urun.fiyat ? `₺${urun.fiyat}` : "Fiyat belirtilmedi",
-          image: urun.image_url ?? ""
-        }))
+        id: urun.id,
+        title: urun.name,
+        description: "Açıklama eklenmemiş.",
+        price: urun.fiyat ? `₺${urun.fiyat}` : "Fiyat belirtilmedi",
+        image: urun.image_url ?? ""
+      }))
       : fallbackProducts;
   return (
     <div className="min-h-screen">
       <TopNav />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-12">
-        <section className="glass-card rounded-3xl px-8 py-10">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-              Ürünler
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
-              Öne çıkan ürün ve paketler
-            </h1>
-            <p className="mt-3 text-muted">
-              Lastik, jant ve bakım ürünlerimizi inceleyin.
-            </p>
-          </div>
+        <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
+          <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-10">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-white">
+                Ürünler
+              </p>
+              <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+                Öne Çıkan Ürün ve Paketler
+              </h1>
+              <p className="mt-4 text-base text-white leading-relaxed sm:text-lg">
+                Lastik, jant ve bakım ürünlerimizi inceleyebilir, ihtiyacınıza uygun paketi seçebilirsiniz.
+              </p>
+            </div>
 
-          <ProductGrid products={products} />
+            <div className="mt-10">
+              <ProductGrid products={products} />
+            </div>
+          </div>
         </section>
       </main>
     </div>

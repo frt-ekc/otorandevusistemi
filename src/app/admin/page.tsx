@@ -6,37 +6,83 @@ import {
   getUrunler,
   deleteRandevu,
   getAyarlar,
-  getHizmetler
+  getHizmetler,
+  updateRandevuStatus,
+  deleteLastik
 } from "@/lib/db";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { revalidatePath } from "next/cache";
+import Image from "next/image";
+import RandevuCalendar from "@/components/admin/RandevuCalendar";
+import RandevuList from "@/components/admin/RandevuList";
+import SelectionWithOther from "@/components/admin/SelectionWithOther";
+import SmartTireSize from "@/components/admin/SmartTireSize";
 
 export const dynamic = "force-dynamic";
 
 async function getCounts() {
   const supabase = getSupabaseServerClient();
-  const [{ count: randevular }, { count: stok }] = await Promise.all([
-    supabase.from("randevular").select("id", { count: "exact", head: true }),
+  const [activeRes, cancelledRes, stokRes] = await Promise.all([
+    supabase.from("randevular").select("id", { count: "exact", head: true }).neq("durum", "iptal"),
+    supabase.from("randevular").select("id", { count: "exact", head: true }).eq("durum", "iptal"),
     supabase.from("lastikler").select("id", { count: "exact", head: true })
   ]);
 
   return {
-    randevular: randevular ?? 0,
-    stok: stok ?? 0
+    active: activeRes.count ?? 0,
+    cancelled: cancelledRes.count ?? 0,
+    stok: stokRes.count ?? 0
   };
 }
 
 async function createLastik(formData: FormData) {
   "use server";
 
-  const genislik = String(formData.get("genislik") ?? "").trim();
-  const yanak = String(formData.get("yanak") ?? "").trim();
-  const jant = String(formData.get("jant") ?? "").trim();
-  const marka = String(formData.get("marka") ?? "").trim();
-  const ozellik = String(formData.get("ozellik") ?? "").trim();
+  const genislikSelect = String(formData.get("genislik_select") ?? "");
+  const genislik = genislikSelect === "Diğer" ? String(formData.get("genislik_other") ?? "").trim() : genislikSelect;
+
+  const yanakSelect = String(formData.get("yanak_select") ?? "");
+  const yanak = yanakSelect === "Diğer" ? String(formData.get("yanak_other") ?? "").trim() : yanakSelect;
+
+  const jantSelect = String(formData.get("jant_select") ?? "");
+  const jant = jantSelect === "Diğer" ? String(formData.get("jant_other") ?? "").trim() : jantSelect;
+
+  const markaSelect = String(formData.get("marka_select") ?? "");
+  const marka = markaSelect === "Diğer" ? String(formData.get("marka_other") ?? "").trim() : markaSelect;
+
+  const ozellikSelect = String(formData.get("ozellik_select") ?? "");
+  const ozellik = ozellikSelect === "Diğer" ? String(formData.get("ozellik_other") ?? "").trim() : ozellikSelect;
+
   const durum = String(formData.get("durum") ?? "").trim();
+  const gorsel = formData.get("gorsel");
 
   if (!genislik || !yanak || !jant || !marka || !ozellik || !durum) {
-    redirect("/admin?lastik=0&error=Eksik%20bilgi");
+    redirect("/admin?view=stok&lastik=0&error=Eksik%20bilgi");
+  }
+
+  const supabase = getSupabaseServerClient();
+  let image_url: string | null = null;
+  let image_path: string | null = null;
+
+  if (gorsel instanceof File && gorsel.size > 0) {
+    const extension = gorsel.name.split(".").pop()?.toLowerCase() ?? "png";
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
+    const filePath = fileName; // Artık kök dizine kaydedebiliriz veya 'lastikler/' klasörünü tutabiliriz.
+    const { error: uploadError } = await supabase.storage
+      .from("tire")
+      .upload(filePath, gorsel, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: gorsel.type || "image/png"
+      });
+    if (uploadError) {
+      redirect(
+        `/admin?view=stok&lastik=0&error=${encodeURIComponent(uploadError.message)}`
+      );
+    }
+    const { data: urlData } = supabase.storage.from("tire").getPublicUrl(filePath);
+    image_url = urlData.publicUrl;
+    image_path = filePath;
   }
 
   const payload = {
@@ -45,24 +91,44 @@ async function createLastik(formData: FormData) {
     jant: jant || null,
     marka: marka || null,
     ozellik: ozellik || null,
-    durum: durum || null
+    durum: durum || null,
+    image_url,
+    image_path
   };
 
-  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from("lastikler")
     .insert([payload])
     .select("id")
     .single();
+
   if (error) {
-    redirect(`/admin?lastik=0&error=${encodeURIComponent(error.message)}`);
+    redirect(`/admin?view=stok&lastik=0&error=${encodeURIComponent(error.message)}`);
   }
   if (!data?.id) {
-    redirect("/admin?lastik=0&error=Kayit%20donmedi");
+    redirect("/admin?view=stok&lastik=0&error=Kayit%20donmedi");
   }
-  redirect(`/admin?lastik=1&id=${data.id}`);
+  redirect(`/admin?view=stok&lastik=1&id=${data.id}`);
 }
+async function deleteLastikAction(formData: FormData) {
+  "use server";
+  const id = String(formData.get("id") ?? "");
+  const image_path = String(formData.get("image_path") ?? "");
+  if (!id) return;
 
+  const supabase = getSupabaseServerClient();
+
+  // Storage'dan sil
+  if (image_path) {
+    await supabase.storage.from("tire").remove([image_path]);
+  }
+
+  const result = await deleteLastik(id);
+  if (result.ok) {
+    revalidatePath("/admin");
+    redirect("/admin?view=stok&lastik=Silindi");
+  }
+}
 async function cancelRandevu(formData: FormData) {
   "use server";
 
@@ -70,11 +136,25 @@ async function cancelRandevu(formData: FormData) {
   if (!id) {
     redirect("/admin?randevu=0&error=Randevu%20bulunamadi");
   }
-  const result = await deleteRandevu(id);
+  const result = await updateRandevuStatus(id, "iptal");
   if (!result.ok) {
     redirect(`/admin?randevu=0&error=${encodeURIComponent(result.message ?? "")}`);
   }
-  redirect(`/admin?randevu=1&id=${id}`);
+  revalidatePath("/admin");
+  redirect(`/admin?randevu=1&id=${id}&view=randevular`);
+}
+
+async function handleDeleteRandevu(id: string) {
+  "use server";
+  const result = await deleteRandevu(id);
+  if (result.ok) {
+    revalidatePath("/admin");
+  }
+}
+async function handleCalendarCancel(id: string) {
+  "use server";
+  await updateRandevuStatus(id, "iptal");
+  revalidatePath("/admin");
 }
 
 async function createUrun(formData: FormData) {
@@ -430,6 +510,7 @@ export default async function AdminPage({
     hizmet?: string;
     ayarlar?: string;
     view?: string;
+    tab?: string;
   }>;
 }) {
   const resolvedParams = searchParams ? await searchParams : undefined;
@@ -445,34 +526,58 @@ export default async function AdminPage({
   const insertedId = resolvedParams?.id ?? "";
   const activeView = resolvedParams?.view ?? "randevular";
   const isUrunFormOpen = resolvedParams?.urunEkle === "1";
+  const activeTab = resolvedParams?.tab ?? "takvim";
   const counts =
     activeView === "randevular"
       ? await getCounts()
-      : { randevular: 0, stok: 0 };
+      : { active: 0, cancelled: 0, stok: 0 };
   const lastikler = activeView === "stok" ? await getLastikler() : [];
-  const randevular = activeView === "randevular" ? await getRandevular() : [];
+  const randevularRaw = activeView === "randevular" ? await getRandevular() : [];
+  const randevular = randevularRaw.filter(r =>
+    activeTab === "aktif" ? r.durum !== "iptal" : r.durum === "iptal"
+  );
   const urunler = activeView === "urunler" ? await getUrunler() : [];
-  const hizmetler = activeView === "hizmetler" ? await getHizmetler() : [];
+  const hizmetler = (activeView === "hizmetler" || activeView === "randevular") ? await getHizmetler() : [];
   const ayarlar = activeView === "ayarlar" ? await getAyarlar() : null;
-  const summaryCards =
+
+  const summaryTabs =
     activeView === "randevular"
       ? [
         {
-          title: "Toplam Randevu",
-          value: String(counts.randevular),
-          status: "Canlı"
+          label: "Takvim Görünümü",
+          count: counts.active,
+          slug: "takvim",
+          active: activeTab === "takvim",
+          href: "/admin?view=randevular&tab=takvim"
+        },
+        {
+          label: "Aktif Randevular",
+          count: counts.active,
+          slug: "aktif",
+          active: activeTab === "aktif",
+          href: "/admin?view=randevular&tab=aktif"
+        },
+        {
+          label: "İptal Edilenler",
+          count: counts.cancelled,
+          slug: "iptal",
+          active: activeTab === "iptal",
+          href: "/admin?view=randevular&tab=iptal"
         }
       ]
       : [];
   return (
     <div className="min-h-screen bg-[#0f172a] bg-[url('/otolastik.png')] bg-cover bg-center bg-no-repeat bg-fixed text-white">
       <div className="flex min-h-screen">
-        <aside className="hidden w-64 flex-col gap-6 border-r border-white/10 bg-[#0f172a]/95 backdrop-blur-md px-6 py-8 md:flex shadow-2xl">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-              Yönetici Paneli
-            </p>
-            <p className="mt-2 text-lg font-semibold">OtoRandevu</p>
+        <aside className="hidden w-64 flex-col gap-6 border-r border-white/10 bg-[#0f172a]/80 backdrop-blur-md px-6 py-8 md:flex shadow-2xl">
+          <div className="flex items-center justify-center">
+            <Image
+              src="/logo.svg"
+              alt="Fırat Oto Lastik logo"
+              width={180}
+              height={60}
+              className="h-12 w-auto object-contain"
+            />
           </div>
           <nav className="flex flex-col gap-3 text-sm text-white/70">
             {[
@@ -485,13 +590,13 @@ export default async function AdminPage({
               <Link
                 key={item.label}
                 href={item.href}
-                className={`rounded-xl px-4 py-3 hover:bg-white/5 hover:text-white ${(item.href.includes("view=randevular") && activeView === "randevular") ||
+                className={`rounded-xl px-4 py-3 transition-all duration-200 ${(item.href.includes("view=randevular") && activeView === "randevular") ||
                   (item.href.includes("view=hizmetler") && activeView === "hizmetler") ||
                   (item.href.includes("view=stok") && activeView === "stok") ||
                   (item.href.includes("view=urunler") && activeView === "urunler") ||
                   (item.href.includes("view=ayarlar") && activeView === "ayarlar")
-                  ? "bg-white/10 text-white"
-                  : ""
+                  ? "bg-brand-gold text-brand-dark font-bold shadow-[0_0_20px_rgba(251,191,36,0.2)]"
+                  : "text-white/70 hover:bg-brand-gold/10 hover:text-brand-gold"
                   }`}
               >
                 {item.label}
@@ -503,7 +608,7 @@ export default async function AdminPage({
           </button>
         </aside>
 
-        <main className="flex-1 px-6 py-8 md:px-10 bg-[#0f172a]/90 backdrop-blur-sm">
+        <main className="flex-1 px-6 py-8 md:px-10 bg-[#0f172a]/60 backdrop-blur-sm">
           <div className="flex flex-col gap-10">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-white/60">
@@ -531,22 +636,26 @@ export default async function AdminPage({
             </div>
 
             {activeView === "randevular" ? (
-              <section className="grid gap-4 lg:grid-cols-3">
-                {summaryCards.map((card) => (
-                  <div
-                    key={card.title}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-5"
+              <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {summaryTabs.map((tab) => (
+                  <Link
+                    key={tab.slug}
+                    href={tab.href}
+                    className={`rounded-2xl border p-6 transition-all ${tab.active
+                      ? "border-brand-gold bg-brand-gold/10 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
+                      : "border-white/10 bg-white/5 hover:bg-white/10"
+                      }`}
                   >
                     <div className="flex items-center justify-between text-sm text-white/70">
-                      <span>{card.title}</span>
-                      <span className="rounded-full bg-white/10 px-2 py-1 text-xs">
-                        {card.status}
-                      </span>
+                      <span>{tab.label}</span>
+                      {tab.active && (
+                        <span className="h-2 w-2 rounded-full bg-brand-gold shadow-[0_0_8px_#facc15]" />
+                      )}
                     </div>
-                    <p className="mt-4 text-2xl font-semibold text-white">
-                      {card.value}
+                    <p className={`mt-4 text-3xl font-black ${tab.active ? "text-brand-gold" : "text-white"}`}>
+                      {tab.count}
                     </p>
-                  </div>
+                  </Link>
                 ))}
               </section>
             ) : null}
@@ -583,60 +692,46 @@ export default async function AdminPage({
                   action={createLastik}
                   className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-brand-night/60 p-4 lg:grid-cols-6"
                 >
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Genişlik
-                    <input
-                      name="genislik"
-                      required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Yanak
-                    <input
-                      name="yanak"
-                      required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Jant
-                    <input
-                      name="jant"
-                      required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Marka
-                    <input
-                      name="marka"
-                      required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Özellik
-                    <input
-                      name="ozellik"
-                      required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-                    />
-                  </label>
+                  <SmartTireSize />
+                  <SelectionWithOther
+                    name="marka"
+                    label="Marka"
+                    required
+                    options={[
+                      "Lassa", "Petlas", "Starmaxx", "Michelin", "Bridgestone",
+                      "Goodyear", "Continental", "Pirelli", "Dunlop", "Hankook",
+                      "Falken", "Kumho", "Yokohama", "Milestone", "Waterfall", "Sava"
+                    ]}
+                  />
+                  <SelectionWithOther
+                    name="ozellik"
+                    label="Özellik"
+                    required
+                    options={["Kışlık", "Yazlık", "Dört Mevsim", "RunFlat"]}
+                  />
                   <label className="flex flex-col gap-2 text-sm text-white/70">
                     Durum
                     <select
                       name="durum"
                       required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white focus:ring-1 focus:ring-brand-gold outline-none"
                     >
                       <option value="">Seçiniz</option>
                       <option value="sıfır">Sıfır</option>
                       <option value="2.el">2. El</option>
                     </select>
                   </label>
+                  <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-6">
+                    Lastik Fotoğrafı
+                    <input
+                      name="gorsel"
+                      type="file"
+                      accept="image/*"
+                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white focus:ring-1 focus:ring-brand-gold outline-none file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold hover:file:bg-brand-gold/20"
+                    />
+                  </label>
                   <div className="lg:col-span-6">
-                    <button className="w-full rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft">
+                    <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
                       Kaydet
                     </button>
                   </div>
@@ -645,17 +740,51 @@ export default async function AdminPage({
                   {lastikler.map((lastik) => (
                     <div
                       key={lastik.id}
-                      className="rounded-xl border border-white/10 bg-brand-night/60 p-4 text-sm text-white/80"
+                      className="group rounded-xl border border-white/10 bg-brand-night/60 p-4 text-sm text-white/80 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                     >
-                      <p className="text-base font-semibold text-white">
-                        {lastik.genislik}/{lastik.yanak} R{lastik.jant}
-                      </p>
-                      <p className="mt-1 text-white/60">
-                        {lastik.marka ?? "Marka yok"} · {lastik.ozellik ?? "Özellik yok"}
-                      </p>
-                      <p className="mt-1 text-white/60">
-                        Durum: {lastik.durum ?? "-"}
-                      </p>
+                      <div className="flex items-start justify-between">
+                        <div className="flex flex-1 items-start gap-4">
+                          {lastik.image_url ? (
+                            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10">
+                              <Image
+                                src={lastik.image_url}
+                                alt={`${lastik.marka} ${lastik.genislik}/${lastik.yanak} R${lastik.jant}`}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-base font-bold text-white group-hover:text-brand-gold transition-colors">
+                              {lastik.genislik}/{lastik.yanak} R{lastik.jant}
+                            </p>
+                            <p className="mt-1 text-white/60">
+                              {lastik.marka ?? "Marka yok"} · {lastik.ozellik ?? "Özellik yok"}
+                            </p>
+                            <p className="mt-1 text-white/60">
+                              Durum: <span className="font-bold text-white/90">{lastik.durum ?? "-"}</span>
+                            </p>
+                          </div>
+                        </div>
+                        <form action={deleteLastikAction}>
+                          <input type="hidden" name="id" value={lastik.id} />
+                          <input type="hidden" name="image_path" value={lastik.image_path ?? ""} />
+                          <button
+                            className="rounded-lg bg-red-500/10 p-2 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
+                            title="Sil"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   ))}
                   {lastikler.length === 0 ? (
@@ -683,7 +812,7 @@ export default async function AdminPage({
                   </div>
                   <Link
                     href="/admin?view=urunler&urunEkle=1#urun-ekle"
-                    className="rounded-full bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
+                    className="rounded-full border border-brand-gold/50 bg-brand-gold/10 px-4 py-2 text-sm font-bold text-brand-gold hover:bg-brand-gold/20 transition-all shadow-[0_0_15px_rgba(251,191,36,0.1)]"
                   >
                     Yeni ürün ekle
                   </Link>
@@ -747,7 +876,7 @@ export default async function AdminPage({
                       />
                     </label>
                     <div className="lg:col-span-3">
-                      <button className="w-full rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft">
+                      <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
                         Kaydet
                       </button>
                     </div>
@@ -758,22 +887,25 @@ export default async function AdminPage({
                   {urunler.map((urun) => (
                     <details
                       key={urun.id}
-                      className="rounded-xl border border-white/10 bg-brand-night/60 p-4"
+                      className="group rounded-xl border border-white/10 bg-brand-night/60 p-4 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                     >
                       <summary className="cursor-pointer list-none">
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
                             {urun.image_url ? (
-                              <img
-                                src={urun.image_url}
-                                alt={urun.name}
-                                className="h-14 w-14 rounded-lg object-cover"
-                              />
+                              <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-white/10">
+                                <Image
+                                  src={urun.image_url}
+                                  alt={urun.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
                             ) : (
                               <div className="h-14 w-14 rounded-lg border border-white/10 bg-white/5" />
                             )}
                             <div>
-                              <p className="text-sm font-semibold text-white">
+                              <p className="text-sm font-bold text-white group-hover:text-brand-gold transition-colors">
                                 {urun.name}
                               </p>
                               <p className="text-xs text-white/60">
@@ -781,7 +913,7 @@ export default async function AdminPage({
                               </p>
                             </div>
                           </div>
-                          <span className="text-xs text-white/50">Düzenle</span>
+                          <span className="text-xs font-bold uppercase tracking-widest text-white/30 group-hover:text-brand-gold transition-colors">Düzenle</span>
                         </div>
                       </summary>
 
@@ -824,7 +956,7 @@ export default async function AdminPage({
                           />
                         </label>
                         <div className="lg:col-span-2 flex flex-wrap gap-3">
-                          <button className="flex-1 rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft">
+                          <button className="flex-1 rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.2)] hover:scale-[1.02] transition-all active:scale-95">
                             Güncelle
                           </button>
                         </div>
@@ -837,8 +969,8 @@ export default async function AdminPage({
                           name="image_path"
                           value={urun.image_path ?? ""}
                         />
-                        <button className="w-full rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10">
-                          Sil
+                        <button className="w-full rounded-full border border-red-500/30 px-4 py-2 text-xs font-bold uppercase tracking-widest text-red-400/70 hover:bg-red-500/10 transition-all">
+                          Ürünü Sil
                         </button>
                       </form>
                     </details>
@@ -865,7 +997,7 @@ export default async function AdminPage({
                     </h2>
                   </div>
                   <form action={seedHizmetler}>
-                    <button className="w-full rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                    <button className="w-full rounded-full border border-brand-gold/50 bg-brand-gold/5 px-6 py-3 text-sm font-bold text-brand-gold hover:bg-brand-gold/10 transition-all">
                       Varsayılan hizmetleri ekle
                     </button>
                   </form>
@@ -918,7 +1050,7 @@ export default async function AdminPage({
                       />
                     </label>
                     <div className="lg:col-span-2">
-                      <button className="w-full rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft">
+                      <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
                         Kaydet
                       </button>
                     </div>
@@ -927,12 +1059,12 @@ export default async function AdminPage({
                     {hizmetler.map((hizmet) => (
                       <details
                         key={hizmet.id}
-                        className="rounded-xl border border-white/10 bg-brand-night/60 p-4"
+                        className="group rounded-xl border border-white/10 bg-brand-night/60 p-4 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                       >
                         <summary className="cursor-pointer list-none">
                           <div className="flex items-center justify-between gap-4">
                             <div>
-                              <p className="text-base font-semibold text-white">
+                              <p className="text-base font-bold text-white group-hover:text-brand-gold transition-colors">
                                 {hizmet.name}
                               </p>
                               {typeof hizmet.duration === "number" ? (
@@ -941,16 +1073,19 @@ export default async function AdminPage({
                                 </p>
                               ) : null}
                             </div>
-                            <span className="text-xs text-white/50">Düzenle</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-white/30 group-hover:text-brand-gold transition-colors">Düzenle</span>
                           </div>
                         </summary>
 
                         {hizmet.image_url ? (
-                          <img
-                            src={hizmet.image_url}
-                            alt={hizmet.name}
-                            className="mt-4 h-40 w-full rounded-lg object-cover"
-                          />
+                          <div className="relative mt-4 h-40 w-full overflow-hidden rounded-lg">
+                            <Image
+                              src={hizmet.image_url}
+                              alt={hizmet.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                         ) : null}
 
                         <form
@@ -1001,8 +1136,8 @@ export default async function AdminPage({
                             />
                           </label>
                           <div className="lg:col-span-2 flex flex-wrap gap-3">
-                            <button className="flex-1 rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft">
-                              Güncelle
+                            <button className="flex-1 rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
+                              Güncellemeyi Kaydet
                             </button>
                           </div>
                         </form>
@@ -1014,8 +1149,8 @@ export default async function AdminPage({
                             name="gorsel_path"
                             value={hizmet.image_path ?? ""}
                           />
-                          <button className="w-full rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10">
-                            Sil
+                          <button className="w-full rounded-full border border-red-500/30 px-4 py-2 text-xs font-bold uppercase tracking-widest text-red-400/70 hover:bg-red-500/10 transition-all">
+                            Hizmeti Sil
                           </button>
                         </form>
                       </details>
@@ -1055,62 +1190,20 @@ export default async function AdminPage({
                     {errorMessage || "Randevu güncellenemedi."}
                   </p>
                 ) : null}
-                <div className="mt-6 space-y-4">
-                  {randevular.map((randevu) => (
-                    <details
-                      key={randevu.id}
-                      className="rounded-xl border border-white/10 bg-brand-night/60 p-4"
-                    >
-                      <summary className="cursor-pointer list-none">
-                        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                          <div>
-                            <p className="text-base font-semibold text-white">
-                              {randevu.ad} · {randevu.telefon}
-                            </p>
-                            <p className="mt-1 text-sm text-white/60">
-                              {randevu.hizmet} · {randevu.tarih} {randevu.saat}
-                            </p>
-                          </div>
-                          <div className="text-right text-sm">
-                            <p className="text-white/60">Durum</p>
-                            <p className="text-lg font-semibold text-white">
-                              Aktif
-                            </p>
-                          </div>
-                        </div>
-                      </summary>
-                      <div className="mt-4 border-t border-white/10 pt-4 text-sm text-white/70">
-                        <p className="text-white/60">Ad Soyad: {randevu.ad}</p>
-                        <p className="mt-1 text-white/60">Telefon: {randevu.telefon}</p>
-                        <p className="mt-1 text-white/60">
-                          Hizmet: {randevu.hizmet}
-                        </p>
-                        <p className="mt-1 text-white/60">
-                          Tarih/Saat: {randevu.tarih} {randevu.saat}
-                        </p>
-                        {randevu.email ? (
-                          <p className="mt-1 text-white/60">Email: {randevu.email}</p>
-                        ) : null}
-                        {randevu.plaka ? (
-                          <p className="mt-1 text-white/60">Plaka: {randevu.plaka}</p>
-                        ) : null}
-                        {randevu.not_metni ? (
-                          <p className="mt-2 text-white/70">Not: {randevu.not_metni}</p>
-                        ) : null}
-                        <form action={cancelRandevu} className="mt-4">
-                          <input type="hidden" name="id" value={randevu.id} />
-                          <button className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10">
-                            İptal et
-                          </button>
-                        </form>
-                      </div>
-                    </details>
-                  ))}
-                  {randevular.length === 0 ? (
-                    <p className="text-sm text-white/50">
-                      Henüz randevu yok.
-                    </p>
-                  ) : null}
+                <div className="mt-6">
+                  {activeTab === "takvim" ? (
+                    <RandevuCalendar
+                      randevular={randevularRaw.filter(r => r.durum !== "iptal")}
+                      hizmetler={hizmetler}
+                      onCancel={handleCalendarCancel}
+                    />
+                  ) : (
+                    <RandevuList
+                      randevular={randevular}
+                      onCancel={handleCalendarCancel}
+                      onDelete={handleDeleteRandevu}
+                    />
+                  )}
                 </div>
               </section>
             ) : null}

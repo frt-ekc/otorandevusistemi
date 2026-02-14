@@ -11,7 +11,7 @@ export default function TopNav() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-black/35 backdrop-blur-md">
       <div className="flex w-full flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between lg:flex-nowrap">
-        <div className="flex items-center pl-2">
+        <Link href="/" className="flex items-center pl-2 transition-opacity hover:opacity-80">
           <Image
             src="/logo.svg"
             alt="Fırat Oto Lastik logo"
@@ -21,46 +21,46 @@ export default function TopNav() {
             style={{ width: "auto", height: "auto" }}
             priority
           />
-        </div>
+        </Link>
 
-        <nav className="flex items-center gap-8 text-base font-semibold text-white tracking-wide">
+        <nav className="flex items-center gap-8 text-base font-black text-white tracking-widest uppercase">
           {menu.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="whitespace-nowrap rounded-full px-2 py-1 transition hover:text-white hover:underline hover:decoration-brand-gold hover:decoration-2 hover:underline-offset-8"
+              className="whitespace-nowrap rounded-full px-2 py-1 transition hover:text-brand-gold hover:scale-105"
             >
               {item.label}
             </Link>
           ))}
           <Link
             href="/lastik-sorgula"
-            className="whitespace-nowrap rounded-full px-2 py-1 transition hover:text-white hover:underline hover:decoration-brand-gold hover:decoration-2 hover:underline-offset-8"
+            className="whitespace-nowrap rounded-full px-2 py-1 transition hover:text-brand-gold hover:scale-105"
           >
             Sorgula
           </Link>
           <div className="group relative">
             <Link
               href="/randevu"
-              className="whitespace-nowrap rounded-full px-2 py-1 transition hover:text-white hover:underline hover:decoration-brand-gold hover:decoration-2 hover:underline-offset-8"
+              className="whitespace-nowrap rounded-full px-2 py-1 transition hover:text-brand-gold hover:scale-105"
             >
               Randevu
             </Link>
             <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
               <span className="absolute -top-3 left-0 right-0 h-3 bg-transparent" />
-              <span className="absolute -top-2 left-1/2 h-0 w-0 -translate-x-1/2 border-x-8 border-x-transparent border-b-8 border-b-[#d7d7d9]" />
-              <div className="relative min-w-[260px] rounded-md border border-black/10 bg-[#d7d7d9] px-3 py-1 shadow-soft">
-                <div className="flex items-center justify-center gap-3 text-[14px] font-semibold text-[#2e2e2e] tracking-wide">
+              <span className="absolute -top-2 left-1/2 h-0 w-0 -translate-x-1/2 border-x-[6px] border-x-transparent border-b-[6px] border-b-brand-gold" />
+              <div className="relative rounded-xl border border-brand-gold/50 bg-[#0f172a]/95 backdrop-blur-xl px-2 py-1 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center justify-center gap-3 text-[13px] font-black text-white">
                   <Link
                     href="/randevu"
-                    className="whitespace-nowrap rounded-md px-2.5 py-0.5 transition-transform duration-150 hover:scale-105"
+                    className="whitespace-nowrap px-2 py-1 transition-all hover:scale-110 hover:text-brand-gold"
                   >
                     Randevu Al
                   </Link>
-                  <span className="text-[#7a7a7a]">|</span>
+                  <span className="text-brand-gold/40">/</span>
                   <Link
                     href="/randevu-sorgula"
-                    className="whitespace-nowrap rounded-md px-2.5 py-0.5 transition-transform duration-150 hover:scale-105"
+                    className="whitespace-nowrap px-2 py-1 transition-all hover:scale-110 hover:text-brand-gold"
                   >
                     Randevu Sorgula
                   </Link>
