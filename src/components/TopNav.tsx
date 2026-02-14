@@ -14,6 +14,7 @@ const menu = [
 export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Menü açıkken sayfanın kaymasını engelle
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -52,7 +53,7 @@ export default function TopNav() {
             <Link href="/randevu" className="flex items-center gap-1 transition-colors hover:text-brand-gold">
               Randevu <span className="text-[10px] text-brand-gold">▼</span>
             </Link>
-            {/* Alt Menü - Dead zone engellemek için pt-4 eklendi */}
+            {/* Masaüstü Alt Menü */}
             <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
               <div className="rounded-xl border border-white/10 bg-brand-night/95 p-2 shadow-2xl backdrop-blur-xl">
                 <div className="flex flex-col gap-1 min-w-[180px]">
@@ -68,7 +69,7 @@ export default function TopNav() {
           </div>
         </nav>
 
-        {/* Masaüstü Sağ Taraf (Telefon & WP) */}
+        {/* Masaüstü Sağ Taraf */}
         <div className="hidden items-center gap-3 lg:flex">
           <a href="tel:+905387061065" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
             <PhoneIcon className="h-4 w-4 text-brand-gold" />
@@ -82,7 +83,7 @@ export default function TopNav() {
         {/* Mobil Menü Butonu */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative z-[60] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden"
+          className="relative z-[70] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden"
         >
           {isOpen ? (
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,19 +97,19 @@ export default function TopNav() {
         </button>
       </div>
 
-      {/* Mobil Menü Katmanı */}
+      {/* MOBİL MENÜ - ARKA PLAN KESİNLİKLE OPAK (KARIŞIKLIĞI GİDERİCİ) */}
       <div
-        className={`fixed inset-0 z-50 bg-[#0f172a] transition-all duration-500 lg:hidden ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed inset-0 z-[60] bg-[#0c121e] transition-all duration-500 ease-in-out lg:hidden ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
           }`}
       >
-        <div className="flex flex-col h-full bg-gradient-to-b from-[#0f172a] to-black px-6 pb-12 pt-24 text-center">
-          <nav className="flex flex-col space-y-4">
+        <div className="flex flex-col h-full px-8 pb-12 pt-28 text-center bg-[#0c121e]">
+          <nav className="flex flex-col space-y-6">
             {menu.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="py-4 text-xl font-black uppercase tracking-[0.2em] text-white/90 active:text-brand-gold"
+                className="text-2xl font-black uppercase tracking-[0.2em] text-white active:text-brand-gold"
               >
                 {item.label}
               </Link>
@@ -116,27 +117,28 @@ export default function TopNav() {
             <Link
               href="/randevu"
               onClick={() => setIsOpen(false)}
-              className="py-4 text-xl font-black uppercase tracking-[0.2em] text-brand-gold"
+              className="text-2xl font-black uppercase tracking-[0.2em] text-brand-gold"
             >
               Randevu Al
             </Link>
             <Link
               href="/randevu-sorgula"
               onClick={() => setIsOpen(false)}
-              className="py-4 text-sm font-bold uppercase tracking-[0.2em] text-white/40"
+              className="text-xs font-bold uppercase tracking-[0.2em] text-white/30"
             >
-              Randevu Sorgula
+              Randevu Sorgulama
             </Link>
           </nav>
 
           <div className="mt-auto flex flex-col gap-4">
-            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-2xl bg-white/5 py-5 text-base font-black text-white active:scale-95 transition-transform">
-              <PhoneIcon className="h-5 w-5 text-brand-gold" />
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/10 mb-2">Destek ve İletişim</div>
+            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-2xl bg-white/5 py-5 text-base font-black text-white">
+              <PhoneIcon className="h-6 w-6 text-brand-gold" />
               0538 706 10 65
             </a>
-            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 py-5 text-base font-black text-[#25D366] active:scale-95 transition-transform">
-              <Image src="/wp.svg" alt="WA" width={22} height={22} />
-              WHATSAPP DESTEK
+            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-2xl bg-green-600 py-5 text-base font-black text-white shadow-xl shadow-green-600/20">
+              <Image src="/wp.svg" alt="WA" width={24} height={24} className="brightness-200" />
+              WHATSAPP'TAN YAZIN
             </a>
           </div>
         </div>
