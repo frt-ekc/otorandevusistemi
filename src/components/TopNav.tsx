@@ -14,7 +14,6 @@ const menu = [
 export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Menü açıkken sayfanın kaymasını engelle
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -27,7 +26,7 @@ export default function TopNav() {
     <>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link href="/" className="flex items-center transition-transform active:scale-95 shadow-lg shadow-black/20">
+          <Link href="/" className="flex items-center transition-transform active:scale-95">
             <Image
               src="/logo.svg"
               alt="Fırat Oto Lastik logo"
@@ -54,7 +53,6 @@ export default function TopNav() {
               <Link href="/randevu" className="flex items-center gap-1 transition-colors hover:text-brand-gold">
                 Randevu <span className="text-[10px] text-brand-gold">▼</span>
               </Link>
-              {/* Masaüstü Alt Menü Geçişi Düzenlendi */}
               <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
                 <div className="rounded-xl border border-white/10 bg-brand-night/95 p-2 shadow-2xl backdrop-blur-xl">
                   <div className="flex flex-col gap-1 min-w-[180px]">
@@ -70,7 +68,7 @@ export default function TopNav() {
             </div>
           </nav>
 
-          {/* MASAÜSTÜ SAĞ TARAF - WP İkonu Eklendi */}
+          {/* MASAÜSTÜ SAĞ TARAF */}
           <div className="hidden items-center gap-3 lg:flex">
             <a href="tel:+905387061065" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
               <PhoneIcon className="h-4 w-4 text-brand-gold" />
@@ -100,19 +98,19 @@ export default function TopNav() {
         </div>
       </header>
 
-      {/* MOBİL MENÜ MODAL - TAM OPAK VE AYRI KATMAN */}
+      {/* MOBİL MENÜ MODAL - DAHA KÜÇÜK VE DERLİ TOPLU */}
       <div
-        className={`fixed inset-0 z-[60] h-screen w-screen bg-[#070b14] transition-all duration-300 ease-in-out lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0"
+        className={`fixed inset-0 z-[60] h-screen w-screen bg-[#070b14] transition-all duration-300 ease-in-out lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0 translate-x-12"
           }`}
       >
-        <div className="flex h-full flex-col px-8 pb-12 pt-32 text-center">
-          <nav className="flex flex-col space-y-3">
+        <div className="flex h-full flex-col px-6 pb-8 pt-24 text-center">
+          <nav className="flex flex-col space-y-2.5">
             {menu.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="rounded-2xl border border-white/5 bg-white/5 py-5 text-2xl font-black uppercase tracking-[0.2em] text-white shadow-lg transition-all active:bg-brand-gold active:text-brand-dark"
+                className="rounded-xl border border-white/5 bg-white/5 py-4 text-base font-black uppercase tracking-[0.2em] text-white transition-all active:bg-brand-gold active:text-brand-dark active:scale-[0.98]"
               >
                 {item.label}
               </Link>
@@ -121,7 +119,7 @@ export default function TopNav() {
             <Link
               href="/randevu"
               onClick={() => setIsOpen(false)}
-              className="rounded-2xl border border-white/5 bg-brand-gold/10 py-5 text-2xl font-black uppercase tracking-[0.2em] text-brand-gold shadow-lg transition-all active:bg-brand-gold active:text-brand-dark"
+              className="rounded-xl border border-white/10 bg-brand-gold py-4 text-base font-black uppercase tracking-[0.2em] text-brand-dark shadow-lg shadow-brand-gold/10 transition-all active:scale-[0.98]"
             >
               Randevu Al
             </Link>
@@ -129,20 +127,20 @@ export default function TopNav() {
             <Link
               href="/randevu-sorgula"
               onClick={() => setIsOpen(false)}
-              className="py-6 text-center text-xs font-bold uppercase tracking-[0.3em] text-white/20"
+              className="rounded-xl border border-white/5 bg-white/5 py-4 text-base font-black uppercase tracking-[0.2em] text-white/90 transition-all active:bg-white/10 active:scale-[0.98]"
             >
-              Randevu Durumu Sorgula
+              Randevu Sorgula
             </Link>
           </nav>
 
-          <div className="mt-auto flex flex-col gap-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold mb-1">Hızlı İletişim Hattı</div>
-            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-3xl bg-white/5 py-6 text-lg font-black text-white shadow-xl active:scale-95 transition-transform">
-              <PhoneIcon className="h-6 w-6 text-brand-gold" />
+          <div className="mt-auto flex flex-col gap-3">
+            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold/60 mb-1">Destek Hattı</div>
+            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-2xl bg-white/5 py-4 text-base font-black text-white active:bg-white/10 transition-all">
+              <PhoneIcon className="h-5 w-5 text-brand-gold" />
               0538 706 10 65
             </a>
-            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-3xl bg-[#25D366] py-6 text-lg font-black text-white shadow-2xl shadow-[#25D366]/20 active:scale-95 transition-transform">
-              <Image src="/wp.svg" alt="WA" width={26} height={26} className="brightness-200" />
+            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-2xl bg-[#25D366] py-4 text-base font-black text-white shadow-xl shadow-[#25D366]/20 active:scale-[0.98] transition-all">
+              <Image src="/wp.svg" alt="WA" width={22} height={22} className="brightness-200" />
               WHATSAPP DESTEK
             </a>
           </div>
