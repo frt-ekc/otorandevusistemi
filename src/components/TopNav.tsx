@@ -14,7 +14,7 @@ const menu = [
 export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Menü açıkken sayfanın kaymasını engelle
+  // Menü açıkken arka sayfanın kaymasını engeller (sadece mobil)
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -37,7 +37,7 @@ export default function TopNav() {
           />
         </Link>
 
-        {/* Masaüstü Navigasyon */}
+        {/* MASAÜSTÜ MENÜ - DOKUNMUYORUZ, YAPISI AYNI KALIYOR */}
         <nav className="hidden items-center gap-8 text-[13px] font-black tracking-[0.2em] text-white/90 uppercase lg:flex">
           {menu.map((item) => (
             <Link
@@ -53,7 +53,6 @@ export default function TopNav() {
             <Link href="/randevu" className="flex items-center gap-1 transition-colors hover:text-brand-gold">
               Randevu <span className="text-[10px] text-brand-gold">▼</span>
             </Link>
-            {/* Masaüstü Alt Menü */}
             <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
               <div className="rounded-xl border border-white/10 bg-brand-night/95 p-2 shadow-2xl backdrop-blur-xl">
                 <div className="flex flex-col gap-1 min-w-[180px]">
@@ -69,7 +68,7 @@ export default function TopNav() {
           </div>
         </nav>
 
-        {/* Masaüstü Sağ Taraf */}
+        {/* MASAÜSTÜ SAĞ TARAF - AYNI KALIYOR */}
         <div className="hidden items-center gap-3 lg:flex">
           <a href="tel:+905387061065" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
             <PhoneIcon className="h-4 w-4 text-brand-gold" />
@@ -80,10 +79,10 @@ export default function TopNav() {
           </a>
         </div>
 
-        {/* Mobil Menü Butonu */}
+        {/* MOBİL ÜÇ ÇİZGİ BUTONU */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative z-[70] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden"
+          className="relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden"
         >
           {isOpen ? (
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,48 +96,43 @@ export default function TopNav() {
         </button>
       </div>
 
-      {/* MOBİL MENÜ - ARKA PLAN KESİNLİKLE OPAK (KARIŞIKLIĞI GİDERİCİ) */}
+      {/* SADECE MOBİL İÇİN: TAM KAPALI, KOYU LACİVERT/SİYAH ARKA PLANLI MENÜ */}
       <div
-        className={`fixed inset-0 z-[60] bg-[#0c121e] transition-all duration-500 ease-in-out lg:hidden ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+        className={`fixed inset-0 z-[90] h-screen w-screen bg-[#070b14] transition-all duration-300 lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0"
           }`}
       >
-        <div className="flex flex-col h-full px-8 pb-12 pt-28 text-center bg-[#0c121e]">
-          <nav className="flex flex-col space-y-6">
-            {menu.map((item) => (
+        <div className="flex h-full flex-col px-8 pb-12 pt-32">
+          <nav className="flex flex-col space-y-2">
+            {[...menu, { label: "Randevu Al", href: "/randevu" }].map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="text-2xl font-black uppercase tracking-[0.2em] text-white active:text-brand-gold"
+                className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 px-6 py-5 text-xl font-black uppercase tracking-[0.2em] text-white active:bg-brand-gold active:text-brand-dark"
               >
                 {item.label}
+                <span className="text-brand-gold">→</span>
               </Link>
             ))}
-            <Link
-              href="/randevu"
-              onClick={() => setIsOpen(false)}
-              className="text-2xl font-black uppercase tracking-[0.2em] text-brand-gold"
-            >
-              Randevu Al
-            </Link>
+
             <Link
               href="/randevu-sorgula"
               onClick={() => setIsOpen(false)}
-              className="text-xs font-bold uppercase tracking-[0.2em] text-white/30"
+              className="py-6 text-center text-xs font-bold uppercase tracking-[0.3em] text-white/30"
             >
-              Randevu Sorgulama
+              Randevu Durumu Sorgula
             </Link>
           </nav>
 
           <div className="mt-auto flex flex-col gap-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/10 mb-2">Destek ve İletişim</div>
-            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-2xl bg-white/5 py-5 text-base font-black text-white">
+            <div className="mb-2 text-center text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">Müşteri Destek Hattı</div>
+            <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-3xl bg-white/5 py-6 text-lg font-black text-white active:bg-white/10">
               <PhoneIcon className="h-6 w-6 text-brand-gold" />
               0538 706 10 65
             </a>
-            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-2xl bg-green-600 py-5 text-base font-black text-white shadow-xl shadow-green-600/20">
-              <Image src="/wp.svg" alt="WA" width={24} height={24} className="brightness-200" />
-              WHATSAPP'TAN YAZIN
+            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-4 rounded-3xl bg-green-600 py-6 text-lg font-black text-white shadow-2xl shadow-green-600/30 active:scale-95 transition-transform">
+              <Image src="/wp.svg" alt="WA" width={26} height={26} className="brightness-200" />
+              WHATSAPP DESTEK
             </a>
           </div>
         </div>
