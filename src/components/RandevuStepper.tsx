@@ -50,7 +50,10 @@ export default function RandevuStepper({
 
   useEffect(() => {
     if (summary.tarih) {
-      getReservedSlots(summary.tarih).then(setReservedSlots);
+      setReservedSlots([]); // Önceki tarihin verisini temizle
+      getReservedSlots(summary.tarih)
+        .then(setReservedSlots)
+        .catch(() => setReservedSlots([]));
     }
   }, [summary.tarih, getReservedSlots]);
   const stepActive = (index: number) => currentStep === index;

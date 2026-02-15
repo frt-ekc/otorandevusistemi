@@ -60,5 +60,11 @@ export async function getReservedSlots(date: string) {
         .neq("durum", "iptal");
 
     if (error) return [];
-    return (data || []).map(r => r.saat);
+    return (data || []).map(r => {
+        let s = String(r.saat || "").trim().replace(".", ":");
+        // Eğer format H:mm ise başına 0 ekle (örn: 8:00 -> 08:00)
+        if (s.length === 4 && s.includes(":")) s = "0" + s;
+        // İlk 5 karakteri al (HH:mm)
+        return s.substring(0, 5);
+    });
 }
