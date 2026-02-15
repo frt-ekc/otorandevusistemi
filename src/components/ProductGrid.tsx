@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type ProductCard = {
   id: string;
@@ -49,34 +50,63 @@ export default function ProductGrid({ products }: { products: ProductCard[] }) {
       </div>
 
       {active ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-sm">
-          <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl bg-brand-night text-white shadow-2xl border border-white/10">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/95 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative h-[90vh] sm:h-auto max-w-2xl w-full overflow-y-auto sm:overflow-hidden rounded-t-[2.5rem] sm:rounded-[2.5rem] bg-[#0c121e] text-white shadow-2xl border-t sm:border border-white/10 animate-in slide-in-from-bottom-10 duration-500">
             <button
               onClick={() => setActive(null)}
-              className="absolute right-4 top-4 h-10 w-10 rounded-full border border-white/20 bg-black/50 text-2xl font-bold text-white hover:bg-white/20 z-10"
+              className="absolute right-6 top-6 h-12 w-12 rounded-2xl border border-white/10 bg-white/5 text-2xl font-light text-white hover:bg-white/10 z-20 flex items-center justify-center transition-all active:scale-90"
               aria-label="Kapat"
             >
               ×
             </button>
             {active.image ? (
-              <div className="relative h-72 w-full bg-black/40">
+              <div className="relative h-72 sm:h-96 w-full bg-black/40 p-12 sm:p-20 shrink-0">
                 <Image
                   src={active.image}
                   alt={active.title}
                   fill
-                  className="object-contain p-10"
+                  className="object-contain"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0c121e] to-transparent" />
               </div>
             ) : null}
-            <div className="space-y-4 p-8">
-              <p className="text-xs uppercase tracking-[0.4em] text-white font-bold">
-                Ürün Detayı
-              </p>
-              <h2 className="text-3xl font-black text-brand-gold">{active.title}</h2>
-              <div className="inline-flex items-center gap-2 rounded-full bg-brand-gold/20 px-4 py-2 text-lg font-black text-brand-gold">
-                {active.price}
+            <div className="space-y-6 p-8 sm:p-10">
+              <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">
+                  Ürün Bilgisi
+                </p>
+                <h2 className="text-3xl font-black text-white leading-tight">{active.title}</h2>
               </div>
-              <p className="text-base text-white font-medium leading-relaxed">{active.description}</p>
+
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="inline-flex items-center gap-2 rounded-xl bg-brand-gold/10 border border-brand-gold/20 px-5 py-3 text-2xl font-black text-brand-gold">
+                  {active.price}
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-white/40">KDV Dahil</span>
+              </div>
+
+              <div className="h-px w-full bg-gradient-to-r from-white/10 to-transparent" />
+
+              <p className="text-lg text-white/80 font-medium leading-relaxed">{active.description}</p>
+
+              <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a
+                  href="https://wa.me/905387061065"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-3 rounded-2xl bg-[#25D366] py-5 text-base font-black text-white shadow-2xl shadow-[#25D366]/20 transition-all active:scale-95"
+                >
+                  <Image src="/wp.svg" alt="WA" width={24} height={24} className="brightness-200" />
+                  Sipariş Ver
+                </a>
+                <Link
+                  href="/randevu"
+                  onClick={() => setActive(null)}
+                  className="flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 py-5 text-base font-black text-white transition-all active:bg-white/10 active:scale-95"
+                >
+                  Montaj Randevusu
+                </Link>
+              </div>
             </div>
           </div>
         </div>

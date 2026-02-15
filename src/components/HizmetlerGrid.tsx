@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type ServiceCard = {
   id: string;
@@ -54,36 +55,55 @@ export default function HizmetlerGrid({ services }: { services: ServiceCard[] })
       </div>
 
       {active ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-sm">
-          <div className="relative max-w-2xl w-full overflow-hidden rounded-3xl bg-brand-night text-white shadow-2xl border border-white/10">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/90 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative h-[90vh] sm:h-auto max-w-2xl w-full overflow-y-auto sm:overflow-hidden rounded-t-[2.5rem] sm:rounded-[2.5rem] bg-[#0c121e] text-white shadow-2xl border-t sm:border border-white/10 animate-in slide-in-from-bottom-10 duration-500">
             <button
               onClick={() => setActive(null)}
-              className="absolute right-4 top-4 h-10 w-10 rounded-full border border-white/20 bg-black/50 text-2xl font-bold text-white hover:bg-white/20 z-10"
+              className="absolute right-6 top-6 h-12 w-12 rounded-2xl border border-white/10 bg-white/5 text-2xl font-light text-white hover:bg-white/10 z-20 flex items-center justify-center transition-all active:scale-90"
               aria-label="Kapat"
             >
               ×
             </button>
             {active.image ? (
-              <div className="relative h-72 w-full">
+              <div className="relative h-64 sm:h-80 w-full shrink-0">
                 <Image
                   src={active.image}
                   alt={active.title}
                   fill
                   className="object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0c121e] to-transparent" />
               </div>
             ) : null}
-            <div className="space-y-4 p-8">
-              <p className="text-xs uppercase tracking-[0.4em] text-white font-bold">
-                Hizmet Detayı
-              </p>
-              <h2 className="text-3xl font-black text-brand-gold">{active.title}</h2>
-              {active.duration ? (
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white">
-                  Süre: {active.duration}
-                </div>
-              ) : null}
-              <p className="text-base text-white font-medium leading-relaxed">{active.description}</p>
+            <div className="space-y-6 p-8 sm:p-10">
+              <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">
+                  Hizmet Bilgisi
+                </p>
+                <h2 className="text-3xl font-black text-white leading-tight">{active.title}</h2>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {active.duration ? (
+                  <div className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-white">
+                    <span className="text-brand-gold">⏱</span> Süre: {active.duration}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="h-px w-full bg-gradient-to-r from-white/10 to-transparent" />
+
+              <p className="text-lg text-white/80 font-medium leading-relaxed">{active.description}</p>
+
+              <div className="pt-6">
+                <Link
+                  href="/randevu"
+                  onClick={() => setActive(null)}
+                  className="flex w-full items-center justify-center rounded-2xl bg-brand-gold py-5 text-base font-black text-brand-dark shadow-2xl shadow-brand-gold/20 transition-all active:scale-95"
+                >
+                  Bu Hizmet İçin Randevu Al
+                </Link>
+              </div>
             </div>
           </div>
         </div>
