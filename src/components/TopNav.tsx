@@ -92,7 +92,8 @@ export default function TopNav() {
             </a>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 shadow-lg shadow-black/20 border border-white/5"
+              className={`relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 active:scale-90 shadow-lg shadow-black/20 border border-white/5 transition-colors ${isOpen ? "text-rose-500" : "text-white"
+                }`}
               aria-label="Menü"
             >
               {isOpen ? (
