@@ -72,14 +72,16 @@ export default function DateGridPicker({
     }> = [];
     const current = new Date(monthStart);
     while (current <= monthEnd) {
-      const value = toIsoDate(current);
-      result.push({
-        value,
-        dayLabel: dayNames[current.getDay()],
-        dateLabel: `${String(current.getDate()).padStart(2, "0")} ${monthNames[current.getMonth()]
-          }`,
-        disabled: current < min || current > max
-      });
+      if (current >= min) {
+        const value = toIsoDate(current);
+        result.push({
+          value,
+          dayLabel: dayNames[current.getDay()],
+          dateLabel: `${String(current.getDate()).padStart(2, "0")} ${monthNames[current.getMonth()]
+            }`,
+          disabled: current > max
+        });
+      }
       current.setDate(current.getDate() + 1);
     }
     return result;
@@ -155,8 +157,8 @@ export default function DateGridPicker({
                 />
                 <div
                   className={`rounded-xl border px-3 py-2 text-left transition ${slot.disabled || disabled
-                      ? "border-brand-gold/20 bg-white/5 text-white/35 opacity-50"
-                      : "hover:-translate-y-0.5 hover:bg-white/10"
+                    ? "border-brand-gold/20 bg-white/5 text-white/35 opacity-50"
+                    : "hover:-translate-y-0.5 hover:bg-white/10"
                     } ${isSelected && !slot.disabled && !disabled
                       ? "border-brand-gold bg-brand-gold/15 text-white"
                       : "border-brand-gold/40 bg-white/5 text-white/80"
