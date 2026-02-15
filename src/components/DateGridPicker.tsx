@@ -71,21 +71,24 @@ export default function DateGridPicker({
       disabled: boolean;
     }> = [];
     const current = new Date(monthStart);
+    current.setHours(0, 0, 0, 0);
+    const minStr = toIsoDate(min);
+
     while (current <= monthEnd) {
-      if (current >= min) {
-        const value = toIsoDate(current);
+      const dateStr = toIsoDate(current);
+      if (dateStr >= minStr) {
         result.push({
-          value,
+          value: dateStr,
           dayLabel: dayNames[current.getDay()],
           dateLabel: `${String(current.getDate()).padStart(2, "0")} ${monthNames[current.getMonth()]
             }`,
-          disabled: current > max
+          disabled: dateStr > maxDate
         });
       }
       current.setDate(current.getDate() + 1);
     }
     return result;
-  }, [monthStart, monthEnd, min, max]);
+  }, [monthStart, monthEnd, min, maxDate]);
 
   const selectedLabel = useMemo(() => {
     const match = days.find((item) => item.value === selected);
