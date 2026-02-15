@@ -514,7 +514,6 @@ export default async function AdminPage({
   }>;
 }) {
   const resolvedParams = searchParams ? await searchParams : undefined;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const lastikStatus = resolvedParams?.lastik;
   const randevuStatus = resolvedParams?.randevu;
   const urunStatus = resolvedParams?.urun;
@@ -625,9 +624,6 @@ export default async function AdminPage({
                         ? "Ürünler"
                         : "Ayarlar"}
               </h1>
-              <p className="mt-2 text-xs text-white/50">
-                Supabase: {supabaseUrl || "Bilinmiyor"}
-              </p>
               {activeView === "stok" ? (
                 <p className="mt-1 text-xs text-white/50">
                   Lastik sayısı: {lastikler.length}
