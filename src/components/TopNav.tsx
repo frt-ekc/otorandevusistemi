@@ -79,22 +79,33 @@ export default function TopNav() {
             </a>
           </div>
 
-          {/* MOBİL ÜÇ ÇİZGİ BUTONU */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 lg:hidden shadow-lg shadow-black/20"
-            aria-label="Menü"
-          >
-            {isOpen ? (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-              </svg>
-            )}
-          </button>
+          {/* MOBİL BUTONLAR */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <a
+              href="https://wa.me/905387061065"
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-brand-gold active:scale-90 shadow-lg shadow-black/20 border border-white/5"
+              aria-label="WhatsApp"
+            >
+              <Image src="/wp.svg" alt="WA" width={22} height={22} />
+            </a>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="relative z-[100] flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white active:scale-90 shadow-lg shadow-black/20 border border-white/5"
+              aria-label="Menü"
+            >
+              {isOpen ? (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -103,8 +114,8 @@ export default function TopNav() {
         className={`fixed inset-0 z-[60] h-screen w-screen bg-[#070b14] transition-all duration-300 ease-in-out lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0 translate-x-12"
           }`}
       >
-        <div className="flex h-full flex-col px-6 pb-8 pt-24 text-center">
-          <nav className="flex flex-col space-y-2.5">
+        <div className="flex h-full flex-col px-6 pb-10 pt-20 text-center overflow-y-auto">
+          <nav className="flex flex-col space-y-2 mt-4">
             {menu.map((item) => (
               <Link
                 key={item.label}
@@ -133,7 +144,7 @@ export default function TopNav() {
             </Link>
           </nav>
 
-          <div className="mt-auto flex flex-col gap-3">
+          <div className="mt-12 flex flex-col gap-3">
             <div className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold/60 mb-1">Destek Hattı</div>
             <a href="tel:+905387061065" className="flex items-center justify-center gap-4 rounded-2xl bg-white/5 py-4 text-base font-black text-white active:bg-white/10 transition-all">
               <PhoneIcon className="h-5 w-5 text-brand-gold" />
