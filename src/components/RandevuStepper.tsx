@@ -12,6 +12,7 @@ type RandevuStepperProps = {
     prevState: { ok: boolean; message?: string },
     formData: FormData
   ) => Promise<{ ok: boolean; message?: string }>;
+  getReservedSlots: (date: string) => Promise<string[]>;
   services: ServiceItem[];
   steps: string[];
   timeSlots: string[];
@@ -21,6 +22,7 @@ type RandevuStepperProps = {
 
 export default function RandevuStepper({
   action,
+  getReservedSlots,
   services,
   steps,
   timeSlots,
@@ -34,6 +36,7 @@ export default function RandevuStepper({
   const [dateOpen, setDateOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [timeEnabled, setTimeEnabled] = useState(false);
+  const [reservedSlots, setReservedSlots] = useState<string[]>([]);
   const [summary, setSummary] = useState({
     ad: "",
     telefon: "",
@@ -44,6 +47,12 @@ export default function RandevuStepper({
     saat: "",
     not: ""
   });
+
+  useEffect(() => {
+    if (summary.tarih) {
+      getReservedSlots(summary.tarih).then(setReservedSlots);
+    }
+  }, [summary.tarih, getReservedSlots]);
   const stepActive = (index: number) => currentStep === index;
   const [formState, formAction] = useActionState(action, { ok: false });
   const [localError, setLocalError] = useState<string | null>(null);
@@ -312,6 +321,7 @@ export default function RandevuStepper({
             <TimeGridPicker
               name="saat_picker"
               slots={timeSlots}
+              reservedSlots={reservedSlots}
               open={timeEnabled ? timeOpen : false}
               onOpenChange={setTimeOpen}
               disabled={!timeEnabled || !stepActive(2)}

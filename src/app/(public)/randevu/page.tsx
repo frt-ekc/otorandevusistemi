@@ -58,12 +58,12 @@ async function createAppointment(
 
   const supabase = getSupabaseServerClient();
 
-  // Mevcut aktif randevu kontrolü (Aynı gün, aynı plaka kontrolü)
+  // Mevcut aktif randevu kontrolü (Aynı gün, aynı saat kontrolü - Hizmet farketmeksizin)
   const { data: existing, error: checkError } = await supabase
     .from("randevular")
     .select("id")
-    .eq("plaka", payload.plaka)
     .eq("tarih", payload.tarih)
+    .eq("saat", payload.saat)
     .neq("durum", "iptal")
     .limit(1);
 
@@ -74,7 +74,7 @@ async function createAppointment(
   if (existing && existing.length > 0) {
     return {
       ok: false,
-      message: "Bu plaka için bu tarihte zaten aktif bir randevu bulunmaktadır."
+      message: "Bu randevu saati az önce başka bir müşteri tarafından rezerve edildi. Lütfen başka bir saat seçiniz."
     };
   }
 
@@ -83,6 +83,19 @@ async function createAppointment(
     return { ok: false, message: error.message };
   }
   return { ok: true };
+}
+
+export async function getReservedSlots(date: string) {
+  "use server";
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("randevular")
+    .select("saat")
+    .eq("tarih", date)
+    .neq("durum", "iptal");
+
+  if (error) return [];
+  return (data || []).map(r => r.saat);
 }
 
 export default async function RandevuPage() {
@@ -121,6 +134,7 @@ export default async function RandevuPage() {
               <div className="mt-4">
                 <RandevuStepper
                   action={createAppointment}
+                  getReservedSlots={getReservedSlots}
                   services={services}
                   steps={steps}
                   timeSlots={timeSlots}
