@@ -24,7 +24,8 @@ export default function TopNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
+      <header className={`sticky top-0 transition-all duration-300 ${isOpen ? "z-[70] bg-[#070b14]" : "z-50 bg-black/20 backdrop-blur-md"
+        } border-b border-white/10`}>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center transition-transform active:scale-95">
             <Image
