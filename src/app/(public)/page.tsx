@@ -79,7 +79,7 @@ export default async function HomePage() {
                 alt="Bridgestone"
                 width={300}
                 height={80}
-                className="h-16 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+                className="h-16 w-auto object-contain brightness-0 invert opacity-40 hover:opacity-100 hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] transition-all duration-500 cursor-pointer"
               />
             </div>
           </div>
