@@ -143,28 +143,28 @@ export default function TopNav() {
             ))}
 
             {/* Mobil Randevu Accordion */}
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-1">
               <button
                 onClick={() => setIsRandevuOpen(!isRandevuOpen)}
-                className={`flex w-full items-center justify-center gap-3 rounded-xl border border-white/5 py-4 text-base font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] ${isRandevuOpen ? "bg-brand-gold text-brand-dark border-brand-gold" : "bg-white/5 text-white"
+                className={`flex w-full items-center justify-between px-6 py-4 rounded-xl border border-white/5 transition-all active:scale-[0.98] ${isRandevuOpen ? "bg-white/10 text-brand-gold border-brand-gold/30" : "bg-white/5 text-white"
                   }`}
               >
-                Randevu
+                <span className="text-base font-black uppercase tracking-[0.2em]">Randevu</span>
                 <ChevronDownIcon className={`h-5 w-5 transition-transform duration-300 ${isRandevuOpen ? "rotate-180" : ""}`} />
               </button>
 
-              <div className={`flex flex-col space-y-2 overflow-hidden transition-all duration-300 ${isRandevuOpen ? "max-h-[200px] opacity-100 mt-2" : "max-h-0 opacity-0"}`}>
+              <div className={`flex flex-col space-y-1 overflow-hidden transition-all duration-300 ${isRandevuOpen ? "max-h-[200px] opacity-100 py-1" : "max-h-0 opacity-0"}`}>
                 <Link
                   href="/randevu"
                   onClick={() => { setIsOpen(false); setIsRandevuOpen(false); }}
-                  className="rounded-xl border border-white/5 bg-white/10 py-4 text-base font-black uppercase tracking-[0.2em] text-white transition-all active:bg-brand-gold active:text-brand-dark"
+                  className="mx-2 rounded-xl bg-white/5 py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white/80 transition-all active:bg-brand-gold active:text-brand-dark"
                 >
                   Randevu Al
                 </Link>
                 <Link
                   href="/randevu-sorgula"
                   onClick={() => { setIsOpen(false); setIsRandevuOpen(false); }}
-                  className="rounded-xl border border-white/5 bg-white/10 py-4 text-base font-black uppercase tracking-[0.2em] text-white/90 transition-all active:bg-brand-gold active:text-brand-dark"
+                  className="mx-2 rounded-xl bg-white/5 py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white/80 transition-all active:bg-brand-gold active:text-brand-dark"
                 >
                   Randevu Sorgula
                 </Link>
