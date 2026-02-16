@@ -13,12 +13,14 @@ const menu = [
 
 export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isRandevuOpen, setIsRandevuOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
+      setIsRandevuOpen(false);
     }
   }, [isOpen]);
 
@@ -140,21 +142,34 @@ export default function TopNav() {
               </Link>
             ))}
 
-            <Link
-              href="/randevu"
-              onClick={() => setIsOpen(false)}
-              className="rounded-xl border border-white/5 bg-white/5 py-4 text-base font-black uppercase tracking-[0.2em] text-white/90 transition-all hover:bg-brand-gold hover:text-brand-dark active:bg-brand-gold active:text-brand-dark active:scale-[0.98]"
-            >
-              Randevu Al
-            </Link>
+            {/* Mobil Randevu Accordion */}
+            <div className="flex flex-col space-y-2">
+              <button
+                onClick={() => setIsRandevuOpen(!isRandevuOpen)}
+                className={`flex w-full items-center justify-center gap-3 rounded-xl border border-white/5 py-4 text-base font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] ${isRandevuOpen ? "bg-brand-gold text-brand-dark border-brand-gold" : "bg-white/5 text-white"
+                  }`}
+              >
+                Randevu
+                <ChevronDownIcon className={`h-5 w-5 transition-transform duration-300 ${isRandevuOpen ? "rotate-180" : ""}`} />
+              </button>
 
-            <Link
-              href="/randevu-sorgula"
-              onClick={() => setIsOpen(false)}
-              className="rounded-xl border border-white/5 bg-white/5 py-4 text-base font-black uppercase tracking-[0.2em] text-white/90 transition-all active:bg-white/10 active:scale-[0.98]"
-            >
-              Randevu Sorgula
-            </Link>
+              <div className={`flex flex-col space-y-2 overflow-hidden transition-all duration-300 ${isRandevuOpen ? "max-h-[200px] opacity-100 mt-2" : "max-h-0 opacity-0"}`}>
+                <Link
+                  href="/randevu"
+                  onClick={() => { setIsOpen(false); setIsRandevuOpen(false); }}
+                  className="rounded-xl border border-white/5 bg-white/10 py-4 text-base font-black uppercase tracking-[0.2em] text-white transition-all active:bg-brand-gold active:text-brand-dark"
+                >
+                  Randevu Al
+                </Link>
+                <Link
+                  href="/randevu-sorgula"
+                  onClick={() => { setIsOpen(false); setIsRandevuOpen(false); }}
+                  className="rounded-xl border border-white/5 bg-white/10 py-4 text-base font-black uppercase tracking-[0.2em] text-white/90 transition-all active:bg-brand-gold active:text-brand-dark"
+                >
+                  Randevu Sorgula
+                </Link>
+              </div>
+            </div>
           </nav>
 
           <div className="mt-12 flex flex-col gap-3">
