@@ -91,6 +91,17 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
         }
     };
 
+    const components = {
+        dateCellWrapper: ({ children, value }: any) => {
+            return (
+                <div className="rbc-day-bg-custom-wrapper relative group h-full w-full">
+                    {children}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-brand-gold/10 transition-all duration-300 pointer-events-none border border-brand-gold/20 z-0" />
+                </div>
+            );
+        },
+    };
+
     return (
         <div className="flex flex-col gap-6 lg:flex-row">
             <div className="flex-1 flex flex-col gap-4">
@@ -113,32 +124,151 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md min-h-[600px]">
+                <div className="admin-calendar-outer rounded-[3rem] border border-white/5 bg-[#0b1120]/60 p-10 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.8)] min-h-[800px] relative overflow-hidden">
                     <style jsx global>{`
-            .rbc-calendar { color: white; font-family: inherit; }
-            .rbc-off-range-bg { background: rgba(255, 255, 255, 0.02); }
-            .rbc-today { background: rgba(251, 191, 36, 0.1); }
-            .rbc-event { 
-              background: #ef4444; 
-              border-radius: 4px; 
-              font-size: 0.75rem; 
-              border: none;
+            /* TAKVİMİN ANA MODERNİZE EDİLMİŞ HALİ */
+            .rbc-calendar { 
+                color: #f1f5f9 !important; 
+                font-family: inherit !important;
+                height: 800px !important;
             }
-            .rbc-event.rbc-selected { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-            .rbc-header { border-bottom: 2px solid rgba(255, 255, 255, 0.1); padding: 10px 0; font-weight: 700; color: #facc15; }
-            .rbc-month-view, .rbc-time-view, .rbc-agenda-view { border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; }
-            .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(255, 255, 255, 0.1); }
-            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(255, 255, 255, 0.1); }
-            .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; }
-            .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; }
-            .rbc-toolbar button.rbc-active { background: #facc15; color: #0f172a; border-color: #facc15; }
+            
+            .rbc-month-view { 
+                border: 1px solid rgba(255, 255, 255, 0.05) !important; 
+                border-radius: 32px !important; 
+                overflow: hidden !important; 
+                background: rgba(0, 0, 0, 0.2) !important;
+                backdrop-filter: blur(20px);
+            }
+
+            /* HÜCRE ANİMASYONLARI (GÜÇLÜ VE BELİRGİN) */
+            .rbc-day-bg-custom-wrapper {
+                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+                cursor: pointer !important;
+                position: relative !important;
+                z-index: 1 !important;
+                height: 100%;
+                width: 100%;
+            }
+            
+            .rbc-day-bg-custom-wrapper:hover {
+                background: rgba(250, 204, 21, 0.15) !important;
+                transform: scale(1.05) !important;
+                z-index: 50 !important;
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(250, 204, 21, 0.15) !important;
+                border-radius: 16px !important;
+            }
+
+            .rbc-day-bg {
+                background: transparent !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            }
+
+            /* BUGÜNÜN ÖZEL GÖRÜNÜMÜ */
+            .rbc-today { 
+                background: rgba(250, 204, 21, 0.1) !important; 
+            }
+            
+            .rbc-today .rbc-button-link {
+                color: #facc15 !important;
+                font-weight: 900 !important;
+                text-shadow: 0 0 15px rgba(250, 204, 21, 0.7);
+                background: rgba(250, 204, 21, 0.2);
+                padding: 4px 10px;
+                border-radius: 10px;
+                margin: 4px;
+            }
+
+            /* RANDEVU KARTLARI (PREMIUM) */
+            .rbc-event { 
+              background: rgba(255, 255, 255, 0.05) !important;
+              border: 1px solid rgba(255, 255, 255, 0.1) !important;
+              border-left: 4px solid #facc15 !important;
+              color: white !important;
+              border-radius: 12px !important; 
+              font-size: 0.75rem !important; 
+              font-weight: 800 !important;
+              padding: 6px 12px !important;
+              transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+              margin: 4px 8px !important;
+              backdrop-filter: blur(10px);
+            }
+            
+            .rbc-event:hover { 
+                transform: scale(1.1) translateX(5px) !important; 
+                background: rgba(250, 204, 21, 0.25) !important; 
+                border-color: #facc15 !important;
+                box-shadow: -15px 0 40px rgba(250, 204, 21, 0.25);
+                z-index: 100 !important;
+            }
+
+            /* ÜST HEADER VE TOOLBAR */
+            .rbc-header { 
+              border: none !important;
+              padding: 24px 0 !important; 
+              font-weight: 900 !important; 
+              text-transform: uppercase;
+              letter-spacing: 0.2em;
+              color: rgba(255, 255, 255, 0.4) !important; 
+              font-size: 0.7rem;
+            }
+
+            .rbc-toolbar { 
+                margin-bottom: 50px !important;
+                padding: 15px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border-radius: 24px !important;
+                border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+
+            .rbc-toolbar-label {
+                font-size: 1.8rem !important;
+                font-weight: 900 !important;
+                color: white !important;
+                letter-spacing: -0.02em;
+            }
+
+            .rbc-toolbar button { 
+              color: rgba(255, 255, 255, 0.6) !important; 
+              border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+              background: transparent !important; 
+              border-radius: 16px !important;
+              padding: 12px 30px !important;
+              font-weight: 800 !important;
+              text-transform: uppercase;
+              transition: all 0.4s ease !important;
+            }
+            
+            .rbc-toolbar button:hover { 
+                background: rgba(255, 255, 255, 0.08) !important; 
+                color: white !important;
+                transform: translateY(-3px);
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+
+            .rbc-toolbar button.rbc-active { 
+                background: #facc15 !important; 
+                color: #0f172a !important; 
+                border-color: #facc15 !important;
+                box-shadow: 0 15px 35px rgba(250, 204, 21, 0.4);
+            }
+
+            .rbc-date-cell { 
+                padding: 18px !important; 
+                font-weight: 900; 
+                font-size: 1.1rem; 
+                color: rgba(255, 255, 255, 0.2) !important;
+                transition: color 0.3s;
+            }
+            .rbc-month-row:hover .rbc-date-cell { color: rgba(255, 255, 255, 0.3) !important; }
           `}</style>
                     <Calendar
                         localizer={localizer}
                         events={events}
                         startAccessor="start"
                         endAccessor="end"
-                        style={{ height: 600 }}
+                        style={{ height: 800 }}
                         culture="tr"
                         messages={{
                             next: "Sonraki",
@@ -156,6 +286,10 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                         selectable
                         onSelectSlot={handleSelectSlot}
                         onSelectEvent={handleSelectEvent}
+                        dayPropGetter={(date) => ({
+                            className: "calendar-day-custom",
+                        })}
+                        components={components}
                     />
                 </div>
             </div>

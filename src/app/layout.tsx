@@ -6,8 +6,16 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fırat Oto Lastik | OtoRandevu",
-  description: "Fırat Oto Lastik randevu ve stok sorgulama sistemi.",
+  metadataBase: new URL("https://otorandevusistemi-y2uz.vercel.app"),
+  title: "Fırat Oto Lastik | Online Randevu ve Yönetim Sistemi",
+  description: "Otomotiv servisleri için geliştirilmiş, gerçek zamanlı randevu kontrolü ve stok yönetimini barındıran premium web çözümü.",
+  openGraph: {
+    title: "Fırat Oto Lastik - Dijital Servis Deneyimi",
+    description: "Modern arayüz, anlık randevu takibi ve akıllı stok yönetimi ile geliştirilmiş otomotiv yönetim platformu.",
+    images: [{ url: "/otolastik.png", width: 1200, height: 630, alt: "Fırat Oto Lastik Paylaşım Görseli" }],
+    type: "website",
+    locale: "tr_TR",
+  },
   icons: {
     icon: "/favicon.ico"
   }
