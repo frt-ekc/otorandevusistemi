@@ -143,7 +143,7 @@ export default function TopNav() {
             <Link
               href="/randevu"
               onClick={() => setIsOpen(false)}
-              className="rounded-xl border border-white/10 bg-brand-gold py-4 text-base font-black uppercase tracking-[0.2em] text-brand-dark shadow-lg shadow-brand-gold/10 transition-all active:scale-[0.98]"
+              className="rounded-xl border border-white/5 bg-white/5 py-4 text-base font-black uppercase tracking-[0.2em] text-white/90 transition-all hover:bg-brand-gold hover:text-brand-dark active:bg-brand-gold active:text-brand-dark active:scale-[0.98]"
             >
               Randevu Al
             </Link>
