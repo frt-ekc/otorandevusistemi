@@ -72,15 +72,6 @@ export default async function HomePage() {
                 />
               </div>
             </div>
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-10 border-t border-white/10 pt-10 lg:justify-start">
-              <Image
-                src="/brands/bridgestone.png"
-                alt="Bridgestone"
-                width={160}
-                height={40}
-                className="h-8 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
-              />
-            </div>
           </div>
         </section>
 
