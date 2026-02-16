@@ -117,7 +117,7 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                     <style jsx global>{`
             .rbc-calendar { color: white; font-family: inherit; }
             .rbc-off-range-bg { background: rgba(255, 255, 255, 0.02); }
-            .rbc-today { background: rgba(251, 191, 36, 0.1); }
+            .rbc-today { background: rgba(251, 191, 36, 0.15) !important; }
             .rbc-event { 
               background: #ef4444; 
               border-radius: 4px; 
@@ -127,8 +127,25 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
             .rbc-event.rbc-selected { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
             .rbc-header { border-bottom: 2px solid rgba(255, 255, 255, 0.1); padding: 10px 0; font-weight: 700; color: #facc15; }
             .rbc-month-view, .rbc-time-view, .rbc-agenda-view { border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; }
-            .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(255, 255, 255, 0.1); }
-            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+            
+            /* HÜCRE ÇERÇEVE VE ZOOM EFEKTİ */
+            .rbc-day-bg { 
+              transition: all 0.2s ease-in-out !important;
+              border: 1px solid rgba(250, 204, 21, 0.1) !important; 
+            }
+            
+            .rbc-day-bg:hover { 
+              background: rgba(250, 204, 21, 0.08) !important;
+              transform: scale(1.015);
+              z-index: 10;
+              border: 1px solid #facc15 !important;
+              box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+              cursor: pointer;
+            }
+
+            .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(250, 204, 21, 0.1) !important; }
+            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(250, 204, 21, 0.1) !important; }
+            
             .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; }
             .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; }
             .rbc-toolbar button.rbc-active { background: #facc15; color: #0f172a; border-color: #facc15; }
