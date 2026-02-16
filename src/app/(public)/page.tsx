@@ -72,16 +72,19 @@ export default async function HomePage() {
                 />
               </div>
             </div>
+          </div>
+        </section>
 
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-10 border-t border-white/10 pt-10 lg:justify-start">
-              <Image
-                src="/bridgestone.svg"
-                alt="Bridgestone"
-                width={800}
-                height={200}
-                className="h-44 w-auto object-contain brightness-0 invert opacity-40 hover:opacity-100 hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] transition-all duration-500 cursor-pointer"
-              />
-            </div>
+        {/* Brands Section */}
+        <section className="glass-card bg-haze overflow-hidden rounded-[2.5rem] p-1 shadow-2xl">
+          <div className="w-full rounded-[2.3rem] bg-gradient-to-r from-brand-gold/15 via-white/5 to-transparent p-8 backdrop-blur-md border border-white/10 flex flex-wrap items-center justify-center gap-12 lg:p-12">
+            <Image
+              src="/bridgestone.svg"
+              alt="Bridgestone"
+              width={1000}
+              height={300}
+              className="h-56 w-auto object-contain brightness-0 invert opacity-50 hover:opacity-100 hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.6)] transition-all duration-500 cursor-pointer"
+            />
           </div>
         </section>
 
