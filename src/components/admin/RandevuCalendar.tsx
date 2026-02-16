@@ -131,20 +131,20 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
             /* HÜCRE ÇERÇEVE VE ZOOM EFEKTİ */
             .rbc-day-bg { 
               transition: all 0.2s ease-in-out !important;
-              border: 1px solid rgba(250, 204, 21, 0.1) !important; 
+              border: 1px solid rgba(255, 255, 255, 0.05) !important; 
             }
             
             .rbc-day-bg:hover { 
-              background: rgba(250, 204, 21, 0.08) !important;
+              background: rgba(217, 119, 6, 0.1) !important;
               transform: scale(1.015);
               z-index: 10;
-              border: 1px solid #facc15 !important;
-              box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+              border: 2px solid #d97706 !important; /* Koyu sarı / turuncuya yakın */
+              box-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
               cursor: pointer;
             }
 
-            .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(250, 204, 21, 0.1) !important; }
-            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(250, 204, 21, 0.1) !important; }
+            .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(255, 255, 255, 0.05) !important; }
+            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(255, 255, 255, 0.05) !important; }
             
             .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; }
             .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; }
