@@ -127,43 +127,47 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
             .rbc-event.rbc-selected { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
             .rbc-header { border-bottom: 2px solid rgba(250, 204, 21, 0.1); padding: 10px 0; font-weight: 700; color: #facc15; }
             
-            /* DIŞ KENAR SARI ÇERÇEVE */
-            .rbc-month-view, .rbc-time-view, .rbc-agenda-view { 
+            /* DIŞ KENAR VE İÇ IZGARA - TURUNCU SİSTEMİ */
+            .rbc-month-view { 
               border: 2px solid #d97706 !important; 
               border-radius: 12px; 
               overflow: hidden;
+              background: rgba(0,0,0,0.2);
             }
             
-            /* KUTUCUKLARIN (İÇ IZGARA) KALDIRILMASI */
+            .rbc-month-row {
+              border-top: 1px solid rgba(217, 119, 6, 0.2) !important;
+            }
+
             .rbc-day-bg { 
               transition: all 0.2s ease-in-out !important;
-              border: none !important; 
+              border-left: 1px solid rgba(217, 119, 6, 0.2) !important; 
             }
             
-            /* VARSAYILAN (RANDEVUSUZ) HOVER - SARI/TURUNCU */
+            /* VARSAYILAN (RANDEVUSUZ) HOVER - SİTE SARISI (BRAND GOLD) */
             .rbc-day-bg:hover { 
-              background: rgba(217, 119, 6, 0.1) !important;
-              transform: scale(1.015);
+              background: rgba(250, 204, 21, 0.15) !important;
+              transform: scale(1.02);
               z-index: 10;
-              border: 2px solid #d97706 !important;
-              box-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
-              border-radius: 4px; /* Hover'da kutu belirginleşsin */
+              border: 2px solid #facc15 !important;
+              box-shadow: 0 0 30px rgba(250, 204, 21, 0.3) !important;
+              border-radius: 6px;
               cursor: pointer;
             }
 
-            /* RANDEVULU GÜN HOVER - YEŞİL */
+            /* RANDEVULU GÜN HOVER - YEŞİL YANSIMA */
             .rbc-day-bg.has-appointments:hover { 
-              background: rgba(16, 185, 129, 0.1) !important;
+              background: rgba(16, 185, 129, 0.2) !important;
               border: 2px solid #10b981 !important;
-              box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+              box-shadow: 0 0 30px rgba(16, 185, 129, 0.4) !important;
             }
 
-            .rbc-day-bg + .rbc-day-bg { border-left: none !important; }
-            .rbc-month-row + .rbc-month-row { border-top: none !important; }
+            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(217, 119, 6, 0.2) !important; }
             
-            .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; }
-            .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+            .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; font-weight: bold; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+            .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; border-color: white; }
             .rbc-toolbar button.rbc-active { background: #facc15; color: #0f172a; border-color: #facc15; }
+            .rbc-toolbar .rbc-toolbar-label { font-size: 1.25rem; font-weight: 800; color: white; text-transform: capitalize; }
           `}</style>
                     <Calendar
                         localizer={localizer}
@@ -177,12 +181,9 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                             previous: "Önceki",
                             today: "Bugün",
                             month: "Ay",
-                            week: "Hafta",
-                            day: "Gün",
-                            agenda: "Ajanda",
                         }}
-                        view={view}
-                        onView={(newView) => setView(newView)}
+                        views={['month']}
+                        view={Views.MONTH}
                         date={selectedDate}
                         onNavigate={(newDate) => setSelectedDate(newDate)}
                         selectable
