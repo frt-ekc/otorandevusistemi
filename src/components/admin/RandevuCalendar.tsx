@@ -134,13 +134,21 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
               border: 1px solid rgba(255, 255, 255, 0.05) !important; 
             }
             
+            /* VARSAYILAN (RANDEVUSUZ) HOVER - SARI/TURUNCU */
             .rbc-day-bg:hover { 
               background: rgba(217, 119, 6, 0.1) !important;
               transform: scale(1.015);
               z-index: 10;
-              border: 2px solid #d97706 !important; /* Koyu sarı / turuncuya yakın */
+              border: 2px solid #d97706 !important;
               box-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
               cursor: pointer;
+            }
+
+            /* RANDEVULU GÜN HOVER - YEŞİL */
+            .rbc-day-bg.has-appointments:hover { 
+              background: rgba(16, 185, 129, 0.1) !important;
+              border: 2px solid #10b981 !important;
+              box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
             }
 
             .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(255, 255, 255, 0.05) !important; }
@@ -173,6 +181,15 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                         selectable
                         onSelectSlot={handleSelectSlot}
                         onSelectEvent={handleSelectEvent}
+                        dayPropGetter={(date) => {
+                            const hasAppointments = randevular.some((r) => {
+                                const d = parse(r.tarih, "yyyy-MM-dd", new Date());
+                                return isSameDay(d, date) && r.durum !== 'iptal';
+                            });
+                            return {
+                                className: hasAppointments ? "has-appointments" : "",
+                            };
+                        }}
                     />
                 </div>
             </div>
