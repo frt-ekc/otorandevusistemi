@@ -74,15 +74,16 @@ export default async function HomePage() {
             </div>
 
             {/* Brand Logos */}
-            <div className="mt-16 w-full overflow-hidden border-t border-white/10 pt-10">
-              <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 opacity-60 grayscale transition-all duration-500 hover:grayscale-0 hover:opacity-100">
-                <Image src="/brands/continental.png" alt="Continental" width={140} height={40} className="h-7 w-auto object-contain" />
-                <Image src="/brands/michelin.png" alt="Michelin" width={140} height={40} className="h-9 w-auto object-contain" />
-                <Image src="/brands/bridgestone.png" alt="Bridgestone" width={140} height={40} className="h-7 w-auto object-contain" />
-                <Image src="/brands/pirelli.png" alt="Pirelli" width={140} height={40} className="h-7 w-auto object-contain" />
-                <Image src="/brands/falken.png" alt="Falken" width={140} height={40} className="h-7 w-auto object-contain" />
-                <Image src="/brands/lassa.png" alt="Lassa" width={140} height={40} className="h-7 w-auto object-contain" />
-                <Image src="/brands/hankook.png" alt="Hankook" width={140} height={40} className="h-7 w-auto object-contain" />
+            <div className="mt-20 w-full overflow-hidden border-t border-white/10 pt-12">
+              <p className="mb-8 text-center text-[10px] font-black uppercase tracking-[0.5em] text-white/30">Anlaşmalı Olduğumuz Seçkin Markalar</p>
+              <div className="flex flex-wrap items-center justify-center gap-12 md:gap-20 opacity-80 transition-all duration-500 hover:opacity-100">
+                <Image src="/brands/continental.png" alt="Continental" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
+                <Image src="/brands/michelin.png" alt="Michelin" width={180} height={60} className="h-12 md:h-16 w-auto object-contain hover:scale-110 transition-transform" />
+                <Image src="/brands/bridgestone.png" alt="Bridgestone" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
+                <Image src="/brands/pirelli.png" alt="Pirelli" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
+                <Image src="/brands/falken.png" alt="Falken" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
+                <Image src="/brands/lassa.png" alt="Lassa" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
+                <Image src="/brands/hankook.png" alt="Hankook" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
               </div>
             </div>
           </div>
