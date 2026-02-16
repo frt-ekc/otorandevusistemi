@@ -125,13 +125,19 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
               border: none;
             }
             .rbc-event.rbc-selected { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-            .rbc-header { border-bottom: 2px solid rgba(255, 255, 255, 0.1); padding: 10px 0; font-weight: 700; color: #facc15; }
-            .rbc-month-view, .rbc-time-view, .rbc-agenda-view { border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; }
+            .rbc-header { border-bottom: 2px solid rgba(250, 204, 21, 0.1); padding: 10px 0; font-weight: 700; color: #facc15; }
             
-            /* HÜCRE ÇERÇEVE VE ZOOM EFEKTİ */
+            /* DIŞ KENAR SARI ÇERÇEVE */
+            .rbc-month-view, .rbc-time-view, .rbc-agenda-view { 
+              border: 2px solid #d97706 !important; 
+              border-radius: 12px; 
+              overflow: hidden;
+            }
+            
+            /* KUTUCUKLARIN (İÇ IZGARA) KALDIRILMASI */
             .rbc-day-bg { 
               transition: all 0.2s ease-in-out !important;
-              border: 1px solid rgba(255, 255, 255, 0.05) !important; 
+              border: none !important; 
             }
             
             /* VARSAYILAN (RANDEVUSUZ) HOVER - SARI/TURUNCU */
@@ -141,6 +147,7 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
               z-index: 10;
               border: 2px solid #d97706 !important;
               box-shadow: 0 0 20px rgba(217, 119, 6, 0.2);
+              border-radius: 4px; /* Hover'da kutu belirginleşsin */
               cursor: pointer;
             }
 
@@ -151,8 +158,8 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
               box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
             }
 
-            .rbc-day-bg + .rbc-day-bg { border-left: 1px solid rgba(255, 255, 255, 0.05) !important; }
-            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(255, 255, 255, 0.05) !important; }
+            .rbc-day-bg + .rbc-day-bg { border-left: none !important; }
+            .rbc-month-row + .rbc-month-row { border-top: none !important; }
             
             .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; }
             .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; }
