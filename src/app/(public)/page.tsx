@@ -72,19 +72,6 @@ export default async function HomePage() {
                 />
               </div>
             </div>
-
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-white/10 pt-10 lg:justify-start">
-              <p className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/40 lg:w-auto lg:text-left">
-                Anlaşmalı Markalarımız
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-8 grayscale opacity-40 transition-all hover:grayscale-0 hover:opacity-100">
-                <Image src="/brands/bridgestone.png" alt="Bridgestone" width={120} height={30} className="h-6 w-auto object-contain" />
-                <Image src="/brands/michelin.png" alt="Michelin" width={100} height={30} className="h-8 w-auto object-contain" />
-                <Image src="/brands/continental.png" alt="Continental" width={110} height={30} className="h-6 w-auto object-contain" />
-                <Image src="/brands/lassa.png" alt="Lassa" width={80} height={30} className="h-5 w-auto object-contain" />
-                <Image src="/brands/petlas.png" alt="Petlas" width={90} height={30} className="h-6 w-auto object-contain" />
-              </div>
-            </div>
           </div>
         </section>
 
