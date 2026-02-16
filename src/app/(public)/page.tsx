@@ -77,9 +77,9 @@ export default async function HomePage() {
               <Image
                 src="/bridgestone.svg"
                 alt="Bridgestone"
-                width={500}
-                height={150}
-                className="h-28 w-auto object-contain brightness-0 invert opacity-40 hover:opacity-100 hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] transition-all duration-500 cursor-pointer"
+                width={800}
+                height={200}
+                className="h-44 w-auto object-contain brightness-0 invert opacity-40 hover:opacity-100 hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] transition-all duration-500 cursor-pointer"
               />
             </div>
           </div>
