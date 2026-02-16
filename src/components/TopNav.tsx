@@ -26,20 +26,20 @@ export default function TopNav() {
     <>
       <header className={`sticky top-0 transition-all duration-300 ${isOpen ? "z-[70] bg-[#070b14]" : "z-50 bg-black/20 backdrop-blur-md"
         } border-b border-white/10`}>
-        <div className="mx-auto flex max-w-[85rem] items-center justify-between px-4 py-3 sm:px-6 lg:py-5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center transition-transform active:scale-95">
             <Image
               src="/logo.svg"
               alt="Fırat Oto Lastik logo"
-              width={280}
-              height={70}
-              className="h-9 w-auto object-contain sm:h-11 lg:h-20"
+              width={160}
+              height={40}
+              className="h-9 w-auto object-contain sm:h-11"
               priority
             />
           </Link>
 
           {/* MASAÜSTÜ NAVİGASYON */}
-          <nav className="hidden items-center gap-12 text-lg font-black tracking-[0.2em] text-white uppercase lg:flex">
+          <nav className="hidden items-center gap-8 text-[13px] font-black tracking-[0.2em] text-white/90 uppercase lg:flex">
             {menu.map((item) => (
               <Link
                 key={item.label}
@@ -71,18 +71,12 @@ export default function TopNav() {
 
           {/* MASAÜSTÜ SAĞ TARAF */}
           <div className="hidden items-center gap-3 lg:flex">
-            <a href="tel:+905387061065" className="flex items-center gap-4 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-base font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
-              <PhoneIcon className="h-6 w-6 text-brand-gold" />
+            <a href="tel:+905387061065" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all">
+              <PhoneIcon className="h-4 w-4 text-brand-gold" />
               0 538 706 10 65
             </a>
-            <a
-              href="https://wa.me/905387061065"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-4 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-base font-black text-white hover:border-brand-gold/30 hover:text-brand-gold transition-all"
-            >
-              <Image src="/wp.svg" alt="WA" width={24} height={24} />
-              WHATSAPP
+            <a href="https://wa.me/905387061065" target="_blank" rel="noreferrer" className="flex items-center justify-center rounded-full bg-white/5 p-2 border border-white/10 hover:border-[#25D366]/50 transition-all active:scale-95 shadow-lg shadow-black/10">
+              <Image src="/wp.svg" alt="WhatsApp" width={20} height={20} />
             </a>
           </div>
 
