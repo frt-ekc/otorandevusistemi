@@ -27,7 +27,7 @@ export default async function HomePage() {
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 lg:gap-16 lg:py-12">
         {/* Hero Section */}
         <section className="glass-card bg-haze overflow-hidden rounded-[2.5rem] p-1 shadow-2xl">
-          <div className="w-full rounded-[2.3rem] bg-gradient-to-br from-brand-gold/30 via-amber-400/10 to-transparent p-6 backdrop-blur-md lg:p-12">
+          <div className="w-full rounded-[2.3rem] bg-gradient-to-br from-brand-gold/30 via-amber-400/10 to-transparent p-6 backdrop-blur-md lg:p-16 flex flex-col justify-between">
             <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
               <div className="flex-1 text-center lg:text-left">
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
@@ -70,6 +70,19 @@ export default async function HomePage() {
                   className="relative aspect-square rounded-[2.2rem] border border-white/20 object-cover shadow-2xl"
                   priority
                 />
+              </div>
+            </div>
+
+            {/* Brand Logos */}
+            <div className="mt-16 w-full overflow-hidden border-t border-white/10 pt-10">
+              <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 opacity-60 grayscale transition-all duration-500 hover:grayscale-0 hover:opacity-100">
+                <Image src="/brands/continental.png" alt="Continental" width={140} height={40} className="h-7 w-auto object-contain" />
+                <Image src="/brands/michelin.png" alt="Michelin" width={140} height={40} className="h-9 w-auto object-contain" />
+                <Image src="/brands/bridgestone.png" alt="Bridgestone" width={140} height={40} className="h-7 w-auto object-contain" />
+                <Image src="/brands/pirelli.png" alt="Pirelli" width={140} height={40} className="h-7 w-auto object-contain" />
+                <Image src="/brands/falken.png" alt="Falken" width={140} height={40} className="h-7 w-auto object-contain" />
+                <Image src="/brands/lassa.png" alt="Lassa" width={140} height={40} className="h-7 w-auto object-contain" />
+                <Image src="/brands/hankook.png" alt="Hankook" width={140} height={40} className="h-7 w-auto object-contain" />
               </div>
             </div>
           </div>
