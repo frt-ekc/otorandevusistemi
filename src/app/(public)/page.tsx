@@ -74,16 +74,17 @@ export default async function HomePage() {
             </div>
 
             {/* Brand Logos */}
-            <div className="mt-20 w-full overflow-hidden border-t border-white/10 pt-12">
+            <div className="mt-16 w-full border-t border-white/10 pt-10">
               <p className="mb-8 text-center text-[10px] font-black uppercase tracking-[0.5em] text-white/30">Anlaşmalı Olduğumuz Seçkin Markalar</p>
-              <div className="flex flex-wrap items-center justify-center gap-12 md:gap-20 opacity-80 transition-all duration-500 hover:opacity-100">
-                <Image src="/brands/continental.png" alt="Continental" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
-                <Image src="/brands/michelin.png" alt="Michelin" width={180} height={60} className="h-12 md:h-16 w-auto object-contain hover:scale-110 transition-transform" />
-                <Image src="/brands/bridgestone.png" alt="Bridgestone" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
-                <Image src="/brands/pirelli.png" alt="Pirelli" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
-                <Image src="/brands/falken.png" alt="Falken" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
-                <Image src="/brands/lassa.png" alt="Lassa" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
-                <Image src="/brands/hankook.png" alt="Hankook" width={180} height={60} className="h-10 md:h-12 w-auto object-contain hover:scale-110 transition-transform" />
+              <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 px-4 opacity-100">
+                <Image src="/brands/continental.png" alt="Continental" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/michelin.png" alt="Michelin" width={160} height={50} className="h-10 md:h-12 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/bridgestone.png" alt="Bridgestone" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/pirelli.png" alt="Pirelli" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/falken.png" alt="Falken" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/lassa.png" alt="Lassa" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/petlas.png" alt="Petlas" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
+                <Image src="/brands/hankook.png" alt="Hankook" width={160} height={50} className="h-7 md:h-8 w-auto object-contain brightness-200 contrast-200" />
               </div>
             </div>
           </div>
