@@ -51,12 +51,16 @@ export default function TopNav() {
             ))}
 
             <div className="group relative">
-              <Link href="/randevu" className="transition-colors hover:text-brand-gold">
+              <Link href="/randevu" className="flex items-center gap-1.5 transition-colors hover:text-brand-gold">
                 Randevu
+                <ChevronDownIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-180" />
               </Link>
               <div className="pointer-events-none absolute left-1/2 top-full pt-4 -translate-x-1/2 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
                 <div className="relative rounded-xl border border-brand-gold/50 bg-[#0f172a]/95 backdrop-blur-xl px-4 py-2 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                  <div className="flex items-center justify-center gap-3 text-xs font-black text-white whitespace-nowrap">
+                  {/* Dropdown Arrow */}
+                  <div className="absolute -top-[6px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t border-brand-gold/50 bg-[#0f172a]" />
+
+                  <div className="relative z-10 flex items-center justify-center gap-3 text-xs font-black text-white whitespace-nowrap">
                     <Link
                       href="/randevu"
                       className="transition-all hover:scale-110 hover:text-brand-gold"
@@ -177,6 +181,14 @@ function PhoneIcon({ className = "h-5 w-5" }) {
         fill="currentColor"
         d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.36 11.36 0 0 0 .57 3.55 1 1 0 0 1-1 1C10.4 21 3 13.6 3 4a1 1 0 0 1 1-1h3.6a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.55 1 1 0 0 1-.25 1.02z"
       />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({ className = "h-5 w-5" }) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
     </svg>
   );
 }
