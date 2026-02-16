@@ -61,6 +61,27 @@ export default function RandevuStepper({
   const [localError, setLocalError] = useState<string | null>(null);
   const [rejectedDate, setRejectedDate] = useState<string | null>(null);
 
+  const filteredTimeSlots = useMemo(() => {
+    if (!summary.tarih) return timeSlots;
+
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+    if (summary.tarih !== todayStr) {
+      return timeSlots;
+    }
+
+    const currentHour = today.getHours();
+    const currentMinute = today.getMinutes();
+
+    return timeSlots.filter((slot) => {
+      const [h, m] = slot.split(":").map(Number);
+      if (h > currentHour) return true;
+      if (h === currentHour && m > currentMinute) return true;
+      return false;
+    });
+  }, [summary.tarih, timeSlots]);
+
   useEffect(() => {
     if (formState.ok) {
       setLocalError(null);
@@ -323,7 +344,7 @@ export default function RandevuStepper({
             Saat
             <TimeGridPicker
               name="saat_picker"
-              slots={timeSlots}
+              slots={filteredTimeSlots}
               reservedSlots={reservedSlots}
               open={timeEnabled ? timeOpen : false}
               onOpenChange={setTimeOpen}
