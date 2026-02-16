@@ -51,16 +51,23 @@ export default function TopNav() {
             ))}
 
             <div className="group relative">
-              <Link href="/randevu" className="flex items-center gap-1 transition-colors hover:text-brand-gold">
-                Randevu <span className="text-[10px] text-brand-gold">▼</span>
+              <Link href="/randevu" className="transition-colors hover:text-brand-gold">
+                Randevu
               </Link>
-              <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
-                <div className="rounded-xl border border-white/10 bg-brand-night/95 p-2 shadow-2xl backdrop-blur-xl">
-                  <div className="flex flex-col gap-1 min-w-[180px]">
-                    <Link href="/randevu" className="rounded-lg px-4 py-3 text-xs tracking-widest hover:bg-white/5 hover:text-brand-gold">
+              <div className="pointer-events-none absolute left-1/2 top-full pt-4 -translate-x-1/2 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+                <div className="relative rounded-xl border border-brand-gold/50 bg-[#0f172a]/95 backdrop-blur-xl px-4 py-2 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                  <div className="flex items-center justify-center gap-3 text-xs font-black text-white whitespace-nowrap">
+                    <Link
+                      href="/randevu"
+                      className="transition-all hover:scale-110 hover:text-brand-gold"
+                    >
                       Randevu Al
                     </Link>
-                    <Link href="/randevu-sorgula" className="rounded-lg px-4 py-3 text-xs tracking-widest hover:bg-white/5 hover:text-brand-gold">
+                    <span className="text-brand-gold/40">/</span>
+                    <Link
+                      href="/randevu-sorgula"
+                      className="transition-all hover:scale-110 hover:text-brand-gold"
+                    >
                       Randevu Sorgula
                     </Link>
                   </div>
