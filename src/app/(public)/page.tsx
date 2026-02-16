@@ -77,6 +77,19 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Brand Section */}
+        <section className="flex justify-center -mt-4 lg:-mt-8">
+          <div className="glass-card bg-white/5 backdrop-blur-md rounded-full px-12 py-6 border border-white/10 flex items-center justify-center shadow-xl">
+            <Image
+              src="/brands/bridgestone.svg"
+              alt="Bridgestone"
+              width={220}
+              height={50}
+              className="opacity-60 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 cursor-pointer"
+            />
+          </div>
+        </section>
+
         {/* Location Section */}
         <section className="glass-card bg-haze overflow-hidden rounded-[2.5rem] p-1 shadow-2xl">
           <div className="w-full rounded-[2.3rem] bg-gradient-to-r from-brand-gold/25 via-amber-300/10 to-transparent p-6 backdrop-blur-md border border-brand-gold/20 lg:p-12">
