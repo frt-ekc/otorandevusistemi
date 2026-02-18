@@ -4,42 +4,15 @@ import HizmetlerGrid from "@/components/HizmetlerGrid";
 
 export const dynamic = "force-dynamic";
 
-const fallbackServices = [
-  {
-    title: "Lastik Değişimi",
-    description: "Araç tipine uygun hızlı ve güvenli lastik değişimi.",
-    duration: "60 dk"
-  },
-  {
-    title: "Balans Ayarı",
-    description: "Titreşimsiz sürüş için hassas balans ayarı.",
-    duration: "45 dk"
-  },
-  {
-    title: "Lastik Tamiri",
-    description: "Delik ve hasarlara profesyonel tamir çözümleri.",
-    duration: "40 dk"
-  }
-];
-
 export default async function HizmetlerPage() {
   const hizmetler = await getHizmetler();
-  const services =
-    hizmetler.length > 0
-      ? hizmetler.map((hizmet) => ({
-        id: hizmet.id,
-        title: hizmet.name,
-        description: hizmet.description ?? "Açıklama eklenmemiş.",
-        image: hizmet.image_url ?? "",
-        duration: typeof hizmet.duration === "number" ? `${hizmet.duration} dk` : ""
-      }))
-      : fallbackServices.map((item, index) => ({
-        id: `fallback-${index}`,
-        title: item.title,
-        description: item.description,
-        image: "",
-        duration: item.duration
-      }));
+  const services = hizmetler.map((hizmet) => ({
+    id: hizmet.id,
+    title: hizmet.name,
+    description: hizmet.description ?? "Açıklama eklenmemiş.",
+    image: hizmet.image_url ?? "",
+    duration: typeof hizmet.duration === "number" ? `${hizmet.duration} dk` : ""
+  }));
 
   return (
     <div className="min-h-screen">

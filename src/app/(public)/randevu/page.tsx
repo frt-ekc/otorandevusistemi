@@ -7,12 +7,6 @@ import RandevuStepper from "@/components/RandevuStepper";
 export const dynamic = "force-dynamic";
 
 const steps = ["Hizmet", "İletişim", "Tarih/Saat", "Özet"];
-const fallbackServices = [
-  { title: "Lastik Değişimi", duration: "Tahmini süre: 60 dakika" },
-  { title: "Lastik Tamiri", duration: "Tahmini süre: 60 dakika" },
-  { title: "Balans Ayarı", duration: "Tahmini süre: 60 dakika" }
-];
-
 function buildTimeSlots() {
   const slots: string[] = [];
   for (let hour = 8; hour <= 21; hour += 1) {
@@ -36,13 +30,10 @@ function toIsoDate(value: Date) {
 
 export default async function RandevuPage() {
   const hizmetler = await getHizmetler();
-  const services =
-    hizmetler.length > 0
-      ? hizmetler.map((item) => ({
-        title: item.name,
-        duration: item.duration ? `Tahmini süre: ${item.duration} dakika` : ""
-      }))
-      : fallbackServices;
+  const services = hizmetler.map((item) => ({
+    title: item.name,
+    duration: item.duration ? `Tahmini süre: ${item.duration} dakika` : ""
+  }));
   const today = new Date();
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 30);

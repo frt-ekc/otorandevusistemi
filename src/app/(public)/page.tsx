@@ -6,20 +6,10 @@ import { getHizmetler, getAyarlar } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 const categories = ["Binek", "Jant", "Kamyonet", "Hafif Ticari", "SUV", "Ticari"];
-const fallbackServices = [
-  "Lastik Değişimi",
-  "Balans Ayarı",
-  "Lastik Tamiri",
-  "Sibop Değişimi",
-  "Jant Temizleme",
-  "Jant Boyama"
-];
-
 export default async function HomePage() {
   const hizmetler = await getHizmetler();
   const ayarlar = await getAyarlar();
-  const serviceList =
-    hizmetler.length > 0 ? hizmetler.map((item) => item.name) : fallbackServices;
+  const serviceList = hizmetler.map((item) => item.name);
   return (
     <div className="min-h-screen">
       <TopNav />
