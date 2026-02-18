@@ -146,10 +146,10 @@ export default function TopNav() {
             <div className="flex flex-col space-y-1">
               <button
                 onClick={() => setIsRandevuOpen(!isRandevuOpen)}
-                className={`flex w-full items-center justify-between px-6 py-4 rounded-xl border border-white/5 transition-all active:scale-[0.98] ${isRandevuOpen ? "bg-white/10 text-brand-gold border-brand-gold/30" : "bg-white/5 text-white"
+                className={`flex w-full items-center justify-center gap-3 py-4 rounded-xl border border-white/5 transition-all active:scale-[0.98] ${isRandevuOpen ? "bg-white/10 text-brand-gold border-brand-gold/30" : "bg-white/5 text-white"
                   }`}
               >
-                <span className="text-base font-black uppercase tracking-[0.2em]">Randevu</span>
+                <span className="text-base font-black uppercase tracking-[0.2em] ml-8">Randevu</span>
                 <ChevronDownIcon className={`h-5 w-5 transition-transform duration-300 ${isRandevuOpen ? "rotate-180" : ""}`} />
               </button>
 
