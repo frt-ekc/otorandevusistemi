@@ -28,7 +28,14 @@ function toIsoDate(value: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export default async function RandevuPage() {
+export default async function RandevuPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ service?: string }>;
+}) {
+  const resolvedParams = searchParams ? await searchParams : {};
+  const selectedService = resolvedParams.service || "";
+
   const hizmetler = await getHizmetler();
   const services = hizmetler.map((item) => ({
     title: item.name,
@@ -67,6 +74,7 @@ export default async function RandevuPage() {
                   timeSlots={timeSlots}
                   minDate={toIsoDate(today)}
                   maxDate={toIsoDate(maxDate)}
+                  initialService={selectedService}
                 />
               </div>
             </div>

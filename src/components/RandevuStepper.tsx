@@ -18,6 +18,7 @@ type RandevuStepperProps = {
   timeSlots: string[];
   minDate: string;
   maxDate: string;
+  initialService?: string;
 };
 
 export default function RandevuStepper({
@@ -27,9 +28,17 @@ export default function RandevuStepper({
   steps,
   timeSlots,
   minDate,
-  maxDate
+  maxDate,
+  initialService
 }: RandevuStepperProps) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const isInitialServiceValid = initialService && services.some(s => s.title.toLowerCase() === initialService.toLowerCase());
+  const matchedServiceTitle = (() => {
+    if (!initialService) return "";
+    const found = services.find(s => s.title.toLowerCase() === initialService.toLowerCase());
+    return found ? found.title : "";
+  })();
+
+  const [currentStep, setCurrentStep] = useState(isInitialServiceValid ? 1 : 0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const submitIntentRef = useRef(false);
@@ -42,7 +51,7 @@ export default function RandevuStepper({
     telefon: "",
     email: "",
     plaka: "",
-    hizmet: "",
+    hizmet: matchedServiceTitle,
     tarih: "",
     saat: "",
     not: ""
@@ -231,6 +240,7 @@ export default function RandevuStepper({
                   required={stepActive(0)}
                   disabled={!stepActive(0)}
                   className="peer sr-only"
+                  checked={summary.hizmet === service.title}
                   onChange={(event) =>
                     setSummary((prev) => ({ ...prev, hizmet: event.target.value }))
                   }

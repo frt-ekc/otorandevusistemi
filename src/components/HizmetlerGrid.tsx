@@ -97,7 +97,7 @@ export default function HizmetlerGrid({ services }: { services: ServiceCard[] })
 
               <div className="pt-6">
                 <Link
-                  href="/randevu"
+                  href={`/randevu?service=${encodeURIComponent(active.title)}`}
                   onClick={() => setActive(null)}
                   className="flex w-full items-center justify-center rounded-2xl bg-brand-gold py-5 text-base font-black text-brand-dark shadow-2xl shadow-brand-gold/20 transition-all active:scale-95"
                 >

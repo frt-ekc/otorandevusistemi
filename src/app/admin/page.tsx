@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import {
   getLastikler,
   getRandevular,
@@ -497,6 +498,14 @@ async function updateAyarlar(formData: FormData) {
   }
   redirect("/admin?view=ayarlar&ayarlar=1");
 }
+
+async function handleLogout() {
+  "use server";
+  const cookieStore = await cookies();
+  cookieStore.delete("sb-access-token");
+  redirect("/admin/login");
+}
+
 export default async function AdminPage({
   searchParams
 }: {
@@ -602,9 +611,11 @@ export default async function AdminPage({
               </Link>
             ))}
           </nav>
-          <button className="mt-auto rounded-xl bg-white/5 px-4 py-3 text-sm text-white/70">
-            Çıkış
-          </button>
+          <form action={handleLogout} className="mt-auto w-full">
+            <button type="submit" className="w-full rounded-xl bg-white/5 px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-all">
+              Çıkış
+            </button>
+          </form>
         </aside>
 
         <main className="flex-1 px-6 py-8 md:px-10 bg-[#0f172a]/60 backdrop-blur-sm">
