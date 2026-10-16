@@ -25,7 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    // IntroGate betiği <html>e data-intro-seen ekleyebilir
+    <html lang="tr" suppressHydrationWarning>
       <body className="relative min-h-screen bg-brand-dark font-sans text-brand-text antialiased">
         {children}
       </body>
