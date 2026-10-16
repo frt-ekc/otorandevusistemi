@@ -16,27 +16,12 @@ import { requireAdmin } from "@/lib/auth";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/authEdge";
 import { revalidatePath } from "next/cache";
 import Image from "next/image";
-import RandevuCalendar from "@/components/admin/RandevuCalendar";
-import RandevuList from "@/components/admin/RandevuList";
+import RandevuSekmeleri from "@/components/admin/RandevuSekmeleri";
+import LinkBekleme from "@/components/LinkBekleme";
 import SelectionWithOther from "@/components/admin/SelectionWithOther";
 import SmartTireSize from "@/components/admin/SmartTireSize";
 
 export const dynamic = "force-dynamic";
-
-async function getCounts() {
-  const supabase = getSupabaseServerClient();
-  const [activeRes, cancelledRes, stokRes] = await Promise.all([
-    supabase.from("randevular").select("id", { count: "exact", head: true }).neq("durum", "iptal"),
-    supabase.from("randevular").select("id", { count: "exact", head: true }).eq("durum", "iptal"),
-    supabase.from("lastikler").select("id", { count: "exact", head: true })
-  ]);
-
-  return {
-    active: activeRes.count ?? 0,
-    cancelled: cancelledRes.count ?? 0,
-    stok: stokRes.count ?? 0
-  };
-}
 
 async function createLastik(formData: FormData) {
   "use server";
@@ -552,45 +537,15 @@ export default async function AdminPage({
   const activeView = resolvedParams?.view ?? "randevular";
   const isUrunFormOpen = resolvedParams?.urunEkle === "1";
   const activeTab = resolvedParams?.tab ?? "takvim";
-  const counts =
-    activeView === "randevular"
-      ? await getCounts()
-      : { active: 0, cancelled: 0, stok: 0 };
-  const lastikler = activeView === "stok" ? await getLastikler() : [];
-  const randevularRaw = activeView === "randevular" ? await getRandevular() : [];
-  const randevular = randevularRaw.filter(r =>
-    activeTab === "aktif" ? r.durum !== "iptal" : r.durum === "iptal"
-  );
-  const urunler = activeView === "urunler" ? await getUrunler() : [];
-  const hizmetler = (activeView === "hizmetler" || activeView === "randevular") ? await getHizmetler() : [];
-  const ayarlar = activeView === "ayarlar" ? await getAyarlar() : null;
+  // Sadece açık bölümün verisi çekilir; sorgular sırayla değil aynı anda çalışır
+  const [lastikler, randevularRaw, urunler, hizmetler, ayarlar] = await Promise.all([
+    activeView === "stok" ? getLastikler() : [],
+    activeView === "randevular" ? getRandevular() : [],
+    activeView === "urunler" ? getUrunler() : [],
+    activeView === "hizmetler" || activeView === "randevular" ? getHizmetler() : [],
+    activeView === "ayarlar" ? getAyarlar() : null
+  ]);
 
-  const summaryTabs =
-    activeView === "randevular"
-      ? [
-        {
-          label: "Takvim Görünümü",
-          count: counts.active,
-          slug: "takvim",
-          active: activeTab === "takvim",
-          href: "/admin?view=randevular&tab=takvim"
-        },
-        {
-          label: "Aktif Randevular",
-          count: counts.active,
-          slug: "aktif",
-          active: activeTab === "aktif",
-          href: "/admin?view=randevular&tab=aktif"
-        },
-        {
-          label: "İptal Edilenler",
-          count: counts.cancelled,
-          slug: "iptal",
-          active: activeTab === "iptal",
-          href: "/admin?view=randevular&tab=iptal"
-        }
-      ]
-      : [];
   const menu = [
     { label: "Randevular", view: "randevular" },
     { label: "Hizmetler", view: "hizmetler" },
@@ -625,12 +580,13 @@ export default async function AdminPage({
               <Link
                 key={item.view}
                 href={`/admin?view=${item.view}`}
-                className={`rounded-xl px-4 py-3 transition-colors ${activeView === item.view
+                className={`flex items-center justify-between rounded-xl px-4 py-3 transition-colors ${activeView === item.view
                   ? "bg-brand-gold text-brand-dark"
                   : "text-brand-text/75 hover:bg-white/5 hover:text-brand-gold"
                   }`}
               >
                 {item.label}
+                <LinkBekleme />
               </Link>
             ))}
           </nav>
@@ -668,12 +624,13 @@ export default async function AdminPage({
                 <Link
                   key={item.view}
                   href={`/admin?view=${item.view}`}
-                  className={`shrink-0 rounded-full px-4 py-2 transition-colors ${activeView === item.view
+                  className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 transition-colors ${activeView === item.view
                     ? "bg-brand-gold text-brand-dark"
                     : "bg-white/5 text-brand-text/80"
                     }`}
                 >
                   {item.label}
+                  <LinkBekleme yerTut={false} className="-mr-1" />
                 </Link>
               ))}
             </nav>
@@ -689,28 +646,24 @@ export default async function AdminPage({
             </div>
 
             {activeView === "randevular" ? (
-              <section className="grid grid-cols-3 gap-2 sm:gap-4">
-                {summaryTabs.map((tab) => (
-                  <Link
-                    key={tab.slug}
-                    href={tab.href}
-                    className={`rounded-3xl border p-3 transition-colors sm:p-6 ${tab.active
-                      ? "border-brand-gold/60 bg-brand-gold/[0.08]"
-                      : "border-white/10 bg-brand-slate hover:border-white/20"
-                      }`}
-                  >
-                    <div className="flex items-start justify-between gap-1 text-xs leading-tight text-brand-muted sm:items-center sm:text-sm">
-                      <span>{tab.label}</span>
-                      {tab.active && (
-                        <span className="h-2 w-2 rounded-full bg-brand-gold" />
-                      )}
-                    </div>
-                    <p className={`mt-2 font-display text-2xl font-extrabold sm:mt-4 sm:text-4xl ${tab.active ? "text-brand-gold" : "text-brand-text"}`}>
-                      {tab.count}
+              <RandevuSekmeleri
+                randevular={randevularRaw}
+                hizmetler={hizmetler}
+                ilkSekme={activeTab}
+                onCancel={handleCalendarCancel}
+                onDelete={handleDeleteRandevu}
+                bildirim={
+                  randevuStatus === "1" ? (
+                    <p className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                      Randevu silindi.
                     </p>
-                  </Link>
-                ))}
-              </section>
+                  ) : randevuStatus === "0" ? (
+                    <p className="mt-4 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                      {errorMessage || "Randevu güncellenemedi."}
+                    </p>
+                  ) : null
+                }
+              />
             ) : null}
 
             {/* Stok sayfasında sadece stok bilgileri gösterilir. */}
@@ -1218,48 +1171,6 @@ export default async function AdminPage({
               </section>
             ) : null}
 
-            {activeView === "randevular" ? (
-              <section
-                id="randevular"
-                className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-brand-gold">
-                      Randevular
-                    </p>
-                    <p className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">
-                      Gelen randevular
-                    </p>
-                  </div>
-                </div>
-                {randevuStatus === "1" ? (
-                  <p className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-                    Randevu silindi.
-                  </p>
-                ) : null}
-                {randevuStatus === "0" ? (
-                  <p className="mt-4 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
-                    {errorMessage || "Randevu güncellenemedi."}
-                  </p>
-                ) : null}
-                <div className="mt-6">
-                  {activeTab === "takvim" ? (
-                    <RandevuCalendar
-                      randevular={randevularRaw.filter(r => r.durum !== "iptal")}
-                      hizmetler={hizmetler}
-                      onCancel={handleCalendarCancel}
-                    />
-                  ) : (
-                    <RandevuList
-                      randevular={randevular}
-                      onCancel={handleCalendarCancel}
-                      onDelete={handleDeleteRandevu}
-                    />
-                  )}
-                </div>
-              </section>
-            ) : null}
             {activeView === "ayarlar" ? (
               <section
                 id="ayarlar"

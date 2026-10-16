@@ -6,7 +6,7 @@ import {
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
   refreshSession,
-  verifyAccessToken
+  tokenSuresiGecerli
 } from "@/lib/authEdge";
 
 const LOGIN_PATH = "/admin/login";
@@ -31,15 +31,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 1) Çerezdeki token gerçekten geçerli mi? (Supabase'e sorulur)
+  // 1) Token var ve süresi dolmamışsa geçir. Burada Supabase'e sorulmaz: sayfa ve her
+  //    server action requireAdmin() ile token'ı zaten Supabase'e doğrulatıyor. Önceden
+  //    burada da sorulduğu için her tıklamada aynı kontrol iki kez yapılıyordu.
   const accessToken = req.cookies.get(ACCESS_COOKIE)?.value;
-  if (await verifyAccessToken(accessToken)) {
+  if (tokenSuresiGecerli(accessToken)) {
     return NextResponse.next();
   }
 
-  // 2) Süresi dolduysa refresh token ile sessizce yenile
+  // 2) Süresi dolduysa refresh token ile sessizce yenile (Supabase'den gelen yeni token)
   const session = await refreshSession(req.cookies.get(REFRESH_COOKIE)?.value);
-  if (!session || !(await verifyAccessToken(session.access_token))) {
+  if (!session) {
     return redirectToLogin(req);
   }
 
