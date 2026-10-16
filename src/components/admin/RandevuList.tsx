@@ -1,6 +1,7 @@
 "use client";
 
 import { isAnlasmaliSendika } from "@/lib/sendikalar";
+import { formatTL, paketAciklamasi } from "@/lib/lastikPaketleri";
 
 type Randevu = {
     id: string;
@@ -9,6 +10,10 @@ type Randevu = {
     email: string | null;
     plaka: string | null;
     sendika?: string | null;
+    arac_turu?: string | null;
+    lastik_adedi?: number | null;
+    balans_adedi?: number | null;
+    fiyat?: number | null;
     hizmet: string;
     tarih: string;
     saat: string;
@@ -68,6 +73,12 @@ export default function RandevuList({ randevular, onCancel, onDelete }: Props) {
                                     {randevu.ad}
                                 </h3>
                                 <p className="text-sm text-white/60">{randevu.hizmet}</p>
+                                {paketAciklamasi(randevu) ? (
+                                    <p className="text-sm text-white/60">{paketAciklamasi(randevu)}</p>
+                                ) : null}
+                                {randevu.fiyat ? (
+                                    <p className="mt-1 text-base font-black text-brand-gold">{formatTL(randevu.fiyat)}</p>
+                                ) : null}
                             </div>
 
                             <div className="space-y-2 border-t border-white/10 pt-4">

@@ -2,27 +2,34 @@
 
 import { getSupabaseServerClient } from "@/lib/supabase";
 import { SENDIKA_SECENEKLERI, normalizePhone } from "@/lib/sendikalar";
+import { paketHesapla } from "@/lib/lastikPaketleri";
 
 export async function createAppointment(
     _prevState: { ok: boolean; message?: string },
     formData: FormData
 ) {
-    const islem = String(formData.get("islem") ?? "").trim();
-    const ekNot = String(formData.get("not") ?? "").trim();
-    // Yapılacak işlem ayrı bir kolon yerine randevu notunun başına yazılır,
-    // admin panelinde not olarak görünür.
-    const notMetni = [islem ? `İşlem: ${islem}` : "", ekNot ? `Not: ${ekNot}` : ""]
-        .filter(Boolean)
-        .join("\n");
+    // Fiyat tarayıcıdan alınmaz; seçimden sunucuda yeniden hesaplanır.
+    const paket = paketHesapla(
+        String(formData.get("hizmet_key") ?? ""),
+        String(formData.get("arac_turu") ?? ""),
+        String(formData.get("lastik_adedi") ?? "")
+    );
+    if (!paket) {
+        return { ok: false, message: "Lütfen hizmet, araç türü ve lastik sayısını seçiniz." };
+    }
 
     const payload = {
         ad: String(formData.get("ad") ?? "").trim(),
         telefon: String(formData.get("telefon") ?? "").trim(),
         sendika: String(formData.get("sendika") ?? "").trim(),
-        hizmet: String(formData.get("hizmet") ?? "").trim(),
+        hizmet: paket.hizmetAdi,
+        arac_turu: paket.aracTuru,
+        lastik_adedi: paket.lastikAdedi,
+        balans_adedi: paket.balansAdedi,
+        fiyat: paket.fiyat,
         tarih: String(formData.get("tarih") ?? "").trim(),
         saat: String(formData.get("saat") ?? "").trim(),
-        not_metni: notMetni,
+        not_metni: String(formData.get("not") ?? "").trim() || null,
         durum: "bekliyor"
     };
 
@@ -33,10 +40,7 @@ export async function createAppointment(
         return { ok: false, message: "Lütfen geçerli bir telefon numarası giriniz." };
     }
     if (!SENDIKA_SECENEKLERI.includes(payload.sendika)) {
-        return { ok: false, message: "Lütfen sendika seçiniz." };
-    }
-    if (!islem) {
-        return { ok: false, message: "Lütfen yapılacak işlemi yazınız." };
+        return { ok: false, message: "Lütfen sendikanızı seçiniz." };
     }
     if (!payload.tarih || !payload.saat) {
         return { ok: false, message: "Lütfen tarih ve saat seçiniz." };

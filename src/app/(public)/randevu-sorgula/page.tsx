@@ -1,5 +1,6 @@
 import TopNav from "@/components/TopNav";
 import { searchRandevular } from "@/lib/db";
+import { formatTL, paketAciklamasi } from "@/lib/lastikPaketleri";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +90,9 @@ export default async function RandevuSorgulaPage({
                                         <p className="text-2xl font-black text-brand-gold">
                                             {randevu.hizmet}
                                         </p>
+                                        {paketAciklamasi(randevu) ? (
+                                            <p className="mt-1 text-sm font-medium text-white/80">{paketAciklamasi(randevu)}</p>
+                                        ) : null}
                                         <div className="mt-4 space-y-2">
                                             <p className="text-sm text-white flex justify-between border-b border-white/5 pb-1 font-medium">
                                                 <span className="text-white">Müşteri:</span>
@@ -110,6 +114,12 @@ export default async function RandevuSorgulaPage({
                                                 <span className="text-white">Saat:</span>
                                                 <span className="font-bold">{randevu.saat}</span>
                                             </p>
+                                            {randevu.fiyat ? (
+                                                <p className="text-sm text-white flex justify-between border-b border-white/5 pb-1 font-medium">
+                                                    <span className="text-white">Ücret:</span>
+                                                    <span className="font-bold text-brand-gold">{formatTL(randevu.fiyat)}</span>
+                                                </p>
+                                            ) : null}
                                             <p className="text-sm text-white flex justify-between font-medium">
                                                 <span className="text-white">Durum:</span>
                                                 <span className="text-brand-gold uppercase font-black text-xs tracking-widest">{randevu.durum}</span>

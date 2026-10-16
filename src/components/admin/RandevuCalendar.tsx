@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { formatTL, paketAciklamasi } from "@/lib/lastikPaketleri";
 import { Calendar, dateFnsLocalizer, View, Views } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay, addMinutes, isSameDay } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -25,6 +26,10 @@ type Randevu = {
     email: string | null;
     plaka: string | null;
     sendika?: string | null;
+    arac_turu?: string | null;
+    lastik_adedi?: number | null;
+    balans_adedi?: number | null;
+    fiyat?: number | null;
     hizmet: string;
     tarih: string;
     saat: string;
@@ -228,6 +233,8 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
 
                                     <div className="space-y-1">
                                         <p className="font-bold text-white text-base">{r.hizmet}</p>
+                                        {paketAciklamasi(r) ? <p className="text-sm text-white/70">{paketAciklamasi(r)}</p> : null}
+                                        {r.fiyat ? <p className="text-sm font-black text-brand-gold">{formatTL(r.fiyat)}</p> : null}
                                         <p className="text-sm text-white/80">{r.ad}</p>
                                         <div className="flex flex-col text-xs text-white/50 pt-2 gap-1 border-t border-white/5 mt-2">
                                             <p>📞 {r.telefon}</p>

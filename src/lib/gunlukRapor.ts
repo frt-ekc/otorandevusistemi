@@ -1,6 +1,7 @@
 import ExcelJS from "exceljs";
 import { getSupabaseServerClient } from "@/lib/supabase";
-import type { RandevuRow } from "@/lib/db";
+import { RANDEVU_KOLONLARI, type RandevuRow } from "@/lib/db";
+import { formatTL, paketAciklamasi } from "@/lib/lastikPaketleri";
 
 const TIME_ZONE = "Europe/Istanbul";
 
@@ -45,11 +46,16 @@ function splitNot(notMetni: string | null) {
   return { islem, not: notlar.join(" ") };
 }
 
+// Yeni kayıtlarda paket bilgisi kolonlardan, eski kayıtlarda nottaki "İşlem:" satırından gelir.
+function islemMetni(r: RandevuRow) {
+  return paketAciklamasi(r) || splitNot(r.not_metni).islem;
+}
+
 export async function getAktifRandevular(tarih: string) {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from("randevular")
-    .select("id, ad, telefon, email, plaka, sendika, hizmet, tarih, saat, not_metni, durum, created_at")
+    .select(RANDEVU_KOLONLARI)
     .eq("tarih", tarih)
     .neq("durum", "iptal")
     .order("saat", { ascending: true });
@@ -73,14 +79,15 @@ export async function buildRandevuExcel(tarih: string, randevular: RandevuRow[])
     { key: "telefon", width: 16 },
     { key: "sendika", width: 24 },
     { key: "hizmet", width: 22 },
-    { key: "islem", width: 40 },
+    { key: "islem", width: 30 },
+    { key: "fiyat", width: 12, style: { numFmt: '#,##0 "₺"' } },
     { key: "not", width: 30 },
     { key: "durum", width: 12 },
     { key: "kayit", width: 18 }
   ];
 
   // 1. satır: başlık
-  sheet.mergeCells("A1:I1");
+  sheet.mergeCells("A1:J1");
   const title = sheet.getCell("A1");
   title.value = `${formatTrDate(tarih)} randevuları (${randevular.length} adet)`;
   title.font = { bold: true, size: 14 };
@@ -93,7 +100,8 @@ export async function buildRandevuExcel(tarih: string, randevular: RandevuRow[])
     "Telefon",
     "Sendika",
     "Hizmet",
-    "Yapılacak İşlem",
+    "Paket",
+    "Ücret",
     "Ek Not",
     "Durum",
     "Kayıt Zamanı"
@@ -105,14 +113,15 @@ export async function buildRandevuExcel(tarih: string, randevular: RandevuRow[])
   });
 
   for (const r of randevular) {
-    const { islem, not } = splitNot(r.not_metni);
+    const { not } = splitNot(r.not_metni);
     const row = sheet.addRow({
       saat: String(r.saat ?? "").slice(0, 5),
       ad: r.ad,
       telefon: r.telefon,
       sendika: r.sendika ?? "-",
       hizmet: r.hizmet,
-      islem: islem || "-",
+      islem: islemMetni(r) || "-",
+      fiyat: r.fiyat ?? null,
       not: not || "",
       durum: r.durum,
       kayit: r.created_at
@@ -126,7 +135,13 @@ export async function buildRandevuExcel(tarih: string, randevular: RandevuRow[])
     row.alignment = { vertical: "top", wrapText: true };
   }
 
-  sheet.autoFilter = { from: "A2", to: "I2" };
+  sheet.autoFilter = { from: "A2", to: "J2" };
+
+  // Toplam satırı
+  const toplam = randevular.reduce((sum, r) => sum + (r.fiyat ?? 0), 0);
+  const toplamRow = sheet.addRow({ islem: "TOPLAM", fiyat: toplam });
+  toplamRow.font = { bold: true };
+  toplamRow.getCell("fiyat").border = { top: { style: "thin" } };
 
   const buffer = await workbook.xlsx.writeBuffer();
   return Buffer.from(buffer as ArrayBuffer);
@@ -151,16 +166,18 @@ export async function sendRaporMail(params: {
   const count = params.randevular.length;
   const satirlar = params.randevular
     .map((r) => {
-      const { islem } = splitNot(r.not_metni);
+      const islem = islemMetni(r);
       return `<li><b>${String(r.saat ?? "").slice(0, 5)}</b> · ${escapeHtml(r.ad)} · ${escapeHtml(r.hizmet)}${
         islem ? ` · ${escapeHtml(islem)}` : ""
-      }</li>`;
+      }${r.fiyat ? ` · <b>${formatTL(r.fiyat)}</b>` : ""}</li>`;
     })
     .join("");
 
   const html =
     count > 0
-      ? `<p>${tarihTr} için <b>${count}</b> aktif randevu var. Tüm bilgiler ekteki Excel dosyasında.</p><ul>${satirlar}</ul>`
+      ? `<p>${tarihTr} için <b>${count}</b> aktif randevu var, beklenen toplam <b>${formatTL(
+          params.randevular.reduce((sum, r) => sum + (r.fiyat ?? 0), 0)
+        )}</b>. Tüm bilgiler ekteki Excel dosyasında.</p><ul>${satirlar}</ul>`
       : `<p>${tarihTr} için aktif randevu bulunmuyor.</p>`;
 
   const body: Record<string, unknown> = {

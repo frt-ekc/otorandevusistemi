@@ -1,11 +1,11 @@
 import TopNav from "@/components/TopNav";
-import { getHizmetler } from "@/lib/db";
+import { getGorunurHizmetler } from "@/lib/db";
 import HizmetlerGrid from "@/components/HizmetlerGrid";
 
 export const dynamic = "force-dynamic";
 
 export default async function HizmetlerPage() {
-  const hizmetler = await getHizmetler();
+  const hizmetler = await getGorunurHizmetler();
   const services = hizmetler.map((hizmet) => ({
     id: hizmet.id,
     title: hizmet.name,
