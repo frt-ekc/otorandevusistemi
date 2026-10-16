@@ -1,4 +1,5 @@
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { normalizePhone } from "@/lib/sendikalar";
 
 export type HizmetRow = {
   id: string;
@@ -35,6 +36,7 @@ export type RandevuRow = {
   telefon: string;
   email: string | null;
   plaka: string | null;
+  sendika: string | null;
   hizmet: string;
   tarih: string;
   saat: string;
@@ -134,7 +136,7 @@ export async function getRandevular() {
   const { data, error } = await supabase
     .from("randevular")
     .select(
-      "id, ad, telefon, email, plaka, hizmet, tarih, saat, not_metni, durum, created_at"
+      "id, ad, telefon, email, plaka, sendika, hizmet, tarih, saat, not_metni, durum, created_at"
     )
     .order("created_at", { ascending: false });
   if (error) {
@@ -143,21 +145,28 @@ export async function getRandevular() {
   return (data ?? []) as RandevuRow[];
 }
 
-export async function searchRandevular(ad: string, plaka: string) {
+export async function searchRandevular(ad: string, telefon: string) {
+  const adTrim = ad.trim();
+  const telefonDigits = normalizePhone(telefon);
+  if (!adTrim || telefonDigits.length < 10) {
+    return [];
+  }
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from("randevular")
     .select(
-      "id, ad, telefon, email, plaka, hizmet, tarih, saat, not_metni, durum, created_at"
+      "id, ad, telefon, email, plaka, sendika, hizmet, tarih, saat, not_metni, durum, created_at"
     )
-    .ilike("ad", ad.trim())
-    .ilike("plaka", plaka.trim());
+    .ilike("ad", adTrim);
 
   if (error) {
     return [];
   }
-  // ilike boş string eşleşmesi istemezsek trim kontrolü üstte yapıldı; burada da filtrelenmiş.
-  return (data ?? []) as RandevuRow[];
+  // Telefon farklı biçimlerde yazılmış olabilir ("0538 706 1065" / "05387061065"),
+  // bu yüzden sadece rakamlarını karşılaştırıyoruz.
+  return ((data ?? []) as RandevuRow[]).filter(
+    (r) => normalizePhone(r.telefon) === telefonDigits
+  );
 }
 
 export async function getAyarlar() {

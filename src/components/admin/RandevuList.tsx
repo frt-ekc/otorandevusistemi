@@ -1,6 +1,7 @@
 "use client";
 
 import { updateRandevuStatus } from "@/lib/db";
+import { isAnlasmaliSendika } from "@/lib/sendikalar";
 import { revalidatePath } from "next/cache";
 
 type Randevu = {
@@ -9,6 +10,7 @@ type Randevu = {
     telefon: string;
     email: string | null;
     plaka: string | null;
+    sendika?: string | null;
     hizmet: string;
     tarih: string;
     saat: string;
@@ -75,6 +77,14 @@ export default function RandevuList({ randevular, onCancel, onDelete }: Props) {
                                     <span>📞</span>
                                     <span>{randevu.telefon}</span>
                                 </div>
+                                {randevu.sendika && (
+                                    <div className="flex items-center gap-3 text-sm text-white/70">
+                                        <span>🏷️</span>
+                                        <span className={isAnlasmaliSendika(randevu.sendika) ? "font-semibold text-brand-gold" : ""}>
+                                            {randevu.sendika}
+                                        </span>
+                                    </div>
+                                )}
                                 {randevu.plaka && (
                                     <div className="flex items-center gap-3 text-sm text-white/70">
                                         <span>🚗</span>
@@ -92,7 +102,7 @@ export default function RandevuList({ randevular, onCancel, onDelete }: Props) {
                             {randevu.not_metni && (
                                 <div className="rounded-xl bg-white/5 p-3">
                                     <p className="text-xs italic text-white/40 leading-relaxed">
-                                        "{randevu.not_metni}"
+                                        <span className="whitespace-pre-line">{randevu.not_metni}</span>
                                     </p>
                                 </div>
                             )}

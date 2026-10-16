@@ -1,25 +1,45 @@
 "use server";
 
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { SENDIKA_SECENEKLERI, normalizePhone } from "@/lib/sendikalar";
 
 export async function createAppointment(
     _prevState: { ok: boolean; message?: string },
     formData: FormData
 ) {
+    const islem = String(formData.get("islem") ?? "").trim();
+    const ekNot = String(formData.get("not") ?? "").trim();
+    // Yapılacak işlem ayrı bir kolon yerine randevu notunun başına yazılır,
+    // admin panelinde not olarak görünür.
+    const notMetni = [islem ? `İşlem: ${islem}` : "", ekNot ? `Not: ${ekNot}` : ""]
+        .filter(Boolean)
+        .join("\n");
+
     const payload = {
         ad: String(formData.get("ad") ?? "").trim(),
         telefon: String(formData.get("telefon") ?? "").trim(),
-        email: String(formData.get("email") ?? "").trim(),
-        plaka: String(formData.get("plaka") ?? "").trim().toUpperCase(),
+        sendika: String(formData.get("sendika") ?? "").trim(),
         hizmet: String(formData.get("hizmet") ?? "").trim(),
         tarih: String(formData.get("tarih") ?? "").trim(),
         saat: String(formData.get("saat") ?? "").trim(),
-        not_metni: String(formData.get("not") ?? "").trim(),
+        not_metni: notMetni,
         durum: "bekliyor"
     };
 
-    if (!payload.plaka || !payload.telefon) {
-        return { ok: false, message: "Plaka ve telefon alanları zorunludur." };
+    if (!payload.ad || !payload.telefon) {
+        return { ok: false, message: "Ad soyad ve telefon alanları zorunludur." };
+    }
+    if (normalizePhone(payload.telefon).length < 10) {
+        return { ok: false, message: "Lütfen geçerli bir telefon numarası giriniz." };
+    }
+    if (!SENDIKA_SECENEKLERI.includes(payload.sendika)) {
+        return { ok: false, message: "Lütfen sendika seçiniz." };
+    }
+    if (!islem) {
+        return { ok: false, message: "Lütfen yapılacak işlemi yazınız." };
+    }
+    if (!payload.tarih || !payload.saat) {
+        return { ok: false, message: "Lütfen tarih ve saat seçiniz." };
     }
 
     const supabase = getSupabaseServerClient();

@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import DateGridPicker from "@/components/DateGridPicker";
 import TimeGridPicker from "@/components/TimeGridPicker";
-import type { HizmetRow } from "@/lib/db";
+import { SENDIKA_SECENEKLERI } from "@/lib/sendikalar";
 
 type ServiceItem = { title: string; duration: string };
 
@@ -49,8 +49,8 @@ export default function RandevuStepper({
   const [summary, setSummary] = useState({
     ad: "",
     telefon: "",
-    email: "",
-    plaka: "",
+    sendika: "",
+    islem: "",
     hizmet: matchedServiceTitle,
     tarih: "",
     saat: "",
@@ -103,9 +103,9 @@ export default function RandevuStepper({
       return () => clearTimeout(timer);
     } else if (formState.message) {
       setLocalError(formState.message);
-      // Eğer hata "randevu bulunmaktadır" hatasıysa, bu plaka+tarih kombinasyonunu kara listeye al
+      // Eğer hata "randevu bulunmaktadır" hatasıysa, bu telefon+tarih kombinasyonunu kara listeye al
       if (formState.message.includes("randevu bulunmaktadır")) {
-        setRejectedDate(`${summary.plaka}-${summary.tarih}`);
+        setRejectedDate(`${summary.telefon}-${summary.tarih}`);
       }
     }
   }, [formState.ok, formState.message]); // summary.tarih'i çıkardık, sadece hata geldiğinde çalışsın
@@ -114,9 +114,9 @@ export default function RandevuStepper({
     submitIntentRef.current = false; // Her adım geçişinde güvenliği sıfırla
     setLocalError(null); // Adım geçerken eski hatayı temizle
 
-    // Tarih adımında (2. adım), reddedilen plaka+tarih kontrolü
-    if (currentStep === 2 && `${summary.plaka}-${summary.tarih}` === rejectedDate) {
-      setLocalError("Lütfen farklı bir tarih seçiniz, bu plakaya bu tarihte aktif randevunuz bulunmaktadır.");
+    // Tarih adımında (2. adım), reddedilen telefon+tarih kontrolü
+    if (currentStep === 2 && `${summary.telefon}-${summary.tarih}` === rejectedDate) {
+      setLocalError("Lütfen farklı bir tarih seçiniz, bu tarihte aktif randevunuz bulunmaktadır.");
       return;
     }
 
@@ -292,28 +292,43 @@ export default function RandevuStepper({
               className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm text-white/70">
-            Email (opsiyonel)
-            <input
-              name="email"
-              type="email"
-              disabled={!stepActive(1)}
-              onChange={(event) =>
-                setSummary((prev) => ({ ...prev, email: event.target.value }))
-              }
-              className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-white/70">
-            Araç Plakası
-            <input
-              name="plaka"
+          <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+            Sendika
+            <select
+              name="sendika"
               required={stepActive(1)}
               disabled={!stepActive(1)}
+              value={summary.sendika}
               onChange={(event) =>
-                setSummary((prev) => ({ ...prev, plaka: event.target.value }))
+                setSummary((prev) => ({ ...prev, sendika: event.target.value }))
               }
               className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+            >
+              <option value="" disabled>
+                Sendikanızı seçiniz
+              </option>
+              {SENDIKA_SECENEKLERI.map((sendika) => (
+                <option key={sendika} value={sendika}>
+                  {sendika}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs text-white/40">
+              Anlaşmalı sendika üyelerine özel indirim uygulanır.
+            </span>
+          </label>
+          <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+            Yapılacak İşlem
+            <textarea
+              name="islem"
+              rows={3}
+              required={stepActive(1)}
+              disabled={!stepActive(1)}
+              placeholder="Örn: 4 lastik değişimi, balans yapılacak / 2 lastik değişimi, balanssız / patlak lastik tamiri"
+              onChange={(event) =>
+                setSummary((prev) => ({ ...prev, islem: event.target.value }))
+              }
+              className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white placeholder:text-white/30"
             />
           </label>
         </div>
@@ -382,14 +397,14 @@ export default function RandevuStepper({
           <input type="hidden" name="hizmet" value={summary.hizmet} />
           <input type="hidden" name="ad" value={summary.ad} />
           <input type="hidden" name="telefon" value={summary.telefon} />
-          <input type="hidden" name="email" value={summary.email} />
-          <input type="hidden" name="plaka" value={summary.plaka} />
+          <input type="hidden" name="sendika" value={summary.sendika} />
+          <input type="hidden" name="islem" value={summary.islem} />
           <input type="hidden" name="tarih" value={summary.tarih} />
           <input type="hidden" name="saat" value={summary.saat} />
           <input type="hidden" name="not" value={summary.not} />
 
           <label className="flex flex-col gap-2 text-sm text-white/70">
-            Not (opsiyonel)
+            Ek Not (opsiyonel)
             <textarea
               name="not"
               rows={3}
@@ -427,12 +442,12 @@ export default function RandevuStepper({
               <span className="text-white">{summary.telefon || "-"}</span>
             </div>
             <div>
-              <span className="text-white/50">Email:</span>{" "}
-              <span className="text-white">{summary.email || "-"}</span>
+              <span className="text-white/50">Sendika:</span>{" "}
+              <span className="text-white">{summary.sendika || "-"}</span>
             </div>
             <div>
-              <span className="text-white/50">Plaka:</span>{" "}
-              <span className="text-white">{summary.plaka || "-"}</span>
+              <span className="text-white/50">Yapılacak İşlem:</span>{" "}
+              <span className="whitespace-pre-line text-white">{summary.islem || "-"}</span>
             </div>
             <div>
               <span className="text-white/50">Tarih:</span>{" "}
