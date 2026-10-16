@@ -42,24 +42,24 @@ export default async function RandevuPage({
   return (
     <div className="min-h-screen">
       <TopNav />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 lg:py-12">
-        <section className="glass-card bg-haze overflow-hidden rounded-[2.5rem] p-1 shadow-2xl">
-          <div className="w-full rounded-[2.3rem] bg-gradient-to-br from-brand-gold/30 via-white/5 to-transparent p-6 backdrop-blur-md border border-brand-gold/20 lg:p-12">
-            <div className="flex flex-col gap-10">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-3 py-4 sm:px-4 sm:py-8 lg:py-12">
+        <section className="glass-card bg-haze overflow-hidden rounded-[2rem] p-1 shadow-2xl sm:rounded-[2.5rem]">
+          <div className="w-full rounded-[2.3rem] bg-gradient-to-br from-brand-gold/30 via-white/5 to-transparent p-3 backdrop-blur-md border border-brand-gold/20 sm:p-6 lg:p-12">
+            <div className="flex flex-col gap-5 sm:gap-10">
               <div className="text-center lg:text-left">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
+                <span className="hidden items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90 sm:inline-flex">
                   Online Randevu
                 </span>
-                <h1 className="mt-6 text-3xl font-black text-white sm:text-4xl lg:text-6xl leading-[1.1]">
+                <h1 className="mt-2 text-2xl font-black leading-[1.1] text-white sm:mt-6 sm:text-4xl lg:text-6xl">
                   <span className="text-brand-gold">Hızlı ve Güvenli</span> <br className="hidden sm:block" />
                   Randevu Sistemi
                 </h1>
-                <p className="mt-6 text-base text-white/70 leading-relaxed sm:text-lg max-w-2xl mx-auto lg:mx-0">
+                <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-lg lg:mx-0">
                   Anlaşmalı sendika üyelerine özel fiyatlarla lastik değişimi ve tamiri. Paketinizi seçin, fiyatı görün, randevunuzu alın.
                 </p>
               </div>
 
-              <div className="mt-4">
+              <div className="sm:mt-4">
                 <RandevuStepper
                   action={createAppointment}
                   getReservedSlots={getReservedSlots}

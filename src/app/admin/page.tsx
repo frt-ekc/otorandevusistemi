@@ -635,7 +635,7 @@ export default async function AdminPage({
           </form>
         </aside>
 
-        <main className="flex-1 px-6 py-8 md:px-10 bg-[#0f172a]/60 backdrop-blur-sm">
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-10 bg-[#0f172a]/60 backdrop-blur-sm">
           <div className="flex flex-col gap-10">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-white/60">
@@ -660,23 +660,23 @@ export default async function AdminPage({
             </div>
 
             {activeView === "randevular" ? (
-              <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <section className="grid grid-cols-3 gap-2 sm:gap-4">
                 {summaryTabs.map((tab) => (
                   <Link
                     key={tab.slug}
                     href={tab.href}
-                    className={`rounded-2xl border p-6 transition-all ${tab.active
+                    className={`rounded-2xl border p-3 transition-all sm:p-6 ${tab.active
                       ? "border-brand-gold bg-brand-gold/10 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
                       : "border-white/10 bg-white/5 hover:bg-white/10"
                       }`}
                   >
-                    <div className="flex items-center justify-between text-sm text-white/70">
+                    <div className="flex items-start justify-between gap-1 text-xs leading-tight text-white/70 sm:items-center sm:text-sm">
                       <span>{tab.label}</span>
                       {tab.active && (
                         <span className="h-2 w-2 rounded-full bg-brand-gold shadow-[0_0_8px_#facc15]" />
                       )}
                     </div>
-                    <p className={`mt-4 text-3xl font-black ${tab.active ? "text-brand-gold" : "text-white"}`}>
+                    <p className={`mt-2 text-2xl font-black sm:mt-4 sm:text-3xl ${tab.active ? "text-brand-gold" : "text-white"}`}>
                       {tab.count}
                     </p>
                   </Link>

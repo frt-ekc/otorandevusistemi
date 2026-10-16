@@ -103,3 +103,12 @@ button.bg-brand-gold {
 .text-glow-soft {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(0, 0, 0, 0.6);
 }
+/* iPhone Safari, yazı boyutu 16px'ten küçük alanlara dokununca sayfayı yakınlaştırır.
+   Telefonda form alanlarını 16px yaparak bunu engelliyoruz. */
+@media (max-width: 639px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
