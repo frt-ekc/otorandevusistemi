@@ -172,7 +172,7 @@ export default async function LastikSorgulaPage({
                         </form>
 
                         <p className="mt-4 text-sm text-white font-medium">
-                            * İsim ve plaka bilgileri tam girilmelidir.
+                            * Sonuç görmek için en az bir özellik seçiniz.
                         </p>
 
                         {hasFilters(filters) ? (

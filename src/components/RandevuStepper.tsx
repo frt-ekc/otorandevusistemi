@@ -39,7 +39,7 @@ const STEP_LABELS: Record<StepId, string> = {
 };
 
 const cardBase =
-  "flex h-full flex-col justify-between rounded-2xl border p-5 text-left backdrop-blur-md transition-all shadow-lg";
+  "flex h-full flex-col justify-between rounded-2xl border p-4 text-left backdrop-blur-md transition-all shadow-lg sm:p-5";
 const cardIdle = "border-brand-gold/20 bg-white/10 hover:bg-white/20 hover:border-brand-gold/40";
 const cardActive = "border-brand-gold bg-brand-gold/20 scale-[1.02]";
 
@@ -80,6 +80,22 @@ export default function RandevuStepper({
   const [formState, formAction, pending] = useActionState(action, { ok: false });
   const [localError, setLocalError] = useState<string | null>(null);
   const submitIntentRef = useRef(false);
+  const topRef = useRef<HTMLDivElement | null>(null);
+  const firstRenderRef = useRef(true);
+
+  // Adım değişince formun başına kaydır: telefonda yeni adım ekranın dışında kalmasın
+  useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+    const el = topRef.current;
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 80; // üst menü payı
+    if (Math.abs(window.scrollY - top) > 40) {
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  }, [stepIndex]);
 
   useEffect(() => {
     if (!tarih.value) return;
@@ -171,6 +187,8 @@ export default function RandevuStepper({
       setLastikAdedi(null);
     }
     setLocalError(null);
+    // Tek seçimlik adım: seçince doğrudan sonraki adıma geç
+    setStepIndex(1);
   };
 
   const balansBilgisi = (arac: AracTuru, adet: number) => {
@@ -182,8 +200,24 @@ export default function RandevuStepper({
 
   return (
     // Alttaki boşluk: mobilde sabit WhatsApp butonu "Randevu Al" butonunun üstüne binmesin
-    <div className="flex flex-col gap-6 pb-28 sm:pb-0">
-      <div className="flex flex-wrap items-center gap-3">
+    <div ref={topRef} className="flex flex-col gap-4 pb-20 sm:gap-6 sm:pb-0">
+      {/* Telefonda: tek satır ilerleme çubuğu */}
+      <div className="sm:hidden">
+        <div className="flex items-baseline justify-between text-sm">
+          <span className="font-bold text-white">{STEP_LABELS[step]}</span>
+          <span className="text-white/60">
+            Adım {stepIndex + 1}/{steps.length}
+          </span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-brand-gold transition-all duration-300"
+            style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }}
+          />
+        </div>
+      </div>
+      {/* Tablet ve bilgisayarda: tüm adımlar */}
+      <div className="hidden flex-wrap items-center gap-3 sm:flex">
         {steps.map((id, index) => (
           <div key={id} className="flex items-center gap-2">
             <div
@@ -213,7 +247,7 @@ export default function RandevuStepper({
             event.preventDefault();
           }
         }}
-        className="relative grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6"
+        className="relative grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-6"
       >
         {/* Sunucuya gidecek değerler */}
         <input type="hidden" name="hizmet_key" value={hizmet ?? ""} />
@@ -254,7 +288,7 @@ export default function RandevuStepper({
                 type="button"
                 key={key}
                 onClick={() => chooseHizmet(key)}
-                className={`${cardBase} min-h-[140px] ${hizmet === key ? cardActive : cardIdle}`}
+                className={`${cardBase} min-h-[110px] sm:min-h-[140px] ${hizmet === key ? cardActive : cardIdle}`}
               >
                 <div>
                   <p className="text-xl font-black text-white">{HIZMETLER[key].ad}</p>
@@ -472,12 +506,12 @@ export default function RandevuStepper({
           </div>
         )}
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-2 flex items-center justify-between gap-3 sm:mt-4 sm:gap-4">
           <button
             type="button"
             onClick={goBack}
             disabled={stepIndex === 0 || pending}
-            className="rounded-full border border-white/20 px-8 py-3 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-white/20 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40 sm:px-8"
           >
             Geri
           </button>
@@ -485,7 +519,7 @@ export default function RandevuStepper({
             <button
               type="button"
               onClick={goNext}
-              className="rounded-full bg-brand-gold px-10 py-4 text-base font-bold tracking-tight text-brand-dark shadow-[0_4px_25px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95"
+              className="flex-1 rounded-full bg-brand-gold px-6 py-4 text-base font-bold tracking-tight text-brand-dark shadow-[0_4px_25px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95 sm:flex-none sm:px-10"
             >
               {step === "paket" ? "İlerle" : "Devam Et"}
             </button>
@@ -496,7 +530,7 @@ export default function RandevuStepper({
               onClick={() => {
                 submitIntentRef.current = true;
               }}
-              className="rounded-full bg-brand-gold px-10 py-4 text-base font-bold tracking-tight text-brand-dark shadow-[0_4px_25px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95 disabled:opacity-60"
+              className="flex-1 rounded-full bg-brand-gold px-6 py-4 text-base font-bold tracking-tight text-brand-dark shadow-[0_4px_25px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95 disabled:opacity-60 sm:flex-none sm:px-10"
             >
               {pending ? "Gönderiliyor..." : "Randevu Al"}
             </button>
