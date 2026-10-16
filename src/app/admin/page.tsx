@@ -12,6 +12,8 @@ import {
   deleteLastik
 } from "@/lib/db";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/auth";
+import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/authEdge";
 import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import RandevuCalendar from "@/components/admin/RandevuCalendar";
@@ -38,6 +40,7 @@ async function getCounts() {
 
 async function createLastik(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const genislikSelect = String(formData.get("genislik_select") ?? "");
   const genislik = genislikSelect === "Diğer" ? String(formData.get("genislik_other") ?? "").trim() : genislikSelect;
@@ -113,6 +116,7 @@ async function createLastik(formData: FormData) {
 }
 async function deleteLastikAction(formData: FormData) {
   "use server";
+  await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const image_path = String(formData.get("image_path") ?? "");
   if (!id) return;
@@ -132,6 +136,7 @@ async function deleteLastikAction(formData: FormData) {
 }
 async function cancelRandevu(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   if (!id) {
@@ -147,6 +152,7 @@ async function cancelRandevu(formData: FormData) {
 
 async function handleDeleteRandevu(id: string) {
   "use server";
+  await requireAdmin();
   const result = await deleteRandevu(id);
   if (result.ok) {
     revalidatePath("/admin");
@@ -154,12 +160,14 @@ async function handleDeleteRandevu(id: string) {
 }
 async function handleCalendarCancel(id: string) {
   "use server";
+  await requireAdmin();
   await updateRandevuStatus(id, "iptal");
   revalidatePath("/admin");
 }
 
 async function createUrun(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const ad = String(formData.get("ad") ?? "").trim();
   const fiyatRaw = String(formData.get("fiyat") ?? "").trim();
@@ -211,6 +219,7 @@ async function createUrun(formData: FormData) {
 
 async function deleteUrun(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   const image_path = String(formData.get("image_path") ?? "");
@@ -230,6 +239,7 @@ async function deleteUrun(formData: FormData) {
 
 async function updateUrun(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   const ad = String(formData.get("ad") ?? "").trim();
@@ -287,6 +297,7 @@ async function updateUrun(formData: FormData) {
 
 async function createHizmet(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const ad = String(formData.get("ad") ?? "").trim();
   const aciklama = String(formData.get("aciklama") ?? "").trim();
@@ -342,6 +353,7 @@ async function createHizmet(formData: FormData) {
 
 async function deleteHizmet(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   const gorsel_path = String(formData.get("gorsel_path") ?? "");
@@ -361,6 +373,7 @@ async function deleteHizmet(formData: FormData) {
 
 async function updateHizmet(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   const ad = String(formData.get("ad") ?? "").trim();
@@ -423,6 +436,7 @@ async function updateHizmet(formData: FormData) {
 
 async function seedHizmetler() {
   "use server";
+  await requireAdmin();
 
   const defaults = [
     {
@@ -473,6 +487,7 @@ async function seedHizmetler() {
 
 async function updateAyarlar(formData: FormData) {
   "use server";
+  await requireAdmin();
 
   const haftaIci = String(formData.get("hafta_ici") ?? "").trim();
   const cumartesi = String(formData.get("cumartesi") ?? "").trim();
@@ -502,7 +517,8 @@ async function updateAyarlar(formData: FormData) {
 async function handleLogout() {
   "use server";
   const cookieStore = await cookies();
-  cookieStore.delete("sb-access-token");
+  cookieStore.delete(ACCESS_COOKIE);
+  cookieStore.delete(REFRESH_COOKIE);
   redirect("/admin/login");
 }
 
@@ -522,6 +538,7 @@ export default async function AdminPage({
     tab?: string;
   }>;
 }) {
+  await requireAdmin();
   const resolvedParams = searchParams ? await searchParams : undefined;
   const lastikStatus = resolvedParams?.lastik;
   const randevuStatus = resolvedParams?.randevu;

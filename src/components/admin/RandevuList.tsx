@@ -1,8 +1,6 @@
 "use client";
 
-import { updateRandevuStatus } from "@/lib/db";
 import { isAnlasmaliSendika } from "@/lib/sendikalar";
-import { revalidatePath } from "next/cache";
 
 type Randevu = {
     id: string;
