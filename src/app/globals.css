@@ -101,3 +101,50 @@ button.bg-brand-gold {
     font-size: 16px !important;
   }
 }
+
+/* Açılış animasyonu (SiteIntro) */
+html[data-intro-seen] .site-intro {
+  display: none;
+}
+
+.site-intro {
+  animation: intro-curtain 0.7s cubic-bezier(0.76, 0, 0.24, 1) 2s forwards;
+}
+
+.site-intro__char {
+  display: inline-block;
+  transform: translateY(110%);
+  animation:
+    intro-char-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i) * 45ms + 100ms) forwards,
+    intro-char-out 0.5s cubic-bezier(0.7, 0, 0.84, 0) 1.75s forwards;
+}
+
+.site-intro__line {
+  transform: scaleX(0);
+  transform-origin: left;
+  animation:
+    intro-line 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards,
+    intro-fade 0.4s ease-in 1.75s forwards;
+}
+
+@keyframes intro-char-in {
+  to { transform: translateY(0); }
+}
+
+@keyframes intro-char-out {
+  from { transform: translateY(0); }
+  to { transform: translateY(-110%); }
+}
+
+@keyframes intro-line {
+  to { transform: scaleX(1); }
+}
+
+@keyframes intro-fade {
+  to { opacity: 0; }
+}
+
+@keyframes intro-curtain {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 0 100% 0); }
+}
