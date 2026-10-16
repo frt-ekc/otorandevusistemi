@@ -4,6 +4,17 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import DateGridPicker from "@/components/DateGridPicker";
 import TimeGridPicker from "@/components/TimeGridPicker";
 import { SENDIKA_SECENEKLERI } from "@/lib/sendikalar";
+import { WHATSAPP_LINK } from "@/components/site/contact";
+import {
+  dakikaToSaat,
+  doluSaatler,
+  gununSaatleri,
+  haftaninGunu,
+  hizmetSuresi,
+  saatToDakika,
+  type Aralik,
+  type CalismaSaatleri
+} from "@/lib/calisma";
 import {
   ARAC_TURLERI,
   HIZMETLER,
@@ -20,19 +31,19 @@ type RandevuStepperProps = {
     prevState: { ok: boolean; message?: string },
     formData: FormData
   ) => Promise<{ ok: boolean; message?: string }>;
-  getReservedSlots: (date: string) => Promise<string[]>;
-  timeSlots: string[];
+  getReservedSlots: (date: string) => Promise<Aralik[]>;
+  calismaSaatleri: CalismaSaatleri;
   minDate: string;
   maxDate: string;
   initialHizmet?: HizmetKey | null;
 };
 
 // Adımlar. "paket" adımı sadece lastik değişiminde gösterilir.
-type StepId = "hizmet" | "paket" | "fiyat" | "iletisim" | "tarih" | "ozet";
+// Fiyat paket kartlarında ve son onay ekranında görünür; ayrıca onay kutusu yok.
+type StepId = "hizmet" | "paket" | "iletisim" | "tarih" | "ozet";
 const STEP_LABELS: Record<StepId, string> = {
   hizmet: "Hizmet",
   paket: "Araç ve Lastik",
-  fiyat: "Fiyat",
   iletisim: "İletişim",
   tarih: "Tarih/Saat",
   ozet: "Onay"
@@ -46,7 +57,7 @@ const cardActive = "border-brand-gold bg-brand-gold/20 scale-[1.02]";
 export default function RandevuStepper({
   action,
   getReservedSlots,
-  timeSlots,
+  calismaSaatleri,
   minDate,
   maxDate,
   initialHizmet
@@ -54,7 +65,6 @@ export default function RandevuStepper({
   const [hizmet, setHizmet] = useState<HizmetKey | null>(initialHizmet ?? null);
   const [aracTuru, setAracTuru] = useState<AracTuru | null>(null);
   const [lastikAdedi, setLastikAdedi] = useState<number | null>(null);
-  const [fiyatOnay, setFiyatOnay] = useState(false);
   const [iletisim, setIletisim] = useState({ ad: "", telefon: "", sendika: "", not: "" });
   const [tarih, setTarih] = useState({ value: "", label: "" });
   const [saat, setSaat] = useState("");
@@ -62,8 +72,8 @@ export default function RandevuStepper({
   const steps: StepId[] = useMemo(
     () =>
       hizmet === "tamir"
-        ? ["hizmet", "fiyat", "iletisim", "tarih", "ozet"]
-        : ["hizmet", "paket", "fiyat", "iletisim", "tarih", "ozet"],
+        ? ["hizmet", "iletisim", "tarih", "ozet"]
+        : ["hizmet", "paket", "iletisim", "tarih", "ozet"],
     [hizmet]
   );
   const [stepIndex, setStepIndex] = useState(initialHizmet ? 1 : 0);
@@ -76,7 +86,7 @@ export default function RandevuStepper({
 
   const [dateOpen, setDateOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
-  const [reservedSlots, setReservedSlots] = useState<string[]>([]);
+  const [mevcutRandevular, setMevcutRandevular] = useState<Aralik[]>([]);
   const [formState, formAction, pending] = useActionState(action, { ok: false });
   const [localError, setLocalError] = useState<string | null>(null);
   const submitIntentRef = useRef(false);
@@ -99,31 +109,41 @@ export default function RandevuStepper({
 
   useEffect(() => {
     if (!tarih.value) return;
-    setReservedSlots([]);
+    setMevcutRandevular([]);
     getReservedSlots(tarih.value)
-      .then(setReservedSlots)
-      .catch(() => setReservedSlots([]));
+      .then(setMevcutRandevular)
+      .catch(() => setMevcutRandevular([]));
   }, [tarih.value, getReservedSlots]);
 
-  // Bugün seçildiyse geçmiş saatleri gizle
-  const filteredTimeSlots = useMemo(() => {
-    if (!tarih.value) return timeSlots;
+  // Seçilen hizmetin dükkânda kapladığı süre: tek lastik / tamir 30 dk, 4 lastik 60 dk
+  const sure = hizmetSuresi({ hizmetKey: hizmet, lastik_adedi: lastikAdedi });
+
+  // Süre değişirse (ör. geri dönüp 4 lastiğe geçilirse) seçili saat artık uymayabilir
+  useEffect(() => {
+    setSaat("");
+  }, [sure]);
+
+  // O gün bu hizmetin başlayabileceği saatler; bugünse geçmiş saatler çıkarılır
+  const bugunSaatleri = (tarihStr: string) => {
+    const slots = gununSaatleri(calismaSaatleri, tarihStr, sure);
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
       now.getDate()
     ).padStart(2, "0")}`;
-    if (tarih.value !== todayStr) return timeSlots;
-    return timeSlots.filter((slot) => {
-      const [h, m] = slot.split(":").map(Number);
-      return h > now.getHours() || (h === now.getHours() && m > now.getMinutes());
-    });
-  }, [tarih.value, timeSlots]);
+    if (tarihStr !== todayStr) return slots;
+    const simdi = now.getHours() * 60 + now.getMinutes();
+    return slots.filter((slot) => saatToDakika(slot) > simdi);
+  };
+  const filteredTimeSlots = tarih.value ? bugunSaatleri(tarih.value) : [];
+  const doluSlotlar = doluSaatler(filteredTimeSlots, sure, mevcutRandevular);
+  const gunAraligi = tarih.value ? calismaSaatleri[haftaninGunu(tarih.value)] : null;
+  // Kapalı günler ve bugün saati geçmişse bugün seçilemez
+  const kapaliMi = (tarihStr: string) => bugunSaatleri(tarihStr).length === 0;
 
   useEffect(() => {
     if (formState.ok) {
       setLocalError(null);
-      const timer = setTimeout(() => window.location.reload(), 3000);
-      return () => clearTimeout(timer);
+      return;
     }
     if (formState.message) {
       setLocalError(formState.message);
@@ -145,8 +165,6 @@ export default function RandevuStepper({
         if (!aracTuru) return "Lütfen araç türünü seçiniz.";
         if (!lastikAdedi) return "Lütfen kaç lastik değişeceğini seçiniz.";
         return null;
-      case "fiyat":
-        return fiyatOnay ? null : "Devam etmek için fiyatı onaylayınız.";
       case "iletisim":
         if (!iletisim.ad.trim()) return "Lütfen ad soyad giriniz.";
         if (iletisim.telefon.replace(/\D/g, "").length < 10)
@@ -181,7 +199,6 @@ export default function RandevuStepper({
 
   const chooseHizmet = (key: HizmetKey) => {
     setHizmet(key);
-    setFiyatOnay(false);
     if (key === "tamir") {
       setAracTuru(null);
       setLastikAdedi(null);
@@ -234,6 +251,43 @@ export default function RandevuStepper({
         ))}
       </div>
 
+      {formState.ok && paket ? (
+        // Randevu alındı: özet ekranda kalır ki müşteri gün ve saati not edebilsin
+        <div className="grid gap-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-5 text-center sm:p-8">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-white sm:text-3xl">Randevunuz alındı!</h2>
+            <p className="mt-2 text-sm text-white/70">Ekibimiz randevuyu onaylamak için sizi arayacak.</p>
+          </div>
+          <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm text-white/80">
+            <Row k="Tarih" v={tarih.label || tarih.value} />
+            <Row k="Saat" v={`${saat} - ${dakikaToSaat(saatToDakika(saat) + sure)}`} />
+            <Row k="Hizmet" v={paket.hizmetAdi} />
+            <Row k="Toplam" v={formatTL(paket.fiyat)} />
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-[#25D366] px-6 py-3.5 text-sm font-bold text-white"
+            >
+              WhatsApp&apos;tan bize yazın
+            </a>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="rounded-full border border-white/20 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10"
+            >
+              Yeni randevu al
+            </button>
+          </div>
+        </div>
+      ) : (
       <form
         action={formAction}
         onSubmit={(event) => {
@@ -259,20 +313,6 @@ export default function RandevuStepper({
         <input type="hidden" name="not" value={iletisim.not} />
         <input type="hidden" name="tarih" value={tarih.value} />
         <input type="hidden" name="saat" value={saat} />
-
-        {formState.ok && (
-          <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center rounded-2xl bg-brand-dark/95 text-center backdrop-blur-xl">
-            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-500 shadow-[0_0_50px_rgba(16,185,129,0.4)]">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="px-4 text-3xl font-black text-white">Randevunuz Başarıyla Alındı!</h2>
-            <p className="mt-4 max-w-[320px] px-6 text-lg text-emerald-100/80">
-              Müşteri temsilcimiz en kısa sürede sizi arayacaktır.
-            </p>
-          </div>
-        )}
 
         {!formState.ok && localError ? (
           <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4 text-sm text-rose-100">
@@ -314,7 +354,6 @@ export default function RandevuStepper({
                     key={key}
                     onClick={() => {
                       setAracTuru(key);
-                      setFiyatOnay(false);
                       setLocalError(null);
                     }}
                     className={`${cardBase} ${aracTuru === key ? cardActive : cardIdle}`}
@@ -338,8 +377,9 @@ export default function RandevuStepper({
                       key={adet}
                       onClick={() => {
                         setLastikAdedi(adet);
-                        setFiyatOnay(false);
                         setLocalError(null);
+                        // Araç ve lastik seçildi: seçimi kısa bir an gösterip sonraki adıma geç
+                        setTimeout(() => setStepIndex(steps.indexOf("iletisim")), 250);
                       }}
                       className={`${cardBase} ${lastikAdedi === adet ? cardActive : cardIdle}`}
                     >
@@ -350,42 +390,6 @@ export default function RandevuStepper({
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* 3) Fiyat özeti ve onay */}
-        {step === "fiyat" && paket && (
-          <div className="grid gap-4">
-            <div className="rounded-2xl border border-brand-gold/30 bg-brand-gold/10 p-6">
-              <p className="text-sm uppercase tracking-[0.3em] text-white/60">Seçiminiz</p>
-              <p className="mt-2 text-2xl font-black text-white">{paket.hizmetAdi}</p>
-              {paket.aracTuru ? (
-                <ul className="mt-3 space-y-1 text-white/80">
-                  <li>Araç: {ARAC_TURLERI[paket.aracTuru].ad}</li>
-                  <li>Lastik: {paket.lastikAdedi} adet</li>
-                  <li>Balans: {paket.balansAdedi} adet (dahil)</li>
-                </ul>
-              ) : (
-                <p className="mt-3 text-white/80">Patlak lastik tamiri</p>
-              )}
-              <div className="mt-5 flex items-end justify-between border-t border-white/10 pt-4">
-                <span className="text-white/70">Toplam</span>
-                <span className="text-4xl font-black text-brand-gold">{formatTL(paket.fiyat)}</span>
-              </div>
-              <p className="mt-2 text-xs text-white/50">Anlaşmalı sendika üyelerine özel fiyattır. Ödeme dükkânda yapılır.</p>
-            </div>
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-white">
-              <input
-                type="checkbox"
-                checked={fiyatOnay}
-                onChange={(e) => {
-                  setFiyatOnay(e.target.checked);
-                  setLocalError(null);
-                }}
-                className="h-5 w-5 accent-[#fbbf24]"
-              />
-              Fiyatı onaylıyorum
-            </label>
           </div>
         )}
 
@@ -449,6 +453,7 @@ export default function RandevuStepper({
                 name="tarih_picker"
                 minDate={minDate}
                 maxDate={maxDate}
+                kapaliMi={kapaliMi}
                 open={dateOpen}
                 onOpenChange={setDateOpen}
                 onChange={(value: string, label: string) => {
@@ -461,14 +466,17 @@ export default function RandevuStepper({
                 required={false}
                 disabled={false}
               />
-              <span className="text-xs text-white/40">Çalışma saatleri 08:00 - 22:00 · 30 dk aralıklar</span>
+              <span className="text-xs text-white/40">Kapalı günler seçilemez</span>
             </label>
             <label className="flex flex-col gap-2 text-sm text-white/70">
               Saat
               <TimeGridPicker
+                // Tarih ya da süre değişince önceki seçim temizlensin
+                key={`${tarih.value}-${sure}`}
                 name="saat_picker"
                 slots={filteredTimeSlots}
-                reservedSlots={reservedSlots}
+                reservedSlots={doluSlotlar}
+                durationMinutes={sure}
                 open={tarih.value ? timeOpen : false}
                 onOpenChange={setTimeOpen}
                 disabled={!tarih.value}
@@ -479,7 +487,11 @@ export default function RandevuStepper({
                 }}
                 required={false}
               />
-              <span className="text-xs text-white/40">Son randevu 21:30 başlar.</span>
+              <span className="text-xs text-white/40">
+                {gunAraligi
+                  ? `Bu gün ${dakikaToSaat(gunAraligi.start)} - ${dakikaToSaat(gunAraligi.end)} arası açığız · işlem yaklaşık ${sure} dk`
+                  : `İşlem yaklaşık ${sure} dk sürer`}
+              </span>
             </label>
         </div>
 
@@ -497,12 +509,13 @@ export default function RandevuStepper({
             <Row k="Telefon" v={iletisim.telefon} />
             <Row k="Sendika" v={iletisim.sendika} />
             <Row k="Tarih" v={tarih.label || tarih.value} />
-            <Row k="Saat" v={saat} />
+            <Row k="Saat" v={saat ? `${saat} - ${dakikaToSaat(saatToDakika(saat) + sure)}` : ""} />
             {iletisim.not ? <Row k="Ek Not" v={iletisim.not} /> : null}
             <div className="mt-2 flex items-end justify-between border-t border-white/10 pt-3">
               <span className="text-white/60">Toplam</span>
               <span className="text-2xl font-black text-brand-gold">{formatTL(paket.fiyat)}</span>
             </div>
+            <p className="text-xs text-white/50">Anlaşmalı sendika üyelerine özel fiyattır. Ödeme işlem sonrası dükkânda yapılır.</p>
           </div>
         )}
 
@@ -537,6 +550,7 @@ export default function RandevuStepper({
           )}
         </div>
       </form>
+      )}
     </div>
   );
 }
