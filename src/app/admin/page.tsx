@@ -591,71 +591,100 @@ export default async function AdminPage({
         }
       ]
       : [];
+  const menu = [
+    { label: "Randevular", view: "randevular" },
+    { label: "Hizmetler", view: "hizmetler" },
+    { label: "Stok", view: "stok" },
+    { label: "Ürünler", view: "urunler" },
+    { label: "Ayarlar", view: "ayarlar" }
+  ];
+  const baslik = {
+    randevular: "Randevular",
+    hizmetler: "Hizmetler",
+    stok: "Stok Yönetimi",
+    urunler: "Ürünler",
+    ayarlar: "Ayarlar"
+  }[activeView] ?? "Ayarlar";
+
   return (
-    <div className="min-h-screen bg-[#0f172a] bg-[url('/otolastik.png')] bg-cover bg-center bg-no-repeat bg-fixed text-white">
+    // Sitedeki tasarımla aynı: asfalt siyahı zemin, tabela sarısı vurgu
+    <div className="min-h-screen text-brand-text">
       <div className="flex min-h-screen">
-        <aside className="hidden w-64 flex-col gap-6 border-r border-white/10 bg-[#0f172a]/80 backdrop-blur-md px-6 py-8 md:flex shadow-2xl">
-          <div className="flex items-center justify-center">
+        <aside className="hidden w-64 shrink-0 flex-col gap-8 border-r border-white/[0.07] bg-[#171614] px-5 py-8 md:sticky md:top-0 md:flex md:h-screen">
+          <Link href="/" className="flex items-center px-2">
             <Image
               src="/logo.svg"
               alt="Fırat Oto Lastik logo"
               width={180}
               height={60}
-              className="h-12 w-auto object-contain"
+              className="h-11 w-auto object-contain"
             />
-          </div>
-          <nav className="flex flex-col gap-3 text-sm text-white/70">
-            {[
-              { label: "Randevular", href: "/admin?view=randevular" },
-              { label: "Hizmetler", href: "/admin?view=hizmetler" },
-              { label: "Stok Yönetimi", href: "/admin?view=stok" },
-              { label: "Ürünler", href: "/admin?view=urunler" },
-              { label: "Ayarlar", href: "/admin?view=ayarlar" }
-            ].map((item) => (
+          </Link>
+          <nav className="flex flex-col gap-1.5 text-[15px] font-semibold">
+            {menu.map((item) => (
               <Link
-                key={item.label}
-                href={item.href}
-                className={`rounded-xl px-4 py-3 transition-all duration-200 ${(item.href.includes("view=randevular") && activeView === "randevular") ||
-                  (item.href.includes("view=hizmetler") && activeView === "hizmetler") ||
-                  (item.href.includes("view=stok") && activeView === "stok") ||
-                  (item.href.includes("view=urunler") && activeView === "urunler") ||
-                  (item.href.includes("view=ayarlar") && activeView === "ayarlar")
-                  ? "bg-brand-gold text-brand-dark font-bold shadow-[0_0_20px_rgba(251,191,36,0.2)]"
-                  : "text-white/70 hover:bg-brand-gold/10 hover:text-brand-gold"
+                key={item.view}
+                href={`/admin?view=${item.view}`}
+                className={`rounded-xl px-4 py-3 transition-colors ${activeView === item.view
+                  ? "bg-brand-gold text-brand-dark"
+                  : "text-brand-text/75 hover:bg-white/5 hover:text-brand-gold"
                   }`}
               >
                 {item.label}
               </Link>
             ))}
           </nav>
-          <form action={handleLogout} className="mt-auto w-full">
-            <button type="submit" className="w-full rounded-xl bg-white/5 px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-all">
-              Çıkış
-            </button>
-          </form>
+          <div className="mt-auto flex flex-col gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="rounded-xl px-4 py-3 text-sm font-semibold text-brand-muted transition-colors hover:bg-white/5 hover:text-brand-text"
+            >
+              Siteyi görüntüle ↗
+            </Link>
+            <form action={handleLogout}>
+              <button type="submit" className="w-full rounded-xl border border-white/10 px-4 py-3 text-left text-sm font-semibold text-brand-muted transition-colors hover:border-white/20 hover:text-brand-text">
+                Çıkış yap
+              </button>
+            </form>
+          </div>
         </aside>
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-10 bg-[#0f172a]/60 backdrop-blur-sm">
-          <div className="flex flex-col gap-10">
+        <main className="min-w-0 flex-1">
+          {/* Telefonda: logo + çıkış, altında kaydırılabilir menü (yan menü sadece geniş ekranda) */}
+          <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-brand-dark/90 backdrop-blur-md md:hidden">
+            <div className="flex items-center justify-between px-4 py-3">
+              <Link href="/">
+                <Image src="/logo.svg" alt="Fırat Oto Lastik logo" width={140} height={36} className="h-9 w-auto object-contain" />
+              </Link>
+              <form action={handleLogout}>
+                <button type="submit" className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-brand-muted">
+                  Çıkış
+                </button>
+              </form>
+            </div>
+            <nav className="flex gap-2 overflow-x-auto px-4 pb-3 text-sm font-semibold [scrollbar-width:none]">
+              {menu.map((item) => (
+                <Link
+                  key={item.view}
+                  href={`/admin?view=${item.view}`}
+                  className={`shrink-0 rounded-full px-4 py-2 transition-colors ${activeView === item.view
+                    ? "bg-brand-gold text-brand-dark"
+                    : "bg-white/5 text-brand-text/80"
+                    }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </header>
+
+          <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-12">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-                Yönetici Paneli
-              </p>
-              <h1 className="mt-2 text-3xl font-semibold text-white">
-                {activeView === "randevular"
-                  ? "Randevular"
-                  : activeView === "hizmetler"
-                    ? "Hizmetler"
-                    : activeView === "stok"
-                      ? "Stok Yönetimi"
-                      : activeView === "urunler"
-                        ? "Ürünler"
-                        : "Ayarlar"}
-              </h1>
+              <p className="text-sm font-semibold text-brand-gold">Yönetici Paneli</p>
+              <h1 className="mt-2 text-3xl font-extrabold leading-tight text-brand-text sm:text-5xl">{baslik}</h1>
               {activeView === "stok" ? (
-                <p className="mt-1 text-xs text-white/50">
-                  Lastik sayısı: {lastikler.length}
-                </p>
+                <p className="mt-2 text-sm text-brand-muted">Kayıtlı lastik: {lastikler.length}</p>
               ) : null}
             </div>
 
@@ -665,18 +694,18 @@ export default async function AdminPage({
                   <Link
                     key={tab.slug}
                     href={tab.href}
-                    className={`rounded-2xl border p-3 transition-all sm:p-6 ${tab.active
-                      ? "border-brand-gold bg-brand-gold/10 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
-                      : "border-white/10 bg-white/5 hover:bg-white/10"
+                    className={`rounded-3xl border p-3 transition-colors sm:p-6 ${tab.active
+                      ? "border-brand-gold/60 bg-brand-gold/[0.08]"
+                      : "border-white/10 bg-brand-slate hover:border-white/20"
                       }`}
                   >
-                    <div className="flex items-start justify-between gap-1 text-xs leading-tight text-white/70 sm:items-center sm:text-sm">
+                    <div className="flex items-start justify-between gap-1 text-xs leading-tight text-brand-muted sm:items-center sm:text-sm">
                       <span>{tab.label}</span>
                       {tab.active && (
-                        <span className="h-2 w-2 rounded-full bg-brand-gold shadow-[0_0_8px_#facc15]" />
+                        <span className="h-2 w-2 rounded-full bg-brand-gold" />
                       )}
                     </div>
-                    <p className={`mt-2 text-2xl font-black sm:mt-4 sm:text-3xl ${tab.active ? "text-brand-gold" : "text-white"}`}>
+                    <p className={`mt-2 font-display text-2xl font-extrabold sm:mt-4 sm:text-4xl ${tab.active ? "text-brand-gold" : "text-brand-text"}`}>
                       {tab.count}
                     </p>
                   </Link>
@@ -689,14 +718,14 @@ export default async function AdminPage({
             {activeView === "stok" ? (
               <section
                 id="stok-yonetimi"
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+                    <p className="text-sm font-semibold text-brand-gold">
                       Lastik Stok
                     </p>
-                    <p className="mt-2 text-lg font-semibold text-white">
+                    <p className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">
                       Yeni lastik ekle
                     </p>
                   </div>
@@ -714,7 +743,7 @@ export default async function AdminPage({
                 ) : null}
                 <form
                   action={createLastik}
-                  className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-brand-night/60 p-4 lg:grid-cols-6"
+                  className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-6"
                 >
                   <SmartTireSize />
                   <SelectionWithOther
@@ -733,29 +762,29 @@ export default async function AdminPage({
                     required
                     options={["Kışlık", "Yazlık", "Dört Mevsim", "RunFlat"]}
                   />
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
+                  <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                     Durum
                     <select
                       name="durum"
                       required
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white focus:ring-1 focus:ring-brand-gold outline-none"
+                      className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                     >
                       <option value="">Seçiniz</option>
                       <option value="sıfır">Sıfır</option>
                       <option value="2.el">2. El</option>
                     </select>
                   </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-6">
+                  <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-6">
                     Lastik Fotoğrafı
                     <input
                       name="gorsel"
                       type="file"
                       accept="image/*"
-                      className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white focus:ring-1 focus:ring-brand-gold outline-none file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold hover:file:bg-brand-gold/20"
+                      className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold hover:file:bg-brand-gold/20"
                     />
                   </label>
                   <div className="lg:col-span-6">
-                    <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
+                    <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark hover:-translate-y-0.5 transition-all active:scale-95">
                       Kaydet
                     </button>
                   </div>
@@ -764,7 +793,7 @@ export default async function AdminPage({
                   {lastikler.map((lastik) => (
                     <div
                       key={lastik.id}
-                      className="group rounded-xl border border-white/10 bg-brand-night/60 p-4 text-sm text-white/80 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
+                      className="group rounded-xl border border-white/10 bg-brand-dark/50 p-4 text-sm text-white/80 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex flex-1 items-start gap-4">
@@ -785,13 +814,13 @@ export default async function AdminPage({
                             </div>
                           )}
                           <div>
-                            <p className="text-base font-bold text-white group-hover:text-brand-gold transition-colors">
+                            <p className="text-base font-bold text-brand-text group-hover:text-brand-gold transition-colors">
                               {lastik.genislik}/{lastik.yanak} R{lastik.jant}
                             </p>
-                            <p className="mt-1 text-white/60">
+                            <p className="mt-1 text-brand-muted">
                               {lastik.marka ?? "Marka yok"} · {lastik.ozellik ?? "Özellik yok"}
                             </p>
-                            <p className="mt-1 text-white/60">
+                            <p className="mt-1 text-brand-muted">
                               Durum: <span className="font-bold text-white/90">{lastik.durum ?? "-"}</span>
                             </p>
                           </div>
@@ -800,7 +829,7 @@ export default async function AdminPage({
                           <input type="hidden" name="id" value={lastik.id} />
                           <input type="hidden" name="image_path" value={lastik.image_path ?? ""} />
                           <button
-                            className="rounded-lg bg-red-500/10 p-2 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
+                            className="rounded-lg bg-red-500/10 p-2 text-red-500 hover:bg-red-500 hover:text-brand-text transition-all active:scale-90"
                             title="Sil"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -812,7 +841,7 @@ export default async function AdminPage({
                     </div>
                   ))}
                   {lastikler.length === 0 ? (
-                    <p className="text-sm text-white/50">
+                    <p className="text-sm text-brand-muted">
                       Henüz kayıtlı lastik yok.
                     </p>
                   ) : null}
@@ -823,20 +852,20 @@ export default async function AdminPage({
             {activeView === "urunler" ? (
               <section
                 id="urunler"
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+                    <p className="text-sm font-semibold text-brand-gold">
                       Ürünler
                     </p>
-                    <p className="mt-2 text-lg font-semibold text-white">
+                    <p className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">
                       Ürün listesi
                     </p>
                   </div>
                   <Link
                     href="/admin?view=urunler&urunEkle=1#urun-ekle"
-                    className="rounded-full border border-brand-gold/50 bg-brand-gold/10 px-4 py-2 text-sm font-bold text-brand-gold hover:bg-brand-gold/20 transition-all shadow-[0_0_15px_rgba(251,191,36,0.1)]"
+                    className="rounded-full border border-brand-gold/50 bg-brand-gold/10 px-4 py-2 text-sm font-bold text-brand-gold hover:bg-brand-gold/20 transition-all"
                   >
                     Yeni ürün ekle
                   </Link>
@@ -855,52 +884,52 @@ export default async function AdminPage({
 
                 <details
                   id="urun-ekle"
-                  className="mt-6 rounded-2xl border border-white/10 bg-brand-night/60 p-4"
+                  className="mt-6 rounded-2xl border border-white/10 bg-brand-dark/50 p-4"
                   open={isUrunFormOpen}
                 >
-                  <summary className="cursor-pointer text-sm font-semibold text-white">
+                  <summary className="cursor-pointer text-sm font-semibold text-brand-text">
                     Yeni ürün ekle
                   </summary>
                   <form
                     action={createUrun}
                     className="mt-4 grid gap-4 lg:grid-cols-3"
                   >
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Ürün Adı
                       <input
                         name="ad"
                         required
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Fiyat (₺)
                       <input
                         name="fiyat"
                         type="number"
                         step="0.01"
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Fotoğraf
                       <input
                         name="gorsel"
                         type="file"
                         accept="image/*"
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-3">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-3">
                       Açıklama (opsiyonel)
                       <textarea
                         name="aciklama"
                         rows={3}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
                     <div className="lg:col-span-3">
-                      <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
+                      <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark hover:-translate-y-0.5 transition-all active:scale-95">
                         Kaydet
                       </button>
                     </div>
@@ -911,7 +940,7 @@ export default async function AdminPage({
                   {urunler.map((urun) => (
                     <details
                       key={urun.id}
-                      className="group rounded-xl border border-white/10 bg-brand-night/60 p-4 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
+                      className="group rounded-xl border border-white/10 bg-brand-dark/50 p-4 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                     >
                       <summary className="cursor-pointer list-none">
                         <div className="flex items-center justify-between gap-4">
@@ -929,10 +958,10 @@ export default async function AdminPage({
                               <div className="h-14 w-14 rounded-lg border border-white/10 bg-white/5" />
                             )}
                             <div>
-                              <p className="text-sm font-bold text-white group-hover:text-brand-gold transition-colors">
+                              <p className="text-sm font-bold text-brand-text group-hover:text-brand-gold transition-colors">
                                 {urun.name}
                               </p>
-                              <p className="text-xs text-white/60">
+                              <p className="text-xs text-brand-muted">
                                 {urun.fiyat ? `₺${urun.fiyat}` : "Fiyat belirtilmedi"}
                               </p>
                             </div>
@@ -943,7 +972,7 @@ export default async function AdminPage({
 
                       <form
                         action={updateUrun}
-                        className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-black/10 p-4 lg:grid-cols-2"
+                        className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
                       >
                         <input type="hidden" name="id" value={urun.id} />
                         <input
@@ -951,36 +980,36 @@ export default async function AdminPage({
                           name="current_image_path"
                           value={urun.image_path ?? ""}
                         />
-                        <label className="flex flex-col gap-2 text-sm text-white/70">
+                        <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                           Ürün Adı
                           <input
                             name="ad"
                             defaultValue={urun.name}
                             required
-                            className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                            className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                           />
                         </label>
-                        <label className="flex flex-col gap-2 text-sm text-white/70">
+                        <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                           Fiyat (₺)
                           <input
                             name="fiyat"
                             type="number"
                             step="0.01"
                             defaultValue={urun.fiyat ?? ""}
-                            className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                            className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                           />
                         </label>
-                        <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                        <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                           Fotoğraf (değiştir)
                           <input
                             name="gorsel"
                             type="file"
                             accept="image/*"
-                            className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                            className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold"
                           />
                         </label>
                         <div className="lg:col-span-2 flex flex-wrap gap-3">
-                          <button className="flex-1 rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.2)] hover:scale-[1.02] transition-all active:scale-95">
+                          <button className="flex-1 rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark hover:-translate-y-0.5 transition-all active:scale-95">
                             Güncelle
                           </button>
                         </div>
@@ -1000,7 +1029,7 @@ export default async function AdminPage({
                     </details>
                   ))}
                   {urunler.length === 0 ? (
-                    <p className="text-sm text-white/50">Henüz kayıtlı ürün yok.</p>
+                    <p className="text-sm text-brand-muted">Henüz kayıtlı ürün yok.</p>
                   ) : null}
                 </div>
               </section>
@@ -1009,14 +1038,14 @@ export default async function AdminPage({
             {activeView === "hizmetler" ? (
               <section
                 id="hizmetler"
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6"
               >
                 <div className="flex flex-col gap-6">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+                    <p className="text-sm font-semibold text-brand-gold">
                       Hizmetler
                     </p>
-                    <h2 className="mt-2 text-lg font-semibold text-white">
+                    <h2 className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">
                       Hizmet listesi
                     </h2>
                   </div>
@@ -1037,44 +1066,44 @@ export default async function AdminPage({
                   ) : null}
                   <form
                     action={createHizmet}
-                    className="grid gap-4 rounded-2xl border border-white/10 bg-brand-night/60 p-4 lg:grid-cols-2"
+                    className="grid gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
                   >
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Hizmet Adı
                       <input
                         name="ad"
                         required
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Süre (dk)
                       <input
                         name="sure_dk"
                         type="number"
                         min="0"
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                       Açıklama
                       <textarea
                         name="aciklama"
                         rows={3}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                       Fotoğraf
                       <input
                         name="gorsel"
                         type="file"
                         accept="image/*"
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold"
                       />
                     </label>
                     <div className="lg:col-span-2">
-                      <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
+                      <button className="w-full rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark hover:-translate-y-0.5 transition-all active:scale-95">
                         Kaydet
                       </button>
                     </div>
@@ -1083,16 +1112,16 @@ export default async function AdminPage({
                     {hizmetler.map((hizmet) => (
                       <details
                         key={hizmet.id}
-                        className="group rounded-xl border border-white/10 bg-brand-night/60 p-4 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
+                        className="group rounded-xl border border-white/10 bg-brand-dark/50 p-4 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                       >
                         <summary className="cursor-pointer list-none">
                           <div className="flex items-center justify-between gap-4">
                             <div>
-                              <p className="text-base font-bold text-white group-hover:text-brand-gold transition-colors">
+                              <p className="text-base font-bold text-brand-text group-hover:text-brand-gold transition-colors">
                                 {hizmet.name}
                               </p>
                               {typeof hizmet.duration === "number" ? (
-                                <p className="mt-1 text-xs text-white/50">
+                                <p className="mt-1 text-xs text-brand-muted">
                                   Süre: {hizmet.duration} dk
                                 </p>
                               ) : null}
@@ -1114,7 +1143,7 @@ export default async function AdminPage({
 
                         <form
                           action={updateHizmet}
-                          className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-black/10 p-4 lg:grid-cols-2"
+                          className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
                         >
                           <input type="hidden" name="id" value={hizmet.id} />
                           <input
@@ -1122,45 +1151,45 @@ export default async function AdminPage({
                             name="current_image_path"
                             value={hizmet.image_path ?? ""}
                           />
-                          <label className="flex flex-col gap-2 text-sm text-white/70">
+                          <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                             Hizmet Adı
                             <input
                               name="ad"
                               defaultValue={hizmet.name}
                               required
-                              className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                              className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                             />
                           </label>
-                          <label className="flex flex-col gap-2 text-sm text-white/70">
+                          <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                             Süre (dk)
                             <input
                               name="sure_dk"
                               type="number"
                               min="0"
                               defaultValue={hizmet.duration ?? ""}
-                              className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                              className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                             />
                           </label>
-                          <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                          <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                             Açıklama
                             <textarea
                               name="aciklama"
                               rows={3}
                               defaultValue={hizmet.description ?? ""}
-                              className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                              className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                             />
                           </label>
-                          <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                          <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                             Fotoğraf (değiştir)
                             <input
                               name="gorsel"
                               type="file"
                               accept="image/*"
-                              className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                              className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold file:mr-4 file:rounded-full file:border-0 file:bg-brand-gold/10 file:px-4 file:py-1 file:text-xs file:font-bold file:text-brand-gold"
                             />
                           </label>
                           <div className="lg:col-span-2 flex flex-wrap gap-3">
-                            <button className="flex-1 rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] transition-all active:scale-95">
+                            <button className="flex-1 rounded-full bg-brand-gold px-6 py-3 text-sm font-black text-brand-dark hover:-translate-y-0.5 transition-all active:scale-95">
                               Güncellemeyi Kaydet
                             </button>
                           </div>
@@ -1180,7 +1209,7 @@ export default async function AdminPage({
                       </details>
                     ))}
                     {hizmetler.length === 0 ? (
-                      <p className="text-sm text-white/50">
+                      <p className="text-sm text-brand-muted">
                         Henüz kayıtlı hizmet yok.
                       </p>
                     ) : null}
@@ -1192,14 +1221,14 @@ export default async function AdminPage({
             {activeView === "randevular" ? (
               <section
                 id="randevular"
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+                    <p className="text-sm font-semibold text-brand-gold">
                       Randevular
                     </p>
-                    <p className="mt-2 text-lg font-semibold text-white">
+                    <p className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">
                       Gelen randevular
                     </p>
                   </div>
@@ -1234,14 +1263,14 @@ export default async function AdminPage({
             {activeView === "ayarlar" ? (
               <section
                 id="ayarlar"
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6"
               >
                 <div className="flex flex-col gap-6">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+                    <p className="text-sm font-semibold text-brand-gold">
                       İşletme Ayarları
                     </p>
-                    <h2 className="mt-2 text-lg font-semibold text-white">
+                    <h2 className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">
                       Çalışma saatleri ve iletişim
                     </h2>
                   </div>
@@ -1256,57 +1285,59 @@ export default async function AdminPage({
                     </p>
                   ) : null}
                   <form action={updateAyarlar} className="grid gap-4 lg:grid-cols-2">
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Hafta içi (Pzt - Cuma)
                       <input
                         name="hafta_ici"
                         defaultValue={ayarlar?.hafta_ici ?? "09:00 - 18:00"}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
+                      <span className="text-xs text-brand-muted">Örnek: 07:30 - 20:00 · Randevu takvimi bu saatlere göre açılır</span>
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Cumartesi
                       <input
                         name="cumartesi"
                         defaultValue={ayarlar?.cumartesi ?? "09:00 - 16:00"}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Pazar
                       <input
                         name="pazar"
                         defaultValue={ayarlar?.pazar ?? "Kapalı"}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
+                      <span className="text-xs text-brand-muted">Kapalı günler için &quot;Kapalı&quot; yazın</span>
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Telefon
                       <input
                         name="telefon"
                         defaultValue={ayarlar?.telefon ?? ""}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                       WhatsApp
                       <input
                         name="whatsapp"
                         defaultValue={ayarlar?.whatsapp ?? ""}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+                    <label className="flex flex-col gap-2 text-sm text-brand-text/70 lg:col-span-2">
                       Adres
                       <textarea
                         name="adres"
                         rows={3}
                         defaultValue={ayarlar?.adres ?? ""}
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                       />
                     </label>
                     <div className="lg:col-span-2">
-                      <button className="w-full rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft">
+                      <button className="w-full rounded-full bg-brand-gold px-6 py-3.5 text-sm font-bold text-brand-dark transition-transform hover:-translate-y-0.5">
                         Kaydet
                       </button>
                     </div>

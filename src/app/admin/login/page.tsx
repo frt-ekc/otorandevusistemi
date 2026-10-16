@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { loginAction } from "./actions";
 
 function LoginForm() {
@@ -39,9 +40,11 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-white/20 bg-[#0f172a]/90 backdrop-blur-md p-8 text-white shadow-2xl">
-      <h1 className="text-2xl font-semibold">Yönetici Girişi</h1>
-      <p className="mt-2 text-sm text-white/60">
+    <div className="w-full max-w-md rounded-3xl border border-white/10 bg-brand-slate p-6 text-brand-text sm:p-8">
+      <Image src="/logo.svg" alt="Fırat Oto Lastik logo" width={160} height={40} className="h-10 w-auto" priority />
+      <p className="mt-8 text-sm font-semibold text-brand-gold">Yönetici Paneli</p>
+      <h1 className="mt-1 text-3xl font-extrabold">Giriş yap</h1>
+      <p className="mt-2 text-sm text-brand-muted">
         Admin paneline erişmek için e-posta ve şifrenizi girin.
       </p>
 
@@ -58,7 +61,7 @@ function LoginForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+            className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
             required
           />
         </label>
@@ -68,14 +71,14 @@ function LoginForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
+            className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
             required
           />
         </label>
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-soft disabled:opacity-60"
+          className="w-full rounded-full bg-brand-gold px-6 py-3.5 text-sm font-bold text-brand-dark transition-transform hover:-translate-y-0.5 disabled:opacity-60"
         >
           {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
         </button>
@@ -86,8 +89,8 @@ function LoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f172a] bg-[url('/otolastik.png')] bg-cover bg-center bg-no-repeat bg-fixed px-4">
-      <Suspense fallback={<div className="text-white">Yükleniyor...</div>}>
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Suspense fallback={<div className="text-brand-text">Yükleniyor...</div>}>
         <LoginForm />
       </Suspense>
     </div>
