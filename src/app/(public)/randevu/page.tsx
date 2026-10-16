@@ -1,31 +1,11 @@
-import { redirect } from "next/navigation";
 import TopNav from "@/components/TopNav";
 import { createAppointment, getReservedSlots } from "./actions";
 import RandevuStepper from "@/components/RandevuStepper";
 import { hizmetKeyFromName } from "@/lib/lastikPaketleri";
+import { getAyarlar } from "@/lib/db";
+import { ILERI_GUN, calismaSaatleri, istanbulSimdi, tarihEkle } from "@/lib/calisma";
 
 export const dynamic = "force-dynamic";
-
-function buildTimeSlots() {
-  const slots: string[] = [];
-  for (let hour = 8; hour <= 21; hour += 1) {
-    for (const minute of [0, 30]) {
-      const label = `${String(hour).padStart(2, "0")}:${String(minute).padStart(
-        2,
-        "0"
-      )}`;
-      slots.push(label);
-    }
-  }
-  return slots;
-}
-
-function toIsoDate(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export default async function RandevuPage({
   searchParams
@@ -35,10 +15,9 @@ export default async function RandevuPage({
   const resolvedParams = searchParams ? await searchParams : {};
   const selectedService = resolvedParams.service || "";
 
-  const today = new Date();
-  const maxDate = new Date();
-  maxDate.setDate(today.getDate() + 30);
-  const timeSlots = buildTimeSlots();
+  // Takvim, sitede gösterilen çalışma saatlerine göre açılır (admin panelindeki ayarlar)
+  const saatler = calismaSaatleri(await getAyarlar().catch(() => null));
+  const bugun = istanbulSimdi().tarih;
   return (
     <div className="min-h-screen">
       <TopNav />
@@ -63,9 +42,9 @@ export default async function RandevuPage({
                 <RandevuStepper
                   action={createAppointment}
                   getReservedSlots={getReservedSlots}
-                  timeSlots={timeSlots}
-                  minDate={toIsoDate(today)}
-                  maxDate={toIsoDate(maxDate)}
+                  calismaSaatleri={saatler}
+                  minDate={bugun}
+                  maxDate={tarihEkle(bugun, ILERI_GUN)}
                   initialHizmet={hizmetKeyFromName(selectedService)}
                 />
               </div>

@@ -12,6 +12,8 @@ type DateGridPickerProps = {
   onOpenChange?: (open: boolean) => void;
   required?: boolean;
   disabled?: boolean;
+  // Dükkânın kapalı olduğu günler seçilemez
+  kapaliMi?: (value: string) => boolean;
 };
 
 function parseIsoDate(value: string) {
@@ -44,7 +46,8 @@ export default function DateGridPicker({
   open,
   onOpenChange,
   required = false,
-  disabled = false
+  disabled = false,
+  kapaliMi
 }: DateGridPickerProps) {
   const min = useMemo(() => parseIsoDate(minDate), [minDate]);
   const max = useMemo(() => parseIsoDate(maxDate), [maxDate]);
@@ -69,6 +72,7 @@ export default function DateGridPicker({
       dayLabel: string;
       dateLabel: string;
       disabled: boolean;
+      kapali: boolean;
     }> = [];
     const current = new Date(monthStart);
     current.setHours(0, 0, 0, 0);
@@ -82,13 +86,14 @@ export default function DateGridPicker({
           dayLabel: dayNames[current.getDay()],
           dateLabel: `${String(current.getDate()).padStart(2, "0")} ${monthNames[current.getMonth()]
             }`,
-          disabled: dateStr > maxDate
+          disabled: dateStr > maxDate || Boolean(kapaliMi?.(dateStr)),
+          kapali: Boolean(kapaliMi?.(dateStr))
         });
       }
       current.setDate(current.getDate() + 1);
     }
     return result;
-  }, [monthStart, monthEnd, min, maxDate]);
+  }, [monthStart, monthEnd, min, maxDate, kapaliMi]);
 
   const selectedLabel = useMemo(() => {
     const match = days.find((item) => item.value === selected);
@@ -173,6 +178,7 @@ export default function DateGridPicker({
                   <p className="mt-1 text-sm font-semibold text-white">
                     {slot.dateLabel}
                   </p>
+                  {slot.kapali ? <p className="mt-0.5 text-[11px] text-white/50">Kapalı</p> : null}
                 </div>
               </label>
             );
