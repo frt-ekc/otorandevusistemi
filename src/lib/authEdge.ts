@@ -45,6 +45,21 @@ export async function verifyAccessToken(token: string | undefined | null): Promi
   }
 }
 
+// Token'ın süresi dolmuş mu? Sadece içindeki "exp" alanına bakar, Supabase'e SORMAZ;
+// yani gerçek doğrulama değildir. Middleware bunu "yenilemek gerekiyor mu" kararı için
+// kullanır. Asıl kontrol sayfada ve her server action'da requireAdmin() ile yapılır.
+export function tokenSuresiGecerli(token: string | undefined | null): boolean {
+  if (!token) return false;
+  try {
+    const govde = token.split(".")[1];
+    if (!govde) return false;
+    const json = JSON.parse(atob(govde.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(govde.length / 4) * 4, "=")));
+    return typeof json.exp === "number" && json.exp * 1000 > Date.now() + 30_000;
+  } catch {
+    return false;
+  }
+}
+
 // Süresi dolan access token'ı refresh token ile yeniler.
 export async function refreshSession(refreshToken: string | undefined | null): Promise<Session | null> {
   if (!refreshToken || !supabaseUrl() || !anonKey()) return null;
