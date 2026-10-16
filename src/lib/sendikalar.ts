@@ -1,14 +1,13 @@
 // Anlaşmalı sendikalar. Randevu formunda seçilir, admin panelinde gösterilir.
 // Yeni bir anlaşma yapıldığında sadece bu listeye eklemek yeterli.
-export const SENDIKA_YOK = "Üye değilim";
-
 export const SENDIKALAR = [
   "Öz Sağlık-İş Sendikası",
   "Öz İplik İş Sendikası",
   "Öz Güven-Sen"
 ] as const;
 
-export const SENDIKA_SECENEKLERI: string[] = [...SENDIKALAR, SENDIKA_YOK];
+// Sistem sadece anlaşmalı sendika üyeleri içindir; "Üye değilim" seçeneği yoktur.
+export const SENDIKA_SECENEKLERI: string[] = [...SENDIKALAR];
 
 export function isAnlasmaliSendika(value: string | null | undefined) {
   return Boolean(value && (SENDIKALAR as readonly string[]).includes(value));

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import TopNav from "@/components/TopNav";
-import { getHizmetler, getAyarlar } from "@/lib/db";
+import { getGorunurHizmetler, getAyarlar } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 const categories = ["Binek", "Jant", "Kamyonet", "Hafif Ticari", "SUV", "Ticari"];
 export default async function HomePage() {
-  const hizmetler = await getHizmetler();
+  const hizmetler = await getGorunurHizmetler();
   const ayarlar = await getAyarlar();
   const serviceList = hizmetler.map((item) => item.name);
   return (

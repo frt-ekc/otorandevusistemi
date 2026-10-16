@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
 import TopNav from "@/components/TopNav";
-import { getHizmetler } from "@/lib/db";
 import { createAppointment, getReservedSlots } from "./actions";
 import RandevuStepper from "@/components/RandevuStepper";
+import { hizmetKeyFromName } from "@/lib/lastikPaketleri";
 
 export const dynamic = "force-dynamic";
 
-const steps = ["Hizmet", "İletişim", "Tarih/Saat", "Özet"];
 function buildTimeSlots() {
   const slots: string[] = [];
   for (let hour = 8; hour <= 21; hour += 1) {
@@ -36,11 +35,6 @@ export default async function RandevuPage({
   const resolvedParams = searchParams ? await searchParams : {};
   const selectedService = resolvedParams.service || "";
 
-  const hizmetler = await getHizmetler();
-  const services = hizmetler.map((item) => ({
-    title: item.name,
-    duration: item.duration ? `Tahmini süre: ${item.duration} dakika` : ""
-  }));
   const today = new Date();
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 30);
@@ -61,7 +55,7 @@ export default async function RandevuPage({
                   Randevu Sistemi
                 </h1>
                 <p className="mt-6 text-base text-white/70 leading-relaxed sm:text-lg max-w-2xl mx-auto lg:mx-0">
-                  Tarih ve saat seçin, bilgilerinizi bırakın. Randevunuzu onaylamak için sizi telefonla arayacağız.
+                  Anlaşmalı sendika üyelerine özel fiyatlarla lastik değişimi ve tamiri. Paketinizi seçin, fiyatı görün, randevunuzu alın.
                 </p>
               </div>
 
@@ -69,12 +63,10 @@ export default async function RandevuPage({
                 <RandevuStepper
                   action={createAppointment}
                   getReservedSlots={getReservedSlots}
-                  services={services}
-                  steps={steps}
                   timeSlots={timeSlots}
                   minDate={toIsoDate(today)}
                   maxDate={toIsoDate(maxDate)}
-                  initialService={selectedService}
+                  initialHizmet={hizmetKeyFromName(selectedService)}
                 />
               </div>
             </div>

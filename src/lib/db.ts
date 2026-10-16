@@ -1,6 +1,9 @@
 import { getSupabaseServerClient } from "@/lib/supabase";
 import { normalizePhone } from "@/lib/sendikalar";
 
+export const RANDEVU_KOLONLARI =
+  "id, ad, telefon, email, plaka, sendika, arac_turu, lastik_adedi, balans_adedi, fiyat, hizmet, tarih, saat, not_metni, durum, created_at";
+
 export type HizmetRow = {
   id: string;
   name: string;
@@ -37,6 +40,10 @@ export type RandevuRow = {
   email: string | null;
   plaka: string | null;
   sendika: string | null;
+  arac_turu?: string | null;
+  lastik_adedi?: number | null;
+  balans_adedi?: number | null;
+  fiyat?: number | null;
   hizmet: string;
   tarih: string;
   saat: string;
@@ -69,6 +76,21 @@ export async function getHizmetler() {
   const { data, error } = await supabase
     .from("services")
     .select("id, name, duration, description, image_url, image_path")
+    .order("name", { ascending: true });
+  if (error) {
+    return [];
+  }
+  return (data ?? []) as HizmetRow[];
+}
+
+// Sitede (ana sayfa, hizmetler sayfası) sadece "gorunur" işaretli hizmetler gösterilir.
+// Admin paneli getHizmetler() ile hepsini görmeye devam eder.
+export async function getGorunurHizmetler() {
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("services")
+    .select("id, name, duration, description, image_url, image_path")
+    .eq("gorunur", true)
     .order("name", { ascending: true });
   if (error) {
     return [];
@@ -136,7 +158,7 @@ export async function getRandevular() {
   const { data, error } = await supabase
     .from("randevular")
     .select(
-      "id, ad, telefon, email, plaka, sendika, hizmet, tarih, saat, not_metni, durum, created_at"
+      RANDEVU_KOLONLARI
     )
     .order("created_at", { ascending: false });
   if (error) {
@@ -155,7 +177,7 @@ export async function searchRandevular(ad: string, telefon: string) {
   const { data, error } = await supabase
     .from("randevular")
     .select(
-      "id, ad, telefon, email, plaka, sendika, hizmet, tarih, saat, not_metni, durum, created_at"
+      RANDEVU_KOLONLARI
     )
     .ilike("ad", adTrim);
 
