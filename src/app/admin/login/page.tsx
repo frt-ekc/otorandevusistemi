@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
+import { loginAction } from "./actions";
 
 function LoginForm() {
   const router = useRouter();
@@ -20,19 +20,17 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password
-      });
-      if (error || !data.session) {
-        setError(error?.message ?? "Giriş başarısız.");
+      const result = await loginAction(email, password);
+      if (!result.ok) {
+        setError(result.message ?? "Giriş başarısız.");
         setLoading(false);
         return;
       }
-      const accessToken = data.session.access_token;
-      document.cookie = `sb-access-token=${accessToken}; path=/; max-age=${60 * 60 * 6}; secure`;
-      router.push(redirectTo);
+      // Sadece site içi yönlendirmeye izin ver (açık yönlendirme açığını önler)
+      const safeRedirect =
+        redirectTo.startsWith("/admin") && !redirectTo.startsWith("//") ? redirectTo : "/admin";
+      router.push(safeRedirect);
+      router.refresh();
     } catch (err) {
       setError("Giriş sırasında bir hata oluştu.");
     } finally {
