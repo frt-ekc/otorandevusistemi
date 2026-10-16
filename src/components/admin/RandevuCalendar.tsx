@@ -24,6 +24,7 @@ type Randevu = {
     telefon: string;
     email: string | null;
     plaka: string | null;
+    sendika?: string | null;
     hizmet: string;
     tarih: string;
     saat: string;
@@ -230,11 +231,12 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                                         <p className="text-sm text-white/80">{r.ad}</p>
                                         <div className="flex flex-col text-xs text-white/50 pt-2 gap-1 border-t border-white/5 mt-2">
                                             <p>📞 {r.telefon}</p>
+                                            {r.sendika && <p>🏷️ Sendika: {r.sendika}</p>}
                                             {r.plaka && <p>🚗 Plaka: {r.plaka}</p>}
                                         </div>
                                         {r.not_metni && (
                                             <p className="text-xs text-white/40 italic mt-2 bg-white/5 p-2 rounded">
-                                                "{r.not_metni}"
+                                                <span className="whitespace-pre-line">{r.not_metni}</span>
                                             </p>
                                         )}
                                     </div>

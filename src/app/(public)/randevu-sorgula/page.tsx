@@ -5,11 +5,11 @@ export const dynamic = "force-dynamic";
 
 type SearchParams = {
     ad?: string;
-    plaka?: string;
+    telefon?: string;
 };
 
 function hasFilters(params: SearchParams) {
-    return Boolean(params.ad || params.plaka);
+    return Boolean(params.ad || params.telefon);
 }
 
 export default async function RandevuSorgulaPage({
@@ -20,10 +20,10 @@ export default async function RandevuSorgulaPage({
     const searchParams = await searchParamsPromise;
     const filters = {
         ad: searchParams.ad ?? "",
-        plaka: searchParams.plaka ?? ""
+        telefon: searchParams.telefon ?? ""
     };
     const results = hasFilters(filters)
-        ? await searchRandevular(filters.ad, filters.plaka)
+        ? await searchRandevular(filters.ad, filters.telefon)
         : [];
     return (
         <div className="min-h-screen">
@@ -39,7 +39,7 @@ export default async function RandevuSorgulaPage({
                                 Randevunu Sorgula
                             </h1>
                             <p className="mt-4 text-base text-white leading-relaxed sm:text-lg">
-                                Ad Soyad ve Plaka bilgilerinizi girerek oluşturduğunuz randevuyu görüntüleyebilirsiniz.
+                                Ad Soyad ve randevu alırken verdiğiniz telefon numarasını girerek oluşturduğunuz randevuyu görüntüleyebilirsiniz.
                             </p>
                         </div>
 
@@ -58,13 +58,14 @@ export default async function RandevuSorgulaPage({
                                 />
                             </label>
                             <label className="flex flex-col gap-2 text-sm text-white font-bold">
-                                Plaka
+                                Telefon
                                 <input
-                                    name="plaka"
-                                    defaultValue={filters.plaka}
+                                    name="telefon"
+                                    type="tel"
+                                    defaultValue={filters.telefon}
                                     className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white placeholder:text-white/40"
                                     required
-                                    placeholder="44 XX 444"
+                                    placeholder="05XX XXX XX XX"
                                 />
                             </label>
                             <div className="flex items-end">
@@ -75,7 +76,7 @@ export default async function RandevuSorgulaPage({
                         </form>
 
                         <p className="mt-4 text-sm text-white font-medium">
-                            * İsim ve plaka bilgileri tam girilmelidir.
+                            * İsim ve telefon bilgileri randevu alırken girdiğiniz şekilde olmalıdır.
                         </p>
 
                         {hasFilters(filters) ? (
@@ -98,8 +99,8 @@ export default async function RandevuSorgulaPage({
                                                 <span className="font-bold">{randevu.telefon}</span>
                                             </p>
                                             <p className="text-sm text-white flex justify-between border-b border-white/5 pb-1 font-medium">
-                                                <span className="text-white">Plaka:</span>
-                                                <span className="font-bold">{randevu.plaka ?? "-"}</span>
+                                                <span className="text-white">Sendika:</span>
+                                                <span className="font-bold">{randevu.sendika ?? "-"}</span>
                                             </p>
                                             <p className="text-sm text-white flex justify-between border-b border-white/5 pb-1 font-medium">
                                                 <span className="text-white">Tarih:</span>
@@ -116,7 +117,7 @@ export default async function RandevuSorgulaPage({
                                         </div>
                                         {randevu.not_metni ? (
                                             <p className="mt-4 text-sm text-white italic font-medium bg-white/5 p-3 rounded-lg border border-white/5">
-                                                "{randevu.not_metni}"
+                                                <span className="whitespace-pre-line">{randevu.not_metni}</span>
                                             </p>
                                         ) : null}
                                     </div>
