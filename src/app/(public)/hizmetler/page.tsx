@@ -19,7 +19,7 @@ export default async function HizmetlerPage() {
       <TopNav />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 lg:py-12">
         <section className="glass-card bg-haze overflow-hidden rounded-[2.5rem] p-1 shadow-2xl">
-          <div className="w-full rounded-[2.3rem] bg-gradient-to-br from-brand-gold/30 via-white/5 to-transparent p-6 backdrop-blur-md border border-brand-gold/20 lg:p-12">
+          <div className="w-full rounded-[2.3rem] bg-brand-slate/70 p-6 backdrop-blur-md border border-white/10 lg:p-12">
             <div className="text-center lg:text-left">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
                 Hizmetler

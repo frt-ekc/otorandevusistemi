@@ -54,7 +54,7 @@ export default async function LastikSorgulaPage({
             <TopNav />
             <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-12">
                 <section className="glass-card bg-haze overflow-hidden rounded-3xl px-6 py-8">
-                    <div className="w-full rounded-2xl bg-gradient-to-r from-brand-gold/25 via-amber-300/20 to-brand-gold/10 p-5 backdrop-blur-sm border border-brand-gold/30 lg:p-10">
+                    <div className="w-full rounded-2xl bg-brand-slate/70 p-5 backdrop-blur-sm border border-white/10 lg:p-10">
                         <div>
                             <p className="text-xs uppercase tracking-[0.3em] text-white">
                                 Lastik Sorgula

@@ -200,7 +200,7 @@ export default function RandevuStepper({
 
   return (
     // Alttaki boşluk: mobilde sabit WhatsApp butonu "Randevu Al" butonunun üstüne binmesin
-    <div ref={topRef} className="flex flex-col gap-4 pb-20 sm:gap-6 sm:pb-0">
+    <div ref={topRef} className="flex flex-col gap-4 sm:gap-6">
       {/* Telefonda: tek satır ilerleme çubuğu */}
       <div className="sm:hidden">
         <div className="flex items-baseline justify-between text-sm">

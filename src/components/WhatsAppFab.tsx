@@ -5,7 +5,7 @@ export default function WhatsAppFab() {
   return (
     <Link
       href="https://wa.me/905387061065"
-      className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-full bg-[#25D366] p-2 text-sm text-white shadow-soft backdrop-blur hover:bg-[#1ebe5b] sm:bottom-6 sm:right-6 sm:bg-white/10 sm:px-4 sm:py-3 sm:hover:bg-white/20"
+      className="fixed bottom-4 right-4 z-50 hidden items-center gap-3 rounded-full bg-[#25D366] p-2 text-sm text-white shadow-soft backdrop-blur hover:bg-[#1ebe5b] sm:bottom-6 sm:right-6 sm:flex sm:bg-white/10 sm:px-4 sm:py-3 sm:hover:bg-white/20"
       aria-label="WhatsApp ile iletişim"
     >
       <span className="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12">
