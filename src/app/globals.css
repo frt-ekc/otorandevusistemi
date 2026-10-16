@@ -1,58 +1,49 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   color-scheme: dark;
+  --font-display: "Archivo Variable";
+  --font-body: "Manrope Variable";
 }
 
 html {
-  background: transparent;
+  background: #141312;
 }
 
 body {
-  color: #ffffff;
   min-height: 100vh;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
-  /* Reduced global shadow intensity for performance */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  /* Asfalt dokusu: çok hafif, ışığın düştüğü sıcak bir leke */
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(250, 204, 21, 0.07), transparent 60%),
+    radial-gradient(900px 500px at -10% 30%, rgba(255, 255, 255, 0.03), transparent 60%);
+  background-attachment: fixed;
 }
 
-h1 {
-  font-weight: 800;
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-stretch: 112%;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 20px rgba(251, 191, 36, 0.3), 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-h2 {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-shadow: 0 0 15px rgba(251, 191, 36, 0.2), 0 2px 4px rgba(0, 0, 0, 0.8);
+/* Hareket azaltma tercihine saygı: tüm döngüsel animasyonlar durur */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-h3,
-h4,
-h5,
-h6 {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-p,
-a,
-button,
-input,
-select,
-textarea,
-label {
-  /* Removed heavy blur shadows for better scroll performance */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-span {
-  /* Only keep subtle glow for spans if needed */
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.5);
+:focus-visible {
+  outline: 2px solid #facc15;
+  outline-offset: 3px;
 }
 
 /* Koyu renkli metinler için gölgeyi temizle */
@@ -78,13 +69,11 @@ button.bg-brand-gold {
 }
 
 .bg-haze {
-  background-image:
-    radial-gradient(circle at 50% 50%, rgba(148, 163, 184, 0.08) 0, transparent 55%),
-    radial-gradient(circle at 20% 60%, rgba(148, 163, 184, 0.05) 0, transparent 60%);
+  background-image: radial-gradient(circle at 80% 0%, rgba(250, 204, 21, 0.06) 0, transparent 55%);
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(29, 28, 26, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(8px);
