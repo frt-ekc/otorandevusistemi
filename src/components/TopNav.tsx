@@ -43,18 +43,14 @@ export default function TopNav() {
           {/* MASAÜSTÜ NAVİGASYON */}
           <nav className="hidden items-center gap-8 text-[15px] font-semibold text-brand-text/85 lg:flex">
             {menu.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="transition-colors hover:text-brand-gold"
-              >
-                {item.label}
+              <Link key={item.label} href={item.href} className="group/roll">
+                <RollText>{item.label}</RollText>
               </Link>
             ))}
 
             <div className="group relative">
-              <Link href="/randevu" className="flex items-center gap-1.5 transition-colors hover:text-brand-gold">
-                Randevu
+              <Link href="/randevu" className="group/roll flex items-center gap-1.5 transition-colors group-hover:text-brand-gold">
+                <RollText>Randevu</RollText>
                 <ChevronDownIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-180" />
               </Link>
               <div className="pointer-events-none absolute left-1/2 top-full pt-4 -translate-x-1/2 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
@@ -186,6 +182,19 @@ export default function TopNav() {
         </div>
       </div>
     </>
+  );
+}
+
+// Üzerine gelince yazı yukarı kayar, altından sarı kopyası gelir.
+function RollText({ children }: { children: string }) {
+  const ease = "transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]";
+  return (
+    <span className="relative block overflow-hidden">
+      <span className={`block ${ease} group-hover/roll:-translate-y-full`}>{children}</span>
+      <span aria-hidden="true" className={`absolute inset-0 block translate-y-full text-brand-gold ${ease} group-hover/roll:translate-y-0`}>
+        {children}
+      </span>
+    </span>
   );
 }
 
