@@ -156,7 +156,7 @@ export default function SmartTireSize() {
                             setWidth(e.target.value);
                         }
                     }}
-                    className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold"
+                    className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
                 >
                     <option value="">Seçiniz</option>
                     {Object.keys(tireMatrix).map(w => <option key={w} value={w}>{w}</option>)}
@@ -168,7 +168,7 @@ export default function SmartTireSize() {
                         type="text"
                         placeholder="Genişlik..."
                         required
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold animate-in fade-in slide-in-from-top-1"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold animate-in fade-in slide-in-from-top-1"
                     />
                 )}
             </div>
@@ -190,7 +190,7 @@ export default function SmartTireSize() {
                             setAspectRatio(e.target.value);
                         }
                     }}
-                    className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50"
+                    className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold disabled:opacity-50"
                 >
                     <option value="">Seçiniz</option>
                     {availableAspectRatios.map(ar => <option key={ar} value={ar}>{ar}</option>)}
@@ -202,7 +202,7 @@ export default function SmartTireSize() {
                         type="text"
                         placeholder="Yanak..."
                         required
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold animate-in fade-in slide-in-from-top-1"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold animate-in fade-in slide-in-from-top-1"
                     />
                 )}
             </div>
@@ -224,7 +224,7 @@ export default function SmartTireSize() {
                             setRim(e.target.value);
                         }
                     }}
-                    className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50"
+                    className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold disabled:opacity-50"
                 >
                     <option value="">Seçiniz</option>
                     {availableRims.map(r => <option key={r} value={r}>R{r}</option>)}
@@ -236,7 +236,7 @@ export default function SmartTireSize() {
                         type="text"
                         placeholder="Jant... (örn: 16R)"
                         required
-                        className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold animate-in fade-in slide-in-from-top-1"
+                        className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold animate-in fade-in slide-in-from-top-1"
                     />
                 )}
             </div>

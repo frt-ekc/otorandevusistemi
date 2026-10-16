@@ -101,13 +101,13 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
         <div className="flex flex-col gap-6 lg:flex-row">
             <div className="flex-1 flex flex-col gap-4">
                 {/* Filtre Alanı */}
-                <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+                <div className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-brand-slate p-3 sm:p-4">
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-white/70">Filtrele:</span>
                         <select
                             value={selectedHizmet}
                             onChange={(e) => setSelectedHizmet(e.target.value)}
-                            className="rounded-lg border border-white/10 bg-brand-night px-3 py-1.5 text-xs text-white outline-none focus:ring-1 focus:ring-brand-gold"
+                            className="rounded-lg border border-white/10 bg-brand-dark px-3 py-1.5 text-xs text-brand-text outline-none focus:border-brand-gold"
                         >
                             <option value="all">Tüm Hizmetler</option>
                             {hizmetler.map((h) => (
@@ -119,61 +119,28 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md min-h-[600px]">
+                <div className="rounded-3xl border border-white/10 bg-brand-slate p-3 sm:p-4 min-h-[600px]">
                     <style jsx global>{`
-            .rbc-calendar { color: white; font-family: inherit; }
-            .rbc-off-range-bg { background: rgba(255, 255, 255, 0.02); }
-            .rbc-today { background: rgba(251, 191, 36, 0.15) !important; }
-            .rbc-event { 
-              background: #ef4444; 
-              border-radius: 4px; 
-              font-size: 0.75rem; 
-              border: none;
-            }
-            .rbc-event.rbc-selected { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-            .rbc-header { border-bottom: 2px solid rgba(250, 204, 21, 0.1); padding: 10px 0; font-weight: 700; color: #facc15; }
-            
-            /* DIŞ KENAR VE İÇ IZGARA - TURUNCU SİSTEMİ */
-            .rbc-month-view { 
-              border: 2px solid #d97706 !important; 
-              border-radius: 12px; 
-              overflow: hidden;
-              background: rgba(0,0,0,0.2);
-            }
-            
-            .rbc-month-row {
-              border-top: 1px solid rgba(217, 119, 6, 0.2) !important;
-            }
-
-            .rbc-day-bg { 
-              transition: all 0.2s ease-in-out !important;
-              border-left: 1px solid rgba(217, 119, 6, 0.2) !important; 
-            }
-            
-            /* VARSAYILAN (RANDEVUSUZ) HOVER - SİTE SARISI (BRAND GOLD) */
-            .rbc-day-bg:hover { 
-              background: rgba(250, 204, 21, 0.15) !important;
-              transform: scale(1.02);
-              z-index: 10;
-              border: 2px solid #facc15 !important;
-              box-shadow: 0 0 30px rgba(250, 204, 21, 0.3) !important;
-              border-radius: 6px;
-              cursor: pointer;
-            }
-
-            /* RANDEVULU GÜN HOVER - YEŞİL YANSIMA */
-            .rbc-day-bg.has-appointments:hover { 
-              background: rgba(16, 185, 129, 0.2) !important;
-              border: 2px solid #10b981 !important;
-              box-shadow: 0 0 30px rgba(16, 185, 129, 0.4) !important;
-            }
-
-            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(217, 119, 6, 0.2) !important; }
-            
-            .rbc-toolbar button { color: white; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; font-weight: bold; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
-            .rbc-toolbar button:hover { background: rgba(255, 255, 255, 0.1); color: white; border-color: white; }
-            .rbc-toolbar button.rbc-active { background: #facc15; color: #0f172a; border-color: #facc15; }
-            .rbc-toolbar .rbc-toolbar-label { font-size: 1.25rem; font-weight: 800; color: white; text-transform: capitalize; }
+            /* Sitedeki tasarım: asfalt zemin, ince çizgiler, tabela sarısı vurgu */
+            .rbc-calendar { color: #EEEAE3; font-family: inherit; }
+            .rbc-month-view { border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px; overflow: hidden; background: #141312; }
+            .rbc-header { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; border-left-color: rgba(255, 255, 255, 0.06) !important; padding: 10px 0; font-weight: 700; font-size: 12px; color: #A39C90; }
+            .rbc-month-row + .rbc-month-row { border-top: 1px solid rgba(255, 255, 255, 0.06) !important; }
+            .rbc-day-bg { border-left: 1px solid rgba(255, 255, 255, 0.06) !important; transition: background 0.15s; cursor: pointer; }
+            .rbc-day-bg:hover { background: rgba(250, 204, 21, 0.06) !important; }
+            .rbc-off-range-bg { background: rgba(255, 255, 255, 0.02) !important; }
+            .rbc-off-range { color: rgba(238, 234, 227, 0.3); }
+            .rbc-today { background: rgba(250, 204, 21, 0.1) !important; }
+            .rbc-day-bg.has-appointments { box-shadow: inset 0 -3px 0 #FACC15; }
+            .rbc-date-cell { padding: 6px 8px; font-size: 13px; font-weight: 600; }
+            .rbc-event, .rbc-event.rbc-selected { background: #FACC15; color: #141312; border: none; border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 1px 6px; }
+            .rbc-show-more { color: #FACC15; background: transparent; font-weight: 700; }
+            .rbc-toolbar { gap: 8px; flex-wrap: wrap; }
+            .rbc-toolbar button { color: #EEEAE3; border: 1px solid rgba(255, 255, 255, 0.15); background: transparent; font-weight: 600; font-size: 13px; border-radius: 999px !important; padding: 6px 14px; }
+            .rbc-toolbar button:hover, .rbc-toolbar button:focus { background: rgba(255, 255, 255, 0.06); color: #EEEAE3; border-color: rgba(255, 255, 255, 0.3); }
+            .rbc-toolbar button.rbc-active { background: #FACC15; color: #141312; border-color: #FACC15; box-shadow: none; }
+            .rbc-btn-group { display: flex; gap: 6px; }
+            .rbc-toolbar .rbc-toolbar-label { font-family: var(--font-display); font-stretch: 112%; font-size: 1.25rem; font-weight: 800; color: #EEEAE3; text-transform: capitalize; }
           `}</style>
                     <Calendar
                         localizer={localizer}
@@ -210,8 +177,8 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
 
             {/* Detay Paneli */}
             <div className="w-full lg:w-96 flex flex-col gap-4">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md sticky top-6">
-                    <h2 className="text-xl font-bold text-white mb-1">
+                <div className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6 lg:sticky lg:top-6">
+                    <h2 className="text-xl font-bold text-brand-text mb-1">
                         {format(selectedDate, "d MMMM yyyy", { locale: tr })}
                     </h2>
                     <p className="text-xs text-brand-gold uppercase tracking-widest mb-6">
@@ -232,17 +199,17 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                                     </div>
 
                                     <div className="space-y-1">
-                                        <p className="font-bold text-white text-base">{r.hizmet}</p>
+                                        <p className="font-bold text-brand-text text-base">{r.hizmet}</p>
                                         {paketAciklamasi(r) ? <p className="text-sm text-white/70">{paketAciklamasi(r)}</p> : null}
                                         {r.fiyat ? <p className="text-sm font-black text-brand-gold">{formatTL(r.fiyat)}</p> : null}
                                         <p className="text-sm text-white/80">{r.ad}</p>
-                                        <div className="flex flex-col text-xs text-white/50 pt-2 gap-1 border-t border-white/5 mt-2">
+                                        <div className="flex flex-col text-xs text-brand-muted pt-2 gap-1 border-t border-white/5 mt-2">
                                             <p>📞 {r.telefon}</p>
                                             {r.sendika && <p>🏷️ Sendika: {r.sendika}</p>}
                                             {r.plaka && <p>🚗 Plaka: {r.plaka}</p>}
                                         </div>
                                         {r.not_metni && (
-                                            <p className="text-xs text-white/40 italic mt-2 bg-white/5 p-2 rounded">
+                                            <p className="text-xs text-brand-muted italic mt-2 bg-white/5 p-2 rounded">
                                                 <span className="whitespace-pre-line">{r.not_metni}</span>
                                             </p>
                                         )}
@@ -261,7 +228,7 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                         ) : (
                             <div className="text-center py-20">
                                 <p className="text-white/20 text-4xl mb-4">📅</p>
-                                <p className="text-white/40 italic text-sm">
+                                <p className="text-brand-muted italic text-sm">
                                     Bu gün için randevu bulunmamaktadır.
                                 </p>
                             </div>

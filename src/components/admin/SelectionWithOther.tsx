@@ -28,7 +28,7 @@ export default function SelectionWithOther({
                 required={required}
                 value={selected}
                 onChange={(e) => setSelected(e.target.value)}
-                className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold"
+                className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
             >
                 <option value="">{placeholder}</option>
                 {options.map((opt) => (
@@ -45,7 +45,7 @@ export default function SelectionWithOther({
                     type="text"
                     placeholder={`${label} yazınız...`}
                     required={required}
-                    className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white outline-none focus:ring-1 focus:ring-brand-gold animate-in fade-in slide-in-from-top-2 duration-300"
+                    className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold animate-in fade-in slide-in-from-top-2 duration-300"
                 />
             )}
         </div>
