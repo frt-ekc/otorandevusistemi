@@ -13,9 +13,14 @@ alter table public.randevular
 alter table public.services
   add column if not exists gorunur boolean not null default true;
 
--- 3) Sadece lastik değişimi ve tamiri görünsün, diğerleri gizlensin (silinmez)
+-- 3) Sadece lastik değişimi ve lastik tamiri görünsün, diğerleri gizlensin (silinmez)
+--    Jant tamiri ve sibop "tamir/değişim" kelimesi içerse de gizlenir.
 update public.services
-set gorunur = (lower(name) like '%değişim%' or lower(name) like '%tamir%');
+set gorunur = (
+  (lower(name) like '%değişim%' or lower(name) like '%tamir%')
+  and lower(name) not like '%jant%'
+  and lower(name) not like '%sibop%'
+);
 
 -- 4) Kontrol: hangi hizmet görünür, hangisi gizli?
 select name, gorunur from public.services order by gorunur desc, name;
