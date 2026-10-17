@@ -13,7 +13,7 @@ export const SENDIKA_LOGOLARI: Partial<Record<(typeof SENDIKALAR)[number], strin
   "Öz Sağlık-İş Sendikası": "/kurumlar/oz-saglik-is.jpg",
   "Öz İplik İş Sendikası": "/kurumlar/oz-iplik-is.jpg",
   "Öz Güven-Sen": "/kurumlar/oz-guven-sen.jpg",
-  "Hizmet-İş Sendikası": "/kurumlar/hizmet-is.jpg"
+  "Hizmet-İş Sendikası": "/kurumlar/hizmet-is.png"
 };
 
 // Logo yoksa gösterilecek baş harfler: "Öz Sağlık-İş Sendikası" -> "ÖS"

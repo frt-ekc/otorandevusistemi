@@ -5,11 +5,11 @@ import { getAyarlar } from "@/lib/db";
 import { SENDIKALAR, SENDIKA_LOGOLARI, sendikaBasHarfleri } from "@/lib/sendikalar";
 import {
   ARAC_TURLERI,
-  LASTIK_ADETLERI,
+  DEGISIM_PAKETLERI,
   TAMIR_FIYATI,
   formatTL,
-  lastikAdediEtiketi,
-  paketHesapla,
+  balansEtiketi,
+  lastikEtiketi,
   type AracTuru
 } from "@/lib/lastikPaketleri";
 import TireBadge from "@/components/site/TireBadge";
@@ -71,7 +71,7 @@ export default async function HomePage() {
               sıra beklemeden gelin.
             </p>
             <p className="mt-3 animate-rise text-sm text-brand-muted" style={{ animationDelay: "240ms" }}>
-              Balans dahil lastik değişimi {formatTL(paketHesapla("degisim", "binek", 1)!.fiyat)}&apos;den başlayan fiyatlarla.{" "}
+              Balans dahil lastik değişimi {formatTL(DEGISIM_PAKETLERI.binek[0].fiyat)}&apos;den başlayan fiyatlarla.{" "}
               <a href="#fiyatlar" className="text-brand-text underline decoration-white/30 underline-offset-4 hover:decoration-brand-gold">
                 Fiyat listesi
               </a>
@@ -206,16 +206,15 @@ export default async function HomePage() {
                 </thead>
                 <tbody className="divide-y divide-white/10">
                   {araclar.flatMap((arac) =>
-                    LASTIK_ADETLERI.map((adet) => {
-                      const p = paketHesapla("degisim", arac, adet)!;
+                    DEGISIM_PAKETLERI[arac].map((p) => {
                       return (
-                        <tr key={`${arac}-${adet}`}>
+                        <tr key={`${arac}-${p.id}`}>
                           <th scope="row" className="px-5 py-4 font-normal sm:px-8">
                             <span className="block font-semibold text-brand-text">
-                              {ARAC_TURLERI[arac].ad} · {lastikAdediEtiketi(adet).toLocaleLowerCase("tr-TR")}
+                              {ARAC_TURLERI[arac].ad} · {lastikEtiketi(p.lastik).toLocaleLowerCase("tr-TR")}
                             </span>
                             <span className="text-sm text-brand-muted">
-                              {ARAC_TURLERI[arac].aciklama} · {p.balansAdedi} balans dahil
+                              {ARAC_TURLERI[arac].aciklama} · {balansEtiketi(p).toLocaleLowerCase("tr-TR")}
                             </span>
                           </th>
                           <td className="whitespace-nowrap px-5 py-4 text-right font-semibold tabular-nums text-brand-text sm:px-8">

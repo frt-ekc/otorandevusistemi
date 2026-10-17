@@ -4,7 +4,6 @@
 
 export type HizmetKey = "degisim" | "tamir";
 export type AracTuru = "binek" | "ticari";
-export type LastikAdedi = 1 | 2 | 4;
 
 export const HIZMETLER: Record<HizmetKey, { ad: string; aciklama: string }> = {
   degisim: {
@@ -22,19 +21,37 @@ export const ARAC_TURLERI: Record<AracTuru, { ad: string; aciklama: string }> = 
   ticari: { ad: "Ticari Araç", aciklama: "Pikap ve minibüs" }
 };
 
-export const LASTIK_ADETLERI: LastikAdedi[] = [1, 2, 4];
+// Bir değişim paketi: kaç lastik değişir, kaçına balans yapılır, fiyatı ne.
+// id formdan sunucuya gider ("4-2" = 4 lastik, 2 balans).
+export type DegisimPaketi = { id: string; lastik: number; balans: number; fiyat: number };
 
-// Seçim kartlarında ve fiyat listesinde: "Tek lastik", "2 lastik", "4 lastik"
-export function lastikAdediEtiketi(adet: number) {
-  return adet === 1 ? "Tek lastik" : `${adet} lastik`;
+// Binek: 1 adet 150 TL (balans dahil), 2 adet 300 TL (2 balans), 4 adet 2 balans 500 TL, 4 adet 4 balans 600 TL
+// Ticari: 1 adet 200 TL (balans dahil), 2 adet 400 TL (2 balans), 4 adet 800 TL (4 balans)
+export const DEGISIM_PAKETLERI: Record<AracTuru, DegisimPaketi[]> = {
+  binek: [
+    { id: "1-1", lastik: 1, balans: 1, fiyat: 150 },
+    { id: "2-2", lastik: 2, balans: 2, fiyat: 300 },
+    { id: "4-2", lastik: 4, balans: 2, fiyat: 500 },
+    { id: "4-4", lastik: 4, balans: 4, fiyat: 600 }
+  ],
+  ticari: [
+    { id: "1-1", lastik: 1, balans: 1, fiyat: 200 },
+    { id: "2-2", lastik: 2, balans: 2, fiyat: 400 },
+    { id: "4-4", lastik: 4, balans: 4, fiyat: 800 }
+  ]
+};
+
+// "Tek lastik değişimi", "4 lastik değişimi"
+export function lastikEtiketi(adet: number) {
+  return `${adet === 1 ? "Tek" : adet} lastik değişimi`;
 }
 
-// Afiş: Binek 1 adet 150 TL (balans dahil), 2 adet 300 TL (2 balans dahil), 4 adet 500 TL (2 adet balans dahil)
-//       Ticari 1 adet 200 TL (balans dahil), 2 adet 400 TL (2 balans dahil), 4 adet 800 TL (balans dahil)
-const DEGISIM_PAKETLERI: Record<AracTuru, Record<LastikAdedi, { balans: number; fiyat: number }>> = {
-  binek: { 1: { balans: 1, fiyat: 150 }, 2: { balans: 2, fiyat: 300 }, 4: { balans: 2, fiyat: 500 } },
-  ticari: { 1: { balans: 1, fiyat: 200 }, 2: { balans: 2, fiyat: 400 }, 4: { balans: 4, fiyat: 800 } }
-};
+// "Balans dahil", "İki lastiğe de balans", "4 lastiğin hepsine balans", "Sadece 2 lastiğe balans"
+export function balansEtiketi(p: Pick<DegisimPaketi, "lastik" | "balans">) {
+  if (p.lastik === 1) return "Balans dahil";
+  if (p.balans === p.lastik) return p.lastik === 2 ? "İki lastiğe de balans" : `${p.lastik} lastiğin hepsine balans`;
+  return `Sadece ${p.balans} lastiğe balans`;
+}
 
 export const TAMIR_FIYATI = 200;
 
@@ -42,6 +59,7 @@ export type PaketSonucu = {
   hizmetKey: HizmetKey;
   hizmetAdi: string;
   aracTuru: AracTuru | null;
+  paketId: string | null;
   lastikAdedi: number | null;
   balansAdedi: number | null;
   fiyat: number;
@@ -52,13 +70,14 @@ export type PaketSonucu = {
 export function paketHesapla(
   hizmetKey: string | null | undefined,
   aracTuru?: string | null,
-  lastikAdedi?: string | number | null
+  paketId?: string | null
 ): PaketSonucu | null {
   if (hizmetKey === "tamir") {
     return {
       hizmetKey: "tamir",
       hizmetAdi: HIZMETLER.tamir.ad,
       aracTuru: null,
+      paketId: null,
       lastikAdedi: null,
       balansAdedi: null,
       fiyat: TAMIR_FIYATI
@@ -66,14 +85,14 @@ export function paketHesapla(
   }
   if (hizmetKey !== "degisim") return null;
   if (aracTuru !== "binek" && aracTuru !== "ticari") return null;
-  const adet = Number(lastikAdedi) as LastikAdedi;
-  if (!LASTIK_ADETLERI.includes(adet)) return null;
-  const paket = DEGISIM_PAKETLERI[aracTuru][adet];
+  const paket = DEGISIM_PAKETLERI[aracTuru].find((p) => p.id === paketId);
+  if (!paket) return null;
   return {
     hizmetKey: "degisim",
     hizmetAdi: HIZMETLER.degisim.ad,
     aracTuru,
-    lastikAdedi: adet,
+    paketId: paket.id,
+    lastikAdedi: paket.lastik,
     balansAdedi: paket.balans,
     fiyat: paket.fiyat
   };
