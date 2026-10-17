@@ -37,12 +37,22 @@ export default async function RandevuPage({
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-lg lg:mx-0">
                   Anlaşmalı sendika üyelerine özel fiyatlarla lastik değişimi ve tamiri. Paketinizi seçin, fiyatı görün, randevunuzu alın.
                 </p>
-                <p className="mt-2 text-xs text-white/60 sm:text-sm">
-                  Mevcut randevunuzu iptal etmek mi istiyorsunuz?{" "}
-                  <Link href="/randevu-sorgula" className="font-semibold text-brand-gold underline-offset-4 hover:underline">
-                    Randevu Sorgula / İptal
+                <div className="mx-auto mt-4 flex max-w-2xl flex-col items-center gap-3 rounded-2xl border border-rose-400/40 bg-rose-500/10 p-3 sm:mt-6 sm:flex-row sm:justify-between sm:p-4 lg:mx-0">
+                  <p className="text-sm font-semibold text-white">Mevcut randevunuzu iptal etmek mi istiyorsunuz?</p>
+                  <Link
+                    href="/randevu-sorgula"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full bg-rose-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_4px_20px_rgba(244,63,94,0.35)] transition-transform hover:-translate-y-0.5 hover:bg-rose-600 active:translate-y-0"
+                  >
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM7.3 6.3a1 1 0 0 0-1.4 1.4L8.6 10l-2.7 2.3a1 1 0 1 0 1.4 1.4L10 11.4l2.3 2.3a1 1 0 0 0 1.4-1.4L11.4 10l2.3-2.3a1 1 0 0 0-1.4-1.4L10 8.6 7.3 6.3Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Randevumu iptal et
                   </Link>
-                </p>
+                </div>
               </div>
 
               <div className="sm:mt-4">
