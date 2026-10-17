@@ -175,8 +175,8 @@ export default function RandevuStepper({
     }
     if (formState.message) {
       setLocalError(formState.message);
-      // Saat başkası tarafından alındıysa tarih adımına dön
-      if (formState.message.includes("rezerve")) {
+      // Saat başkası tarafından alındıysa ya da o gün zaten randevusu varsa tarih adımına dön
+      if (formState.message.includes("rezerve") || formState.message.includes("zaten bir randevunuz")) {
         setSaat("");
         setStepIndex(steps.indexOf("tarih"));
       }

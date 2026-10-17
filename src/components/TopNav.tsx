@@ -70,7 +70,7 @@ export default function TopNav() {
                       href="/randevu-sorgula"
                       className="transition-all hover:scale-110 hover:text-brand-gold"
                     >
-                      Randevu Sorgula
+                      Randevu Sorgula / İptal
                     </Link>
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default function TopNav() {
                   onClick={() => { setIsOpen(false); setIsRandevuOpen(false); }}
                   className="mx-2 rounded-xl bg-white/5 py-3.5 text-base font-semibold text-white/85 transition-all active:bg-brand-gold active:text-brand-dark"
                 >
-                  Randevu Sorgula
+                  Randevu Sorgula / İptal
                 </Link>
               </div>
             </div>
