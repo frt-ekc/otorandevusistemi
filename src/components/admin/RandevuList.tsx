@@ -37,116 +37,126 @@ export default function RandevuList({ randevular, onCancel, onDelete }: Props) {
         );
     }
 
+    // En erken tarih ve saat en üstte; aynı günün randevuları tek başlık altında
+    const sirali = [...randevular].sort((a, b) =>
+        `${a.tarih} ${saatKisa(a.saat)}`.localeCompare(`${b.tarih} ${saatKisa(b.saat)}`)
+    );
+    const gunler: { tarih: string; randevular: Randevu[] }[] = [];
+    for (const r of sirali) {
+        const son = gunler[gunler.length - 1];
+        if (son && son.tarih === r.tarih) son.randevular.push(r);
+        else gunler.push({ tarih: r.tarih, randevular: [r] });
+    }
+
     return (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {randevular.map((randevu) => (
-                <div
-                    key={randevu.id}
-                    className={`group relative overflow-hidden rounded-3xl border transition-colors ${randevu.durum === "iptal"
-                        ? "border-red-500/40 bg-red-500/10"
-                        : "border-white/10 bg-brand-slate hover:border-white/20"
-                        }`}
-                >
-                    <div className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div className="flex flex-col">
-                                <span className="text-xs uppercase tracking-[0.2em] text-brand-muted">
-                                    {randevu.tarih}
-                                </span>
-                                <span className="mt-1 text-2xl font-black text-brand-gold">
-                                    {randevu.saat}
-                                </span>
-                            </div>
-                            <span
-                                className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${randevu.durum === "iptal"
-                                    ? "bg-red-500/20 text-red-100"
-                                    : "bg-emerald-500/20 text-emerald-100"
+        <div className="space-y-6">
+            {gunler.map((gun) => (
+                <section key={gun.tarih}>
+                    <h3 className="mb-2 flex items-baseline justify-between gap-3 border-b border-white/10 pb-2">
+                        <span className="font-bold text-brand-text">{gunBasligi(gun.tarih)}</span>
+                        <span className="text-xs text-brand-muted">{gun.randevular.length} randevu</span>
+                    </h3>
+                    <ul className="divide-y divide-white/5">
+                        {gun.randevular.map((randevu) => {
+                            const iptal = randevu.durum === "iptal";
+                            const paket = paketAciklamasi(randevu);
+                            return (
+                                <li
+                                    key={randevu.id}
+                                    className={`grid gap-x-4 gap-y-1 px-2 py-3 sm:grid-cols-[4rem_1fr_auto] sm:items-center ${
+                                        iptal ? "opacity-70" : ""
                                     }`}
-                            >
-                                {randevu.durum === "iptal" ? "İptal" : "Aktif"}
-                            </span>
-                        </div>
-
-                        <div className="mt-6 space-y-4">
-                            <div>
-                                <h3 className="text-lg font-bold text-brand-text leading-tight">
-                                    {randevu.ad}
-                                </h3>
-                                <p className="text-sm text-brand-muted">{randevu.hizmet}</p>
-                                {paketAciklamasi(randevu) ? (
-                                    <p className="text-sm text-brand-muted">{paketAciklamasi(randevu)}</p>
-                                ) : null}
-                                {randevu.fiyat ? (
-                                    <p className="mt-1 text-base font-black text-brand-gold">{formatTL(randevu.fiyat)}</p>
-                                ) : null}
-                            </div>
-
-                            <div className="space-y-2 border-t border-white/10 pt-4">
-                                <div className="flex items-center gap-3 text-sm text-white/70">
-                                    <span>📞</span>
-                                    <span>{randevu.telefon}</span>
-                                </div>
-                                {randevu.sendika && (
-                                    <div className="flex items-center gap-3 text-sm text-white/70">
-                                        <span>🏷️</span>
-                                        <span className={isAnlasmaliSendika(randevu.sendika) ? "font-semibold text-brand-gold" : ""}>
-                                            {randevu.sendika}
-                                        </span>
-                                    </div>
-                                )}
-                                {randevu.plaka && (
-                                    <div className="flex items-center gap-3 text-sm text-white/70">
-                                        <span>🚗</span>
-                                        <span>{randevu.plaka}</span>
-                                    </div>
-                                )}
-                                {randevu.email && (
-                                    <div className="flex items-center gap-3 text-sm text-white/70">
-                                        <span>📧</span>
-                                        <span className="truncate">{randevu.email}</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {randevu.not_metni && (
-                                <div className="rounded-xl bg-white/5 p-3">
-                                    <p className="text-xs italic text-brand-muted leading-relaxed">
-                                        <span className="whitespace-pre-line">{randevu.not_metni}</span>
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="flex flex-col gap-2 mt-4">
-                                {randevu.durum !== "iptal" && (
-                                    <button
-                                        onClick={() => {
-                                            if (confirm("Bu randevuyu iptal etmek istiyor musun?")) {
-                                                onCancel(randevu.id);
-                                            }
-                                        }}
-                                        className="w-full rounded-full border border-red-500/30 py-3 text-xs font-bold uppercase tracking-widest text-red-400 transition-all hover:bg-red-500/10 active:scale-95"
+                                >
+                                    <span
+                                        className={`font-display text-lg font-extrabold tabular-nums ${
+                                            iptal ? "text-red-300 line-through" : "text-brand-gold"
+                                        }`}
                                     >
-                                        Randevuyu İptal Et
-                                    </button>
-                                )}
+                                        {saatKisa(randevu.saat)}
+                                    </span>
 
-                                {randevu.durum === "iptal" && (
-                                    <button
-                                        onClick={() => {
-                                            if (confirm("Bu randevuyu KALICI olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
-                                                onDelete(randevu.id);
-                                            }
-                                        }}
-                                        className="w-full rounded-full bg-red-600 px-6 py-3 text-xs font-black uppercase tracking-widest text-brand-text transition-all hover:-translate-y-0.5 hover:bg-red-700 active:scale-95"
-                                    >
-                                        Randevuyu Tamamen Sil
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                    <div className="min-w-0">
+                                        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                                            <span className="font-bold text-brand-text">{randevu.ad}</span>
+                                            <a href={`tel:${randevu.telefon}`} className="text-sm text-white/70 hover:text-brand-gold">
+                                                {randevu.telefon}
+                                            </a>
+                                            {iptal ? (
+                                                <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-red-200">
+                                                    İptal
+                                                </span>
+                                            ) : null}
+                                        </p>
+                                        <p className="text-sm text-brand-muted">
+                                            {[randevu.hizmet, paket].filter(Boolean).join(" · ")}
+                                            {randevu.fiyat ? (
+                                                <span className="font-semibold text-brand-text"> · {formatTL(randevu.fiyat)}</span>
+                                            ) : null}
+                                        </p>
+                                        {randevu.sendika || randevu.plaka || randevu.email ? (
+                                            <p className="text-xs text-white/50">
+                                                {randevu.sendika ? (
+                                                    <span className={isAnlasmaliSendika(randevu.sendika) ? "text-brand-gold/80" : ""}>
+                                                        {randevu.sendika}
+                                                    </span>
+                                                ) : null}
+                                                {[randevu.plaka, randevu.email].filter(Boolean).map((v) => ` · ${v}`)}
+                                            </p>
+                                        ) : null}
+                                        {randevu.not_metni ? (
+                                            <p className="mt-1 whitespace-pre-line text-xs italic text-white/50">{randevu.not_metni}</p>
+                                        ) : null}
+                                    </div>
+
+                                    <div className="mt-2 sm:mt-0">
+                                        {!iptal ? (
+                                            <button
+                                                onClick={() => {
+                                                    if (confirm("Bu randevuyu iptal etmek istiyor musun?")) {
+                                                        onCancel(randevu.id);
+                                                    }
+                                                }}
+                                                className="rounded-full border border-red-500/30 px-4 py-2 text-xs font-bold text-red-400 transition-colors hover:bg-red-500/10"
+                                            >
+                                                İptal et
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => {
+                                                    if (confirm("Bu randevuyu KALICI olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
+                                                        onDelete(randevu.id);
+                                                    }
+                                                }}
+                                                className="rounded-full bg-red-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-red-700"
+                                            >
+                                                Tamamen sil
+                                            </button>
+                                        )}
+                                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </section>
             ))}
         </div>
     );
+}
+
+// "09:30:00" -> "09:30"
+function saatKisa(saat: string) {
+    return String(saat ?? "").slice(0, 5);
+}
+
+// "2026-10-20" -> "20 Ekim 2026 Salı"
+function gunBasligi(tarih: string) {
+    const [y, m, d] = tarih.split("-").map(Number);
+    if (!y || !m || !d) return tarih;
+    return new Intl.DateTimeFormat("tr-TR", {
+        timeZone: "UTC",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        weekday: "long"
+    }).format(new Date(Date.UTC(y, m - 1, d)));
 }

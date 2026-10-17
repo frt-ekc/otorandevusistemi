@@ -536,7 +536,7 @@ export default async function AdminPage({
   const insertedId = resolvedParams?.id ?? "";
   const activeView = resolvedParams?.view ?? "randevular";
   const isUrunFormOpen = resolvedParams?.urunEkle === "1";
-  const activeTab = resolvedParams?.tab ?? "takvim";
+  const activeTab = resolvedParams?.tab ?? "aktif";
   // Sadece açık bölümün verisi çekilir; sorgular sırayla değil aynı anda çalışır
   const [lastikler, randevularRaw, urunler, hizmetler, ayarlar] = await Promise.all([
     activeView === "stok" ? getLastikler() : [],
