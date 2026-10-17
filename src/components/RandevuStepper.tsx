@@ -39,14 +39,14 @@ type RandevuStepperProps = {
 };
 
 // Adımlar. "paket" adımı sadece lastik değişiminde gösterilir.
-// Fiyat paket kartlarında ve son onay ekranında görünür; ayrıca onay kutusu yok.
+// Fiyat paket kartlarında ve özet ekranında yalnızca bilgi olarak görünür; müşteriden fiyat onayı istenmez, ödeme işletmede yapılır.
 type StepId = "hizmet" | "paket" | "iletisim" | "tarih" | "ozet";
 const STEP_LABELS: Record<StepId, string> = {
   hizmet: "Hizmet",
   paket: "Araç ve Lastik",
   iletisim: "İletişim",
   tarih: "Tarih/Saat",
-  ozet: "Onay"
+  ozet: "Özet"
 };
 
 const cardBase =
@@ -267,8 +267,9 @@ export default function RandevuStepper({
             <Row k="Tarih" v={tarih.label || tarih.value} />
             <Row k="Saat" v={`${saat} - ${dakikaToSaat(saatToDakika(saat) + sure)}`} />
             <Row k="Hizmet" v={paket.hizmetAdi} />
-            <Row k="Toplam" v={formatTL(paket.fiyat)} />
+            <Row k="Ücret" v={formatTL(paket.fiyat)} />
           </div>
+          <p className="text-sm font-semibold text-brand-gold">Ödemeler işletmede yapılacaktır.</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
               href={WHATSAPP_LINK}
@@ -495,7 +496,7 @@ export default function RandevuStepper({
             </label>
         </div>
 
-        {/* 6) Son onay */}
+        {/* 6) Özet */}
         {step === "ozet" && paket && (
           <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/80">
             <Row k="Hizmet" v={paket.hizmetAdi} />
@@ -512,10 +513,13 @@ export default function RandevuStepper({
             <Row k="Saat" v={saat ? `${saat} - ${dakikaToSaat(saatToDakika(saat) + sure)}` : ""} />
             {iletisim.not ? <Row k="Ek Not" v={iletisim.not} /> : null}
             <div className="mt-2 flex items-end justify-between border-t border-white/10 pt-3">
-              <span className="text-white/60">Toplam</span>
+              <span className="text-white/60">Ücret</span>
               <span className="text-lg font-bold text-white">{formatTL(paket.fiyat)}</span>
             </div>
-            <p className="text-xs text-white/50">Anlaşmalı sendika üyelerine özel fiyattır. Ödeme işlem sonrası dükkânda yapılır.</p>
+            <p className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 px-4 py-3 text-sm font-semibold text-brand-gold">
+              Ödemeler işletmede yapılacaktır.
+            </p>
+            <p className="text-xs text-white/50">Anlaşmalı sendika üyelerine özel fiyattır.</p>
           </div>
         )}
 
