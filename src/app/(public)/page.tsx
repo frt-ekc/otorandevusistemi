@@ -51,9 +51,8 @@ export default async function HomePage() {
               className="mt-4 animate-rise text-[2.6rem] font-extrabold leading-[0.98] text-brand-text sm:text-6xl lg:text-[4.1rem]"
               style={{ animationDelay: "120ms" }}
             >
-              Lastik değişimi, balans dahil{" "}
-              <span className="whitespace-nowrap text-brand-gold">150 ₺</span>
-              &apos;den.
+              Lastik değişimi ve balans,{" "}
+              <span className="text-brand-gold">sıra beklemeden.</span>
             </h1>
             <p
               className="mt-6 max-w-xl animate-rise text-base leading-relaxed text-brand-muted sm:text-lg"
@@ -61,6 +60,12 @@ export default async function HomePage() {
             >
               {SENDIKALAR.join(", ").replace(/, ([^,]*)$/, " ve $1")} üyelerine özel fiyatlar. Randevunuzu alın,
               sıra beklemeden gelin.
+            </p>
+            <p className="mt-3 animate-rise text-sm text-brand-muted" style={{ animationDelay: "240ms" }}>
+              Balans dahil lastik değişimi {formatTL(paketHesapla("degisim", "binek", 1)!.fiyat)}&apos;den başlayan fiyatlarla.{" "}
+              <a href="#fiyatlar" className="text-brand-text underline decoration-white/30 underline-offset-4 hover:decoration-brand-gold">
+                Fiyat listesi
+              </a>
             </p>
             <div className="mt-8 flex animate-rise flex-wrap gap-3" style={{ animationDelay: "280ms" }}>
               <Link
@@ -124,7 +129,7 @@ export default async function HomePage() {
           <Reveal>
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="max-w-xl">
-                <h2 className="text-3xl font-extrabold leading-tight text-brand-text sm:text-5xl">Sendika fiyat listesi</h2>
+                <h2 className="text-3xl font-extrabold leading-tight text-brand-text sm:text-4xl">Fiyat listesi</h2>
                 <p className="mt-4 text-brand-muted">
                   Fiyatlara balans dahildir. Ödemeyi işlem sonrası dükkânda yaparsınız.
                 </p>
@@ -139,57 +144,59 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {araclar.map((arac, i) => {
-              const tek = paketHesapla("degisim", arac, 1)!;
-              const dort = paketHesapla("degisim", arac, 4)!;
-              return (
-                <Reveal key={arac} delay={i * 120}>
-                  <article className="h-full rounded-3xl border border-white/10 bg-brand-slate p-6 sm:p-8">
-                    <header className="flex items-baseline justify-between gap-4">
-                      <h3 className="text-2xl font-extrabold text-brand-text">{ARAC_TURLERI[arac].ad}</h3>
-                      <span className="text-sm text-brand-muted">{ARAC_TURLERI[arac].aciklama}</span>
-                    </header>
-                    <dl className="mt-6 divide-y divide-white/10">
-                      {[tek, dort].map((p) => (
-                        <div key={p.lastikAdedi} className="flex items-center justify-between gap-4 py-4">
-                          <dt>
+          <Reveal delay={120}>
+            <div className="mt-10 overflow-hidden rounded-3xl border border-white/10 bg-brand-slate">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-white/10 text-xs text-brand-muted">
+                    <th scope="col" className="px-5 py-3 font-medium sm:px-8">Hizmet</th>
+                    <th scope="col" className="px-5 py-3 text-right font-medium sm:px-8">Fiyat</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {araclar.flatMap((arac) =>
+                    [1, 4].map((adet) => {
+                      const p = paketHesapla("degisim", arac, adet)!;
+                      return (
+                        <tr key={`${arac}-${adet}`}>
+                          <th scope="row" className="px-5 py-4 font-normal sm:px-8">
                             <span className="block font-semibold text-brand-text">
-                              {p.lastikAdedi === 1 ? "Tek lastik" : "4 lastik"}
+                              {ARAC_TURLERI[arac].ad} · {adet === 1 ? "tek lastik" : "4 lastik"}
                             </span>
-                            <span className="text-sm text-brand-muted">{p.balansAdedi} balans dahil</span>
-                          </dt>
-                          <dd className="font-display text-3xl font-extrabold text-brand-gold sm:text-4xl">{formatTL(p.fiyat)}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                    <Link
-                      href="/randevu?service=Lastik%20De%C4%9Fi%C5%9Fimi"
-                      className="mt-4 inline-flex rounded-full bg-white/5 px-5 py-3 text-sm font-semibold text-brand-text transition-colors hover:bg-brand-gold hover:text-brand-dark"
-                    >
-                      {ARAC_TURLERI[arac].ad} için randevu al
-                    </Link>
-                  </article>
-                </Reveal>
-              );
-            })}
-          </div>
+                            <span className="text-sm text-brand-muted">
+                              {ARAC_TURLERI[arac].aciklama} · {p.balansAdedi} balans dahil
+                            </span>
+                          </th>
+                          <td className="whitespace-nowrap px-5 py-4 text-right font-semibold tabular-nums text-brand-text sm:px-8">
+                            {formatTL(p.fiyat)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                  <tr>
+                    <th scope="row" className="px-5 py-4 font-normal sm:px-8">
+                      <span className="block font-semibold text-brand-text">Patlak lastik tamiri</span>
+                      <span className="text-sm text-brand-muted">Binek ve ticari araçlar</span>
+                    </th>
+                    <td className="whitespace-nowrap px-5 py-4 text-right font-semibold tabular-nums text-brand-text sm:px-8">
+                      {formatTL(TAMIR_FIYATI)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
 
           <Reveal delay={150}>
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-brand-gold/30 bg-brand-gold/[0.06] p-6 sm:p-8">
-              <div>
-                <h3 className="text-2xl font-extrabold text-brand-text">Patlak lastik tamiri</h3>
-                <p className="mt-1 text-sm text-brand-muted">Binek ve ticari araçlar için sabit fiyat.</p>
-              </div>
-              <div className="flex items-center gap-5">
-                <span className="font-display text-3xl font-extrabold text-brand-gold sm:text-4xl">{formatTL(TAMIR_FIYATI)}</span>
-                <Link
-                  href="/randevu?service=Lastik%20Tamiri"
-                  className="rounded-full bg-brand-gold px-5 py-3 text-sm font-bold text-brand-dark transition-transform hover:-translate-y-0.5"
-                >
-                  Randevu al
-                </Link>
-              </div>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+              <p className="text-sm text-brand-muted">Fiyatlar anlaşmalı sendika üyeleri içindir.</p>
+              <Link
+                href="/randevu"
+                className="rounded-full bg-brand-gold px-6 py-3.5 text-sm font-bold text-brand-dark transition-transform hover:-translate-y-0.5"
+              >
+                Randevu al
+              </Link>
             </div>
           </Reveal>
         </section>

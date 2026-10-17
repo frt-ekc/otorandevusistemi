@@ -42,7 +42,7 @@ export default function ProductGrid({ products }: { products: ProductCard[] }) {
             <div className="space-y-2 p-5">
               <p className="text-xl font-black text-white group-hover:text-brand-gold transition-colors">{product.title}</p>
               <p className="text-sm text-white font-medium line-clamp-2">{product.description}</p>
-              <p className="text-lg font-black text-brand-gold">{product.price}</p>
+              <p className="text-base font-semibold text-white/90">{product.price}</p>
               <p className="text-xs text-white font-bold uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">Detay için tıkla</p>
             </div>
           </button>
@@ -79,10 +79,10 @@ export default function ProductGrid({ products }: { products: ProductCard[] }) {
               </div>
 
               <div className="flex flex-wrap gap-4 items-center">
-                <div className="inline-flex items-center gap-2 rounded-xl bg-brand-gold/10 border border-brand-gold/20 px-5 py-3 text-2xl font-black text-brand-gold">
+                <div className="text-xl font-semibold text-white">
                   {active.price}
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest text-white/40">KDV Dahil</span>
+                <span className="text-sm text-white/50">KDV dahil</span>
               </div>
 
               <div className="h-px w-full bg-gradient-to-r from-white/10 to-transparent" />

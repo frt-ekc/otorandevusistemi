@@ -117,7 +117,7 @@ export default async function RandevuSorgulaPage({
                                             {randevu.fiyat ? (
                                                 <p className="text-sm text-white flex justify-between border-b border-white/5 pb-1 font-medium">
                                                     <span className="text-white">Ücret:</span>
-                                                    <span className="font-bold text-brand-gold">{formatTL(randevu.fiyat)}</span>
+                                                    <span className="font-bold">{formatTL(randevu.fiyat)}</span>
                                                 </p>
                                             ) : null}
                                             <p className="text-sm text-white flex justify-between font-medium">

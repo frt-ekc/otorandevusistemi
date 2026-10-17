@@ -1,6 +1,7 @@
 import TopNav from "@/components/TopNav";
 import { getUrunler } from "@/lib/db";
 import ProductGrid from "@/components/ProductGrid";
+import { formatTL } from "@/lib/lastikPaketleri";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ export default async function UrunlerPage() {
     id: urun.id,
     title: urun.name,
     description: "Açıklama eklenmemiş.",
-    price: urun.fiyat ? `₺${urun.fiyat}` : "Fiyat belirtilmedi",
+    price: urun.fiyat ? formatTL(Number(urun.fiyat)) : "Fiyat için sorun",
     image: urun.image_url ?? ""
   }));
   return (
@@ -26,7 +27,7 @@ export default async function UrunlerPage() {
               </span>
               <h1 className="mt-6 text-3xl font-black text-white sm:text-4xl lg:text-6xl leading-[1.1]">
                 Kaliteli Ürünler, <br className="hidden sm:block" />
-                <span className="text-brand-gold">Uygun Fiyatlar.</span>
+                <span className="text-brand-gold">Dükkânımızda.</span>
               </h1>
               <p className="mt-6 text-base text-white/70 leading-relaxed sm:text-lg max-w-2xl mx-auto lg:mx-0">
                 Lastik, jant ve bakım ürünlerimizi inceleyebilir, ihtiyacınıza uygun paketi seçebilirsiniz.
