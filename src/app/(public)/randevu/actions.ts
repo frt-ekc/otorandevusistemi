@@ -73,6 +73,21 @@ export async function createAppointment(
     }
 
     const supabase = getSupabaseServerClient();
+
+    // Aynı telefonla aynı güne ikinci randevu alınamaz (iptal edilenler sayılmaz)
+    let ayniGun: { saat: string } | null;
+    try {
+        ayniGun = await ayniGunRandevusu(payload.tarih, payload.telefon);
+    } catch {
+        return { ok: false, message: "Doğrulama hatası oluştu." };
+    }
+    if (ayniGun) {
+        return {
+            ok: false,
+            message: `Bu tarihte saat ${String(ayniGun.saat).slice(0, 5)} için zaten bir randevunuz var. Aynı güne ikinci randevu alınamaz. Saati değiştirmek isterseniz önce "Randevu Sorgula / İptal" sayfasından mevcut randevunuzu iptal edebilirsiniz.`
+        };
+    }
+
     let mevcut: Aralik[];
     try {
         mevcut = await doluAraliklar(payload.tarih);
@@ -91,6 +106,19 @@ export async function createAppointment(
         return { ok: false, message: error.message };
     }
     return { ok: true };
+}
+
+// Bu telefonun o günkü aktif randevusu (telefon farklı biçimde yazılmış olabilir, rakamlar karşılaştırılır)
+async function ayniGunRandevusu(date: string, telefon: string) {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+        .from("randevular")
+        .select("saat, telefon")
+        .eq("tarih", date)
+        .neq("durum", "iptal");
+    if (error) throw error;
+    const hedef = normalizePhone(telefon);
+    return (data || []).find((r) => normalizePhone(r.telefon) === hedef) ?? null;
 }
 
 // O günkü aktif randevuların dükkânda kapladığı zaman aralıkları (dakika)

@@ -1,6 +1,8 @@
 import TopNav from "@/components/TopNav";
 import { searchRandevular } from "@/lib/db";
 import { formatTL, paketAciklamasi } from "@/lib/lastikPaketleri";
+import RandevuIptalButonu from "@/components/RandevuIptalButonu";
+import { iptalEdilebilirMi } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -23,9 +25,18 @@ export default async function RandevuSorgulaPage({
         ad: searchParams.ad ?? "",
         telefon: searchParams.telefon ?? ""
     };
-    const results = hasFilters(filters)
+    const bulunanlar = hasFilters(filters)
         ? await searchRandevular(filters.ad, filters.telefon)
         : [];
+    // En yakın tarihli randevu üstte; her biri için iptal edilebilir mi?
+    const results = await Promise.all(
+        [...bulunanlar]
+            .sort((a, b) => `${b.tarih} ${b.saat}`.localeCompare(`${a.tarih} ${a.saat}`))
+            .map(async (r) => ({
+                ...r,
+                iptalEdilebilir: r.durum !== "iptal" && (await iptalEdilebilirMi(r.tarih, r.saat))
+            }))
+    );
     return (
         <div className="min-h-screen">
             <TopNav />
@@ -34,13 +45,14 @@ export default async function RandevuSorgulaPage({
                     <div className="w-full rounded-2xl bg-brand-slate/70 p-5 backdrop-blur-sm border border-white/10 lg:p-10">
                         <div>
                             <p className="text-xs uppercase tracking-[0.3em] text-white">
-                                Randevu Sorgula
+                                Randevu Sorgula / İptal
                             </p>
                             <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-                                Randevunu Sorgula
+                                Randevunu Sorgula veya İptal Et
                             </h1>
                             <p className="mt-4 text-base text-white leading-relaxed sm:text-lg">
-                                Ad Soyad ve randevu alırken verdiğiniz telefon numarasını girerek oluşturduğunuz randevuyu görüntüleyebilirsiniz.
+                                Ad Soyad ve randevu alırken verdiğiniz telefon numarasını girerek randevunuzu görüntüleyebilir,
+                                gelemeyecekseniz iptal edebilirsiniz.
                             </p>
                         </div>
 
@@ -122,13 +134,27 @@ export default async function RandevuSorgulaPage({
                                             ) : null}
                                             <p className="text-sm text-white flex justify-between font-medium">
                                                 <span className="text-white">Durum:</span>
-                                                <span className="text-brand-gold uppercase font-black text-xs tracking-widest">{randevu.durum}</span>
+                                                <span
+                                                    className={`uppercase font-black text-xs tracking-widest ${
+                                                        randevu.durum === "iptal" ? "text-rose-300" : "text-brand-gold"
+                                                    }`}
+                                                >
+                                                    {randevu.durum === "iptal" ? "İptal edildi" : randevu.durum}
+                                                </span>
                                             </p>
                                         </div>
                                         {randevu.not_metni ? (
                                             <p className="mt-4 text-sm text-white italic font-medium bg-white/5 p-3 rounded-lg border border-white/5">
                                                 <span className="whitespace-pre-line">{randevu.not_metni}</span>
                                             </p>
+                                        ) : null}
+                                        {randevu.iptalEdilebilir ? (
+                                            <RandevuIptalButonu
+                                                id={randevu.id}
+                                                ad={filters.ad}
+                                                telefon={filters.telefon}
+                                                ozet={`${randevu.tarih} ${String(randevu.saat).slice(0, 5)}`}
+                                            />
                                         ) : null}
                                     </div>
                                 ))}

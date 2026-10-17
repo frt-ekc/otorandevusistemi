@@ -1,3 +1,4 @@
+import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import { createAppointment, getReservedSlots } from "./actions";
 import RandevuStepper from "@/components/RandevuStepper";
@@ -35,6 +36,12 @@ export default async function RandevuPage({
                 </h1>
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-lg lg:mx-0">
                   Anlaşmalı sendika üyelerine özel fiyatlarla lastik değişimi ve tamiri. Paketinizi seçin, fiyatı görün, randevunuzu alın.
+                </p>
+                <p className="mt-2 text-xs text-white/60 sm:text-sm">
+                  Mevcut randevunuzu iptal etmek mi istiyorsunuz?{" "}
+                  <Link href="/randevu-sorgula" className="font-semibold text-brand-gold underline-offset-4 hover:underline">
+                    Randevu Sorgula / İptal
+                  </Link>
                 </p>
               </div>
 
