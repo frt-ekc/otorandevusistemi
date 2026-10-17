@@ -9,6 +9,7 @@ import MarqueeBand from "@/components/site/MarqueeBand";
 import Reveal from "@/components/site/Reveal";
 import CountUp from "@/components/site/CountUp";
 import SiteFooter from "@/components/site/SiteFooter";
+import { OGLE_MOLASI_METNI } from "@/lib/calisma";
 import { ADRES_TARIF, ADRES_VARSAYILAN, TELEFON_GORUNEN, TELEFON_LINK, WHATSAPP_LINK, YOL_TARIFI_LINK } from "@/components/site/contact";
 
 export const dynamic = "force-dynamic";
@@ -236,6 +237,7 @@ export default async function HomePage() {
                   <div className="flex justify-between gap-4"><dt className="text-brand-muted">Hafta içi</dt><dd className="font-semibold">{ayarlar?.hafta_ici ?? "09:00 - 18:00"}</dd></div>
                   <div className="flex justify-between gap-4"><dt className="text-brand-muted">Cumartesi</dt><dd className="font-semibold">{ayarlar?.cumartesi ?? "09:00 - 16:00"}</dd></div>
                   <div className="flex justify-between gap-4"><dt className="text-brand-muted">Pazar</dt><dd className="font-semibold">{ayarlar?.pazar ?? "Kapalı"}</dd></div>
+                  <div className="flex justify-between gap-4"><dt className="text-brand-muted">Öğle arası</dt><dd className="font-semibold">{OGLE_MOLASI_METNI}</dd></div>
                 </dl>
 
                 <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-8">
