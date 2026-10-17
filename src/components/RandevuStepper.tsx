@@ -3,7 +3,8 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import DateGridPicker from "@/components/DateGridPicker";
 import TimeGridPicker from "@/components/TimeGridPicker";
-import { SENDIKA_SECENEKLERI } from "@/lib/sendikalar";
+import Image from "next/image";
+import { SENDIKA_LOGOLARI, SENDIKA_SECENEKLERI, sendikaBasHarfleri } from "@/lib/sendikalar";
 import { WHATSAPP_LINK } from "@/components/site/contact";
 import {
   dakikaToSaat,
@@ -63,7 +64,7 @@ const STEP_HINTS: Record<StepId, { baslik: string; metin: string }> = {
   },
   iletisim: {
     baslik: "İletişim bilgilerinizi giriniz",
-    metin: "Randevuyu onaylamak için sizi bu numaradan arayacağız. Sendikanızı listeden seçin."
+    metin: "Randevuyu onaylamak için sizi bu numaradan arayacağız. Sendikanızı logosuna dokunarak seçin."
   },
   tarih: {
     baslik: "Size uygun gün ve saati seçiniz",
@@ -445,23 +446,36 @@ export default function RandevuStepper({
                 className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white placeholder:text-white/30"
               />
             </label>
-            <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
-              Sendika
-              <select
-                value={iletisim.sendika}
-                onChange={(e) => setIletisim((p) => ({ ...p, sendika: e.target.value }))}
-                className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-              >
-                <option value="" disabled>
-                  Sendikanızı seçiniz
-                </option>
-                {SENDIKA_SECENEKLERI.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <fieldset className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+              <legend className="mb-2">Sendikanızı seçiniz</legend>
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {SENDIKA_SECENEKLERI.map((s) => {
+                  const logo = SENDIKA_LOGOLARI[s as keyof typeof SENDIKA_LOGOLARI];
+                  const secili = iletisim.sendika === s;
+                  return (
+                    <button
+                      type="button"
+                      key={s}
+                      aria-pressed={secili}
+                      onClick={() => {
+                        setIletisim((p) => ({ ...p, sendika: s }));
+                        setLocalError(null);
+                      }}
+                      className={`${cardBase} items-center gap-3 p-3 text-center sm:p-4 ${secili ? cardActive : cardIdle}`}
+                    >
+                      <span className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white sm:h-20 sm:w-20">
+                        {logo ? (
+                          <Image src={logo} alt="" fill sizes="80px" className="object-contain p-1" />
+                        ) : (
+                          <span className="text-xl font-black text-brand-dark">{sendikaBasHarfleri(s)}</span>
+                        )}
+                      </span>
+                      <span className="text-sm font-bold leading-snug text-white">{s}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
             <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
               Ek Not (isteğe bağlı)
               <textarea

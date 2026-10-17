@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import { getAyarlar } from "@/lib/db";
-import { SENDIKALAR, SENDIKA_LOGOLARI } from "@/lib/sendikalar";
+import { SENDIKALAR, SENDIKA_LOGOLARI, sendikaBasHarfleri } from "@/lib/sendikalar";
 import {
   ARAC_TURLERI,
   LASTIK_ADETLERI,
@@ -155,12 +155,7 @@ export default async function HomePage() {
                         <Image src={logo} alt={`${s} logosu`} fill sizes="96px" className="object-contain p-2" />
                       ) : (
                         <span className="font-display text-2xl font-extrabold text-brand-dark">
-                          {s
-                            .split(/[\s-]+/)
-                            .filter((k) => k && k !== "Sendikası")
-                            .slice(0, 2)
-                            .map((k) => k[0])
-                            .join("")}
+                          {sendikaBasHarfleri(s)}
                         </span>
                       )}
                     </div>
