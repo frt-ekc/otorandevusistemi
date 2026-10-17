@@ -20,10 +20,11 @@ import {
 import {
   ARAC_TURLERI,
   HIZMETLER,
-  LASTIK_ADETLERI,
+  DEGISIM_PAKETLERI,
   TAMIR_FIYATI,
   formatTL,
-  lastikAdediEtiketi,
+  balansEtiketi,
+  lastikEtiketi,
   paketHesapla,
   type AracTuru,
   type HizmetKey
@@ -91,7 +92,7 @@ export default function RandevuStepper({
 }: RandevuStepperProps) {
   const [hizmet, setHizmet] = useState<HizmetKey | null>(initialHizmet ?? null);
   const [aracTuru, setAracTuru] = useState<AracTuru | null>(null);
-  const [lastikAdedi, setLastikAdedi] = useState<number | null>(null);
+  const [paketId, setPaketId] = useState<string | null>(null);
   const [iletisim, setIletisim] = useState({ ad: "", telefon: "", sendika: "", not: "" });
   const [tarih, setTarih] = useState({ value: "", label: "" });
   const [saat, setSaat] = useState("");
@@ -107,8 +108,8 @@ export default function RandevuStepper({
   const step = steps[Math.min(stepIndex, steps.length - 1)];
 
   const paket = useMemo(
-    () => paketHesapla(hizmet, aracTuru, lastikAdedi),
-    [hizmet, aracTuru, lastikAdedi]
+    () => paketHesapla(hizmet, aracTuru, paketId),
+    [hizmet, aracTuru, paketId]
   );
 
   const [dateOpen, setDateOpen] = useState(false);
@@ -143,7 +144,7 @@ export default function RandevuStepper({
   }, [tarih.value, getReservedSlots]);
 
   // Seçilen hizmetin dükkânda kapladığı süre: tek lastik / tamir 30 dk, 4 lastik 60 dk
-  const sure = hizmetSuresi({ hizmetKey: hizmet, lastik_adedi: lastikAdedi });
+  const sure = hizmetSuresi({ hizmetKey: hizmet, lastik_adedi: paket?.lastikAdedi });
 
   // Süre değişirse (ör. geri dönüp 4 lastiğe geçilirse) seçili saat artık uymayabilir
   useEffect(() => {
@@ -190,7 +191,7 @@ export default function RandevuStepper({
         return hizmet ? null : "Lütfen bir hizmet seçiniz.";
       case "paket":
         if (!aracTuru) return "Lütfen araç türünü seçiniz.";
-        if (!lastikAdedi) return "Lütfen kaç lastik değişeceğini seçiniz.";
+        if (!paket) return "Lütfen kaç lastik değişeceğini seçiniz.";
         return null;
       case "iletisim":
         if (!iletisim.ad.trim()) return "Lütfen ad soyad giriniz.";
@@ -228,16 +229,11 @@ export default function RandevuStepper({
     setHizmet(key);
     if (key === "tamir") {
       setAracTuru(null);
-      setLastikAdedi(null);
+      setPaketId(null);
     }
     setLocalError(null);
     // Tek seçimlik adım: seçince doğrudan sonraki adıma geç
     setStepIndex(1);
-  };
-
-  const balansBilgisi = (arac: AracTuru, adet: number) => {
-    const p = paketHesapla("degisim", arac, adet);
-    return p ? `${p.balansAdedi} balans dahil · ${formatTL(p.fiyat)}` : "";
   };
 
   const isLast = stepIndex === steps.length - 1;
@@ -333,7 +329,7 @@ export default function RandevuStepper({
         {/* Sunucuya gidecek değerler */}
         <input type="hidden" name="hizmet_key" value={hizmet ?? ""} />
         <input type="hidden" name="arac_turu" value={aracTuru ?? ""} />
-        <input type="hidden" name="lastik_adedi" value={lastikAdedi ?? ""} />
+        <input type="hidden" name="paket" value={paketId ?? ""} />
         <input type="hidden" name="ad" value={iletisim.ad} />
         <input type="hidden" name="telefon" value={iletisim.telefon} />
         <input type="hidden" name="sendika" value={iletisim.sendika} />
@@ -385,6 +381,8 @@ export default function RandevuStepper({
                     type="button"
                     key={key}
                     onClick={() => {
+                      // Araç değişince paketler de değişir (ticaride 4 lastik 2 balans yok)
+                      if (key !== aracTuru) setPaketId(null);
                       setAracTuru(key);
                       setLocalError(null);
                     }}
@@ -399,26 +397,50 @@ export default function RandevuStepper({
 
             {aracTuru && (
               <div>
-                <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">
+                <p className="mb-1 text-sm font-bold uppercase tracking-widest text-white/60">
                   2. Kaç lastik değişecek?
                 </p>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  {LASTIK_ADETLERI.map((adet) => (
-                    <button
-                      type="button"
-                      key={adet}
-                      onClick={() => {
-                        setLastikAdedi(adet);
-                        setLocalError(null);
-                        // Araç ve lastik seçildi: seçimi kısa bir an gösterip sonraki adıma geç
-                        setTimeout(() => setStepIndex(steps.indexOf("iletisim")), 250);
-                      }}
-                      className={`${cardBase} ${lastikAdedi === adet ? cardActive : cardIdle}`}
-                    >
-                      <p className="text-lg font-black text-white">{lastikAdediEtiketi(adet)}</p>
-                      <p className="mt-1 text-sm text-white/70">{balansBilgisi(aracTuru, adet)}</p>
-                    </button>
-                  ))}
+                <p className="mb-3 text-xs text-white/50">
+                  Balans: lastiğin dengeli dönmesi için yapılan ayardır, direksiyonda titremeyi önler.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {DEGISIM_PAKETLERI[aracTuru].map((p) => {
+                    const tamBalans = p.balans === p.lastik;
+                    return (
+                      <button
+                        type="button"
+                        key={p.id}
+                        onClick={() => {
+                          setPaketId(p.id);
+                          setLocalError(null);
+                          // Araç ve paket seçildi: seçimi kısa bir an gösterip sonraki adıma geç
+                          setTimeout(() => setStepIndex(steps.indexOf("iletisim")), 250);
+                        }}
+                        className={`${cardBase} gap-3 ${paketId === p.id ? cardActive : cardIdle}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-lg font-black text-white">{lastikEtiketi(p.lastik)}</p>
+                          <p className="whitespace-nowrap text-2xl font-black text-brand-gold">{formatTL(p.fiyat)}</p>
+                        </div>
+                        <span
+                          className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${
+                            tamBalans
+                              ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/40"
+                              : "bg-sky-500/15 text-sky-300 ring-1 ring-sky-400/40"
+                          }`}
+                        >
+                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                            <path
+                              fillRule="evenodd"
+                              d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          {balansEtiketi(p)}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -547,7 +569,7 @@ export default function RandevuStepper({
             {paket.aracTuru ? (
               <Row
                 k="Paket"
-                v={`${ARAC_TURLERI[paket.aracTuru].ad} · ${paket.lastikAdedi} lastik · ${paket.balansAdedi} balans`}
+                v={`${ARAC_TURLERI[paket.aracTuru].ad} · ${paket.lastikAdedi} lastik değişimi · ${paket.balansAdedi} balans`}
               />
             ) : null}
             <Row k="Ad Soyad" v={iletisim.ad} />

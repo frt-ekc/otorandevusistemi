@@ -24,10 +24,10 @@ export async function createAppointment(
     const paket = paketHesapla(
         String(formData.get("hizmet_key") ?? ""),
         String(formData.get("arac_turu") ?? ""),
-        String(formData.get("lastik_adedi") ?? "")
+        String(formData.get("paket") ?? "")
     );
     if (!paket) {
-        return { ok: false, message: "Lütfen hizmet, araç türü ve lastik sayısını seçiniz." };
+        return { ok: false, message: "Lütfen hizmet, araç türü ve paketi seçiniz." };
     }
 
     const payload = {
