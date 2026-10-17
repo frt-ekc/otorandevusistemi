@@ -87,7 +87,8 @@ varsa, bu e-postanın listede olduğundan emin olun (yoksa giriş "yetkisi yok" 
    - `SUPABASE_SERVICE_ROLE_KEY` → yeni `service_role` (Legacy API Keys)
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` → yeni `anon` (Legacy API Keys)
 
-3. GitHub'da **Frankfurt bölge PR'ını** (vercel.json: `syd1` → `fra1`) birleştirin.
+3. GitHub'da **Frankfurt bölge PR'ını** (frt-ekc/otorandevusistemi#15, vercel.json: `syd1` → `fra1`)
+   açın: taslak olduğu için önce **Ready for review**, sonra **Merge pull request**.
    Vercel yeni ayarlarla otomatik yayına alır. Deployments sayfasında **Ready** olmasını bekleyin.
 
 4. Kontrol:
