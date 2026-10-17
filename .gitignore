@@ -44,3 +44,7 @@ next-env.d.ts
 
 # Test coverage
 coverage
+
+# Frankfurt taşıma betikleri: şifreler ve veritabanı dökümleri
+scripts/frankfurt-tasima/.env.tasima
+scripts/frankfurt-tasima/cikti/

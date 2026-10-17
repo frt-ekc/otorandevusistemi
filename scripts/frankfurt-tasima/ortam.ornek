@@ -1,0 +1,19 @@
+# Frankfurt taşıma betikleri için ayarlar.
+# Bu dosyayı aynı klasöre ".env.tasima" adıyla kopyalayın ve değerleri doldurun:
+#   cp scripts/frankfurt-tasima/ortam.ornek scripts/frankfurt-tasima/.env.tasima
+# .env.tasima git'e gönderilmez (.gitignore). Şifreleri kimseyle paylaşmayın.
+# Değerleri TEK TIRNAK içinde yazın (şifrede $ veya ! gibi karakterler olabilir).
+
+# --- ESKİ proje (Sidney, ooxtfxdlkopvdhibvbvg) ---
+# Supabase panelinde: Connect > "Session pooler" bağlantı metni (port 5432).
+# [YOUR-PASSWORD] kısmına eski projenin veritabanı şifresini yazın.
+# (Unuttuysanız: Project Settings > Database > Reset database password.)
+ESKI_DB_URL='postgresql://postgres.ooxtfxdlkopvdhibvbvg:SIFRE@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres'
+# Project Settings > API: Project URL ve service_role (secret) anahtarı
+ESKI_SUPABASE_URL='https://ooxtfxdlkopvdhibvbvg.supabase.co'
+ESKI_SERVICE_ROLE_KEY=''
+
+# --- YENİ proje (Frankfurt, eu-central-1) ---
+YENI_DB_URL='postgresql://postgres.YENIREF:SIFRE@aws-0-eu-central-1.pooler.supabase.com:5432/postgres'
+YENI_SUPABASE_URL='https://YENIREF.supabase.co'
+YENI_SERVICE_ROLE_KEY=''
