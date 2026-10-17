@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { AyarlarRow } from "@/lib/db";
+import { OGLE_MOLASI_METNI } from "@/lib/calisma";
 import { ADRES_VARSAYILAN, TELEFON_GORUNEN, TELEFON_LINK, WHATSAPP_LINK } from "./contact";
 
 const menu = [
@@ -41,6 +42,7 @@ export default function SiteFooter({ ayarlar }: { ayarlar?: AyarlarRow | null })
             <div className="flex justify-between gap-4"><dt className="text-brand-muted">Hafta içi</dt><dd>{ayarlar?.hafta_ici ?? "09:00 - 18:00"}</dd></div>
             <div className="flex justify-between gap-4"><dt className="text-brand-muted">Cumartesi</dt><dd>{ayarlar?.cumartesi ?? "09:00 - 16:00"}</dd></div>
             <div className="flex justify-between gap-4"><dt className="text-brand-muted">Pazar</dt><dd>{ayarlar?.pazar ?? "Kapalı"}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-brand-muted">Öğle arası</dt><dd>{OGLE_MOLASI_METNI}</dd></div>
           </dl>
         </div>
 

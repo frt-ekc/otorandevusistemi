@@ -11,6 +11,7 @@ import {
   gununSaatleri,
   haftaninGunu,
   hizmetSuresi,
+  OGLE_MOLASI_METNI,
   saatToDakika,
   type Aralik,
   type CalismaSaatleri
@@ -489,7 +490,7 @@ export default function RandevuStepper({
               />
               <span className="text-xs text-white/40">
                 {gunAraligi
-                  ? `Bu gün ${dakikaToSaat(gunAraligi.start)} - ${dakikaToSaat(gunAraligi.end)} arası açığız · işlem yaklaşık ${sure} dk`
+                  ? `Bu gün ${dakikaToSaat(gunAraligi.start)} - ${dakikaToSaat(gunAraligi.end)} arası açığız (öğle arası ${OGLE_MOLASI_METNI}) · işlem yaklaşık ${sure} dk`
                   : `İşlem yaklaşık ${sure} dk sürer`}
               </span>
             </label>

@@ -6,6 +6,9 @@ import type { AyarlarRow } from "@/lib/db";
 
 export const SLOT_ARALIGI = 30; // dakika
 export const ILERI_GUN = 30; // en fazla kaç gün sonrasına randevu alınabilir
+// Her gün öğle molası: bu aralığa denk gelen randevu alınmaz
+export const OGLE_MOLASI = { start: 12 * 60, end: 13 * 60 };
+export const OGLE_MOLASI_METNI = "12:00 - 13:00";
 
 // Haftanın günü (0 = Pazar ... 6 = Cumartesi) -> açık olduğu aralık (dakika) ya da kapalıysa null
 export type Aralik = { start: number; end: number };
@@ -81,12 +84,16 @@ export function tarihEkle(tarih: string, gun: number) {
   return new Date(Date.UTC(y, mo - 1, d + gun)).toISOString().slice(0, 10);
 }
 
-// O gün, verilen süredeki bir hizmetin başlayabileceği tüm saatler (kapanıştan önce bitmeli)
+// O gün, verilen süredeki bir hizmetin başlayabileceği tüm saatler
+// (kapanıştan önce bitmeli, öğle molasına taşmamalı: 4 lastikte 11:30 olmaz, 11:00 olur)
 export function gununSaatleri(saatler: CalismaSaatleri, tarih: string, sure: number) {
   const aralik = saatler[haftaninGunu(tarih)];
   if (!aralik) return [];
   const sonuc: string[] = [];
-  for (let t = aralik.start; t + sure <= aralik.end; t += SLOT_ARALIGI) sonuc.push(dakikaToSaat(t));
+  for (let t = aralik.start; t + sure <= aralik.end; t += SLOT_ARALIGI) {
+    if (t < OGLE_MOLASI.end && OGLE_MOLASI.start < t + sure) continue;
+    sonuc.push(dakikaToSaat(t));
+  }
   return sonuc;
 }
 
