@@ -4,12 +4,12 @@
 
 export type HizmetKey = "degisim" | "tamir";
 export type AracTuru = "binek" | "ticari";
-export type LastikAdedi = 1 | 4;
+export type LastikAdedi = 1 | 2 | 4;
 
 export const HIZMETLER: Record<HizmetKey, { ad: string; aciklama: string }> = {
   degisim: {
     ad: "Lastik Değişimi",
-    aciklama: "Binek veya ticari araç, tek lastik ya da 4 lastik. Balans dahil."
+    aciklama: "Binek veya ticari araç, tek, 2 ya da 4 lastik. Balans dahil."
   },
   tamir: {
     ad: "Lastik Tamiri",
@@ -22,13 +22,18 @@ export const ARAC_TURLERI: Record<AracTuru, { ad: string; aciklama: string }> = 
   ticari: { ad: "Ticari Araç", aciklama: "Pikap ve minibüs" }
 };
 
-export const LASTIK_ADETLERI: LastikAdedi[] = [1, 4];
+export const LASTIK_ADETLERI: LastikAdedi[] = [1, 2, 4];
 
-// Afiş: Binek 1 adet 150 TL (balans dahil), 4 adet 500 TL (2 adet balans dahil)
-//       Ticari 1 adet 200 TL (balans dahil), 4 adet 800 TL (balans dahil)
+// Seçim kartlarında ve fiyat listesinde: "Tek lastik", "2 lastik", "4 lastik"
+export function lastikAdediEtiketi(adet: number) {
+  return adet === 1 ? "Tek lastik" : `${adet} lastik`;
+}
+
+// Afiş: Binek 1 adet 150 TL (balans dahil), 2 adet 300 TL (2 balans dahil), 4 adet 500 TL (2 adet balans dahil)
+//       Ticari 1 adet 200 TL (balans dahil), 2 adet 400 TL (2 balans dahil), 4 adet 800 TL (balans dahil)
 const DEGISIM_PAKETLERI: Record<AracTuru, Record<LastikAdedi, { balans: number; fiyat: number }>> = {
-  binek: { 1: { balans: 1, fiyat: 150 }, 4: { balans: 2, fiyat: 500 } },
-  ticari: { 1: { balans: 1, fiyat: 200 }, 4: { balans: 4, fiyat: 800 } }
+  binek: { 1: { balans: 1, fiyat: 150 }, 2: { balans: 2, fiyat: 300 }, 4: { balans: 2, fiyat: 500 } },
+  ticari: { 1: { balans: 1, fiyat: 200 }, 2: { balans: 2, fiyat: 400 }, 4: { balans: 4, fiyat: 800 } }
 };
 
 export const TAMIR_FIYATI = 200;
@@ -61,8 +66,8 @@ export function paketHesapla(
   }
   if (hizmetKey !== "degisim") return null;
   if (aracTuru !== "binek" && aracTuru !== "ticari") return null;
-  const adet = Number(lastikAdedi);
-  if (adet !== 1 && adet !== 4) return null;
+  const adet = Number(lastikAdedi) as LastikAdedi;
+  if (!LASTIK_ADETLERI.includes(adet)) return null;
   const paket = DEGISIM_PAKETLERI[aracTuru][adet];
   return {
     hizmetKey: "degisim",

@@ -22,6 +22,7 @@ import {
   LASTIK_ADETLERI,
   TAMIR_FIYATI,
   formatTL,
+  lastikAdediEtiketi,
   paketHesapla,
   type AracTuru,
   type HizmetKey
@@ -48,6 +49,30 @@ const STEP_LABELS: Record<StepId, string> = {
   iletisim: "İletişim",
   tarih: "Tarih/Saat",
   ozet: "Onay"
+};
+
+// Her adımın başında müşteriyi yönlendiren kısa açıklama
+const STEP_HINTS: Record<StepId, { baslik: string; metin: string }> = {
+  hizmet: {
+    baslik: "Randevu almak için hizmet seçiniz",
+    metin: "Lastik değiştirecekseniz “Lastik Değişimi”, patlak lastik için “Lastik Tamiri”ni seçin."
+  },
+  paket: {
+    baslik: "Araç türünü ve lastik sayısını seçiniz",
+    metin: "Önce aracınızı, ardından kaç lastik değişeceğini seçin. Fiyat kartın üzerinde yazar."
+  },
+  iletisim: {
+    baslik: "İletişim bilgilerinizi giriniz",
+    metin: "Randevuyu onaylamak için sizi bu numaradan arayacağız. Sendikanızı listeden seçin."
+  },
+  tarih: {
+    baslik: "Size uygun gün ve saati seçiniz",
+    metin: "Önce tarihi, sonra boş saatlerden birini seçin. Dolu saatler seçilemez."
+  },
+  ozet: {
+    baslik: "Bilgilerinizi kontrol edip randevuyu onaylayınız",
+    metin: "Her şey doğruysa “Randevu Al” butonuna basın. Değiştirmek için “Geri” ile dönebilirsiniz."
+  }
 };
 
 const cardBase =
@@ -321,6 +346,11 @@ export default function RandevuStepper({
           </div>
         ) : null}
 
+        <div className="px-1">
+          <h2 className="text-lg font-black text-white sm:text-xl">{STEP_HINTS[step].baslik}</h2>
+          <p className="mt-1 text-sm text-white/60">{STEP_HINTS[step].metin}</p>
+        </div>
+
         {/* 1) Hizmet */}
         {step === "hizmet" && (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -347,7 +377,7 @@ export default function RandevuStepper({
         {step === "paket" && (
           <div className="grid gap-6">
             <div>
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">Araç türü</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">1. Araç türünü seçin</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 {(Object.keys(ARAC_TURLERI) as AracTuru[]).map((key) => (
                   <button
@@ -369,9 +399,9 @@ export default function RandevuStepper({
             {aracTuru && (
               <div>
                 <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">
-                  Kaç lastik değişecek?
+                  2. Kaç lastik değişecek?
                 </p>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-3">
                   {LASTIK_ADETLERI.map((adet) => (
                     <button
                       type="button"
@@ -384,7 +414,7 @@ export default function RandevuStepper({
                       }}
                       className={`${cardBase} ${lastikAdedi === adet ? cardActive : cardIdle}`}
                     >
-                      <p className="text-lg font-black text-white">{adet === 1 ? "Tek lastik" : "4 lastik"}</p>
+                      <p className="text-lg font-black text-white">{lastikAdediEtiketi(adet)}</p>
                       <p className="mt-1 text-sm text-white/70">{balansBilgisi(aracTuru, adet)}</p>
                     </button>
                   ))}

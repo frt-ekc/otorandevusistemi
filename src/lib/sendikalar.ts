@@ -3,8 +3,13 @@
 export const SENDIKALAR = [
   "Öz Sağlık-İş Sendikası",
   "Öz İplik İş Sendikası",
-  "Öz Güven-Sen"
+  "Öz Güven-Sen",
+  "Hizmet-İş Sendikası"
 ] as const;
+
+// Ana sayfadaki "Anlaşmalı kurumlar" logoları. Logo dosyası public/kurumlar/ içine konur;
+// logosu olmayan kurum, adının baş harfleriyle gösterilir.
+export const SENDIKA_LOGOLARI: Partial<Record<(typeof SENDIKALAR)[number], string>> = {};
 
 // Sistem sadece anlaşmalı sendika üyeleri içindir; "Üye değilim" seçeneği yoktur.
 export const SENDIKA_SECENEKLERI: string[] = [...SENDIKALAR];
