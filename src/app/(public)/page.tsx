@@ -2,8 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import { getAyarlar } from "@/lib/db";
-import { SENDIKALAR } from "@/lib/sendikalar";
-import { ARAC_TURLERI, TAMIR_FIYATI, formatTL, paketHesapla, type AracTuru } from "@/lib/lastikPaketleri";
+import { SENDIKALAR, SENDIKA_LOGOLARI, sendikaBasHarfleri } from "@/lib/sendikalar";
+import {
+  ARAC_TURLERI,
+  LASTIK_ADETLERI,
+  TAMIR_FIYATI,
+  formatTL,
+  lastikAdediEtiketi,
+  paketHesapla,
+  type AracTuru
+} from "@/lib/lastikPaketleri";
 import TireBadge from "@/components/site/TireBadge";
 import MarqueeBand from "@/components/site/MarqueeBand";
 import Reveal from "@/components/site/Reveal";
@@ -125,6 +133,48 @@ export default async function HomePage() {
           items={["Lastik değişimi", "Balans dahil", "Patlak lastik tamiri", "Binek araç", "Pikap ve minibüs", "Sendika üyelerine özel"]}
         />
 
+        {/* ANLAŞMALI KURUMLAR */}
+        <section id="kurumlar" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-16 sm:px-6 lg:pt-24">
+          <Reveal>
+            <h2 className="text-3xl font-extrabold leading-tight text-brand-text sm:text-4xl">Anlaşmalı kurumlarımız</h2>
+            <p className="mt-4 max-w-xl text-brand-muted">
+              Aşağıdaki sendikaların üyeleri özel fiyatlardan yararlanır. Randevu alırken sendikanızı seçmeniz yeterli.
+            </p>
+          </Reveal>
+          <Reveal delay={120}>
+            <ul className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {SENDIKALAR.map((s) => {
+                const logo = SENDIKA_LOGOLARI[s];
+                return (
+                  <li
+                    key={s}
+                    className="flex flex-col items-center gap-4 rounded-3xl border border-white/10 bg-brand-slate p-5 text-center sm:p-6"
+                  >
+                    <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white sm:h-24 sm:w-24">
+                      {logo ? (
+                        <Image src={logo} alt={`${s} logosu`} fill sizes="96px" className="object-contain p-2" />
+                      ) : (
+                        <span className="font-display text-2xl font-extrabold text-brand-dark">
+                          {sendikaBasHarfleri(s)}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-sm font-semibold leading-snug text-brand-text">{s}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </Reveal>
+          <Reveal delay={150}>
+            <p className="mt-6 text-sm text-brand-muted">
+              Randevu almak için önce hizmet seçiniz, ardından araç ve lastik sayısını belirleyip size uygun saati ayırtınız.{" "}
+              <Link href="/randevu" className="font-semibold text-brand-gold underline-offset-4 hover:underline">
+                Hemen randevu al →
+              </Link>
+            </p>
+          </Reveal>
+        </section>
+
         {/* FİYATLAR */}
         <section id="fiyatlar" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:px-6 lg:py-24">
           <Reveal>
@@ -156,13 +206,13 @@ export default async function HomePage() {
                 </thead>
                 <tbody className="divide-y divide-white/10">
                   {araclar.flatMap((arac) =>
-                    [1, 4].map((adet) => {
+                    LASTIK_ADETLERI.map((adet) => {
                       const p = paketHesapla("degisim", arac, adet)!;
                       return (
                         <tr key={`${arac}-${adet}`}>
                           <th scope="row" className="px-5 py-4 font-normal sm:px-8">
                             <span className="block font-semibold text-brand-text">
-                              {ARAC_TURLERI[arac].ad} · {adet === 1 ? "tek lastik" : "4 lastik"}
+                              {ARAC_TURLERI[arac].ad} · {lastikAdediEtiketi(adet).toLocaleLowerCase("tr-TR")}
                             </span>
                             <span className="text-sm text-brand-muted">
                               {ARAC_TURLERI[arac].aciklama} · {p.balansAdedi} balans dahil

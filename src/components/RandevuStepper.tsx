@@ -3,7 +3,8 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import DateGridPicker from "@/components/DateGridPicker";
 import TimeGridPicker from "@/components/TimeGridPicker";
-import { SENDIKA_SECENEKLERI } from "@/lib/sendikalar";
+import Image from "next/image";
+import { SENDIKA_LOGOLARI, SENDIKA_SECENEKLERI, sendikaBasHarfleri } from "@/lib/sendikalar";
 import { WHATSAPP_LINK } from "@/components/site/contact";
 import {
   dakikaToSaat,
@@ -22,6 +23,7 @@ import {
   LASTIK_ADETLERI,
   TAMIR_FIYATI,
   formatTL,
+  lastikAdediEtiketi,
   paketHesapla,
   type AracTuru,
   type HizmetKey
@@ -48,6 +50,30 @@ const STEP_LABELS: Record<StepId, string> = {
   iletisim: "İletişim",
   tarih: "Tarih/Saat",
   ozet: "Onay"
+};
+
+// Her adımın başında müşteriyi yönlendiren kısa açıklama
+const STEP_HINTS: Record<StepId, { baslik: string; metin: string }> = {
+  hizmet: {
+    baslik: "Randevu almak için hizmet seçiniz",
+    metin: "Lastik değiştirecekseniz “Lastik Değişimi”, patlak lastik için “Lastik Tamiri”ni seçin."
+  },
+  paket: {
+    baslik: "Araç türünü ve lastik sayısını seçiniz",
+    metin: "Önce aracınızı, ardından kaç lastik değişeceğini seçin. Fiyat kartın üzerinde yazar."
+  },
+  iletisim: {
+    baslik: "İletişim bilgilerinizi giriniz",
+    metin: "Randevuyu onaylamak için sizi bu numaradan arayacağız. Sendikanızı logosuna dokunarak seçin."
+  },
+  tarih: {
+    baslik: "Size uygun gün ve saati seçiniz",
+    metin: "Önce tarihi, sonra boş saatlerden birini seçin. Dolu saatler seçilemez."
+  },
+  ozet: {
+    baslik: "Bilgilerinizi kontrol edip randevuyu onaylayınız",
+    metin: "Her şey doğruysa “Randevu Al” butonuna basın. Değiştirmek için “Geri” ile dönebilirsiniz."
+  }
 };
 
 const cardBase =
@@ -321,6 +347,11 @@ export default function RandevuStepper({
           </div>
         ) : null}
 
+        <div className="px-1">
+          <h2 className="text-lg font-black text-white sm:text-xl">{STEP_HINTS[step].baslik}</h2>
+          <p className="mt-1 text-sm text-white/60">{STEP_HINTS[step].metin}</p>
+        </div>
+
         {/* 1) Hizmet */}
         {step === "hizmet" && (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -347,7 +378,7 @@ export default function RandevuStepper({
         {step === "paket" && (
           <div className="grid gap-6">
             <div>
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">Araç türü</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">1. Araç türünü seçin</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 {(Object.keys(ARAC_TURLERI) as AracTuru[]).map((key) => (
                   <button
@@ -369,9 +400,9 @@ export default function RandevuStepper({
             {aracTuru && (
               <div>
                 <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">
-                  Kaç lastik değişecek?
+                  2. Kaç lastik değişecek?
                 </p>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-3">
                   {LASTIK_ADETLERI.map((adet) => (
                     <button
                       type="button"
@@ -384,7 +415,7 @@ export default function RandevuStepper({
                       }}
                       className={`${cardBase} ${lastikAdedi === adet ? cardActive : cardIdle}`}
                     >
-                      <p className="text-lg font-black text-white">{adet === 1 ? "Tek lastik" : "4 lastik"}</p>
+                      <p className="text-lg font-black text-white">{lastikAdediEtiketi(adet)}</p>
                       <p className="mt-1 text-sm text-white/70">{balansBilgisi(aracTuru, adet)}</p>
                     </button>
                   ))}
@@ -415,23 +446,36 @@ export default function RandevuStepper({
                 className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white placeholder:text-white/30"
               />
             </label>
-            <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
-              Sendika
-              <select
-                value={iletisim.sendika}
-                onChange={(e) => setIletisim((p) => ({ ...p, sendika: e.target.value }))}
-                className="rounded-xl border border-white/10 bg-brand-night px-4 py-3 text-white"
-              >
-                <option value="" disabled>
-                  Sendikanızı seçiniz
-                </option>
-                {SENDIKA_SECENEKLERI.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <fieldset className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
+              <legend className="mb-2">Sendikanızı seçiniz</legend>
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {SENDIKA_SECENEKLERI.map((s) => {
+                  const logo = SENDIKA_LOGOLARI[s as keyof typeof SENDIKA_LOGOLARI];
+                  const secili = iletisim.sendika === s;
+                  return (
+                    <button
+                      type="button"
+                      key={s}
+                      aria-pressed={secili}
+                      onClick={() => {
+                        setIletisim((p) => ({ ...p, sendika: s }));
+                        setLocalError(null);
+                      }}
+                      className={`${cardBase} items-center gap-3 p-3 text-center sm:p-4 ${secili ? cardActive : cardIdle}`}
+                    >
+                      <span className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white sm:h-20 sm:w-20">
+                        {logo ? (
+                          <Image src={logo} alt="" fill sizes="80px" className="object-contain p-1" />
+                        ) : (
+                          <span className="text-xl font-black text-brand-dark">{sendikaBasHarfleri(s)}</span>
+                        )}
+                      </span>
+                      <span className="text-sm font-bold leading-snug text-white">{s}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
             <label className="flex flex-col gap-2 text-sm text-white/70 lg:col-span-2">
               Ek Not (isteğe bağlı)
               <textarea
