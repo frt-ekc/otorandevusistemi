@@ -334,7 +334,7 @@ export default function RandevuStepper({
                   <p className="text-xl font-black text-white">{HIZMETLER[key].ad}</p>
                   <p className="mt-2 text-sm text-white/70">{HIZMETLER[key].aciklama}</p>
                 </div>
-                <p className="mt-4 text-sm font-bold text-brand-gold">
+                <p className="mt-4 text-sm text-white/60">
                   {key === "tamir" ? formatTL(TAMIR_FIYATI) : "150 ₺'den başlayan fiyatlarla"}
                 </p>
               </button>
@@ -513,7 +513,7 @@ export default function RandevuStepper({
             {iletisim.not ? <Row k="Ek Not" v={iletisim.not} /> : null}
             <div className="mt-2 flex items-end justify-between border-t border-white/10 pt-3">
               <span className="text-white/60">Toplam</span>
-              <span className="text-2xl font-black text-brand-gold">{formatTL(paket.fiyat)}</span>
+              <span className="text-lg font-bold text-white">{formatTL(paket.fiyat)}</span>
             </div>
             <p className="text-xs text-white/50">Anlaşmalı sendika üyelerine özel fiyattır. Ödeme işlem sonrası dükkânda yapılır.</p>
           </div>
