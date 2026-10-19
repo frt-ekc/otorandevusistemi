@@ -4,7 +4,8 @@ export const SENDIKALAR = [
   "Öz Sağlık-İş Sendikası",
   "Öz İplik İş Sendikası",
   "Öz Güven-Sen",
-  "Hizmet-İş Sendikası"
+  "Hizmet-İş Sendikası",
+  "Öz Finans-İş Sendikası"
 ] as const;
 
 // Ana sayfadaki "Anlaşmalı kurumlar" ve randevu formundaki sendika seçimi logoları.
@@ -13,7 +14,8 @@ export const SENDIKA_LOGOLARI: Partial<Record<(typeof SENDIKALAR)[number], strin
   "Öz Sağlık-İş Sendikası": "/kurumlar/oz-saglik-is.jpg",
   "Öz İplik İş Sendikası": "/kurumlar/oz-iplik-is.jpg",
   "Öz Güven-Sen": "/kurumlar/oz-guven-sen.jpg",
-  "Hizmet-İş Sendikası": "/kurumlar/hizmet-is.png"
+  "Hizmet-İş Sendikası": "/kurumlar/hizmet-is.png",
+  "Öz Finans-İş Sendikası": "/kurumlar/oz-finans-is.jpg"
 };
 
 // Logo yoksa gösterilecek baş harfler: "Öz Sağlık-İş Sendikası" -> "ÖS"
