@@ -1,10 +1,10 @@
 // Anlaşmalı sendikalar. Randevu formunda seçilir, admin panelinde gösterilir.
 // Yeni bir anlaşma yapıldığında sadece bu listeye eklemek yeterli.
 export const SENDIKALAR = [
+  "Hizmet-İş Sendikası",
   "Öz Sağlık-İş Sendikası",
   "Öz İplik İş Sendikası",
   "Öz Güven-Sen",
-  "Hizmet-İş Sendikası",
   "Öz Finans-İş Sendikası"
 ] as const;
 
