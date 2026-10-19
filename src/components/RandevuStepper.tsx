@@ -42,12 +42,13 @@ type RandevuStepperProps = {
   initialHizmet?: HizmetKey | null;
 };
 
-// Adımlar. "paket" adımı sadece lastik değişiminde gösterilir.
+// Adımlar. "arac" ve "paket" adımları sadece lastik değişiminde gösterilir.
 // Fiyat paket kartlarında ve son onay ekranında görünür; ayrıca onay kutusu yok.
-type StepId = "hizmet" | "paket" | "iletisim" | "tarih" | "ozet";
+type StepId = "hizmet" | "arac" | "paket" | "iletisim" | "tarih" | "ozet";
 const STEP_LABELS: Record<StepId, string> = {
   hizmet: "Hizmet",
-  paket: "Araç ve Lastik",
+  arac: "Araç Türü",
+  paket: "Lastik Sayısı",
   iletisim: "İletişim",
   tarih: "Tarih/Saat",
   ozet: "Onay"
@@ -59,9 +60,13 @@ const STEP_HINTS: Record<StepId, { baslik: string; metin: string }> = {
     baslik: "Randevu almak için hizmet seçiniz",
     metin: "Lastik değiştirecekseniz “Lastik Değişimi”, patlak lastik için “Lastik Tamiri”ni seçin."
   },
+  arac: {
+    baslik: "Araç türünü seçiniz",
+    metin: "Otomobil ve SUV için “Binek Araç”, pikap ve minibüs için “Ticari Araç”ı seçin."
+  },
   paket: {
-    baslik: "Araç türünü ve lastik sayısını seçiniz",
-    metin: "Önce aracınızı, ardından kaç lastik değişeceğini seçin. Fiyat kartın üzerinde yazar."
+    baslik: "Kaç lastik değişecek?",
+    metin: "Değişecek lastik sayısını seçin. Fiyat kartın üzerinde yazar."
   },
   iletisim: {
     baslik: "İletişim bilgilerinizi giriniz",
@@ -101,7 +106,7 @@ export default function RandevuStepper({
     () =>
       hizmet === "tamir"
         ? ["hizmet", "iletisim", "tarih", "ozet"]
-        : ["hizmet", "paket", "iletisim", "tarih", "ozet"],
+        : ["hizmet", "arac", "paket", "iletisim", "tarih", "ozet"],
     [hizmet]
   );
   const [stepIndex, setStepIndex] = useState(initialHizmet ? 1 : 0);
@@ -189,8 +194,9 @@ export default function RandevuStepper({
     switch (step) {
       case "hizmet":
         return hizmet ? null : "Lütfen bir hizmet seçiniz.";
+      case "arac":
+        return aracTuru ? null : "Lütfen araç türünü seçiniz.";
       case "paket":
-        if (!aracTuru) return "Lütfen araç türünü seçiniz.";
         if (!paket) return "Lütfen kaç lastik değişeceğini seçiniz.";
         return null;
       case "iletisim":
@@ -370,80 +376,75 @@ export default function RandevuStepper({
           </div>
         )}
 
-        {/* 2) Araç türü + lastik sayısı (sadece değişim) */}
-        {step === "paket" && (
-          <div className="grid gap-6">
-            <div>
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-white/60">1. Araç türünü seçin</p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {(Object.keys(ARAC_TURLERI) as AracTuru[]).map((key) => (
+        {/* 2) Araç türü (sadece değişim) */}
+        {step === "arac" && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {(Object.keys(ARAC_TURLERI) as AracTuru[]).map((key) => (
+              <button
+                type="button"
+                key={key}
+                onClick={() => {
+                  // Araç değişince paketler de değişir (ticaride 4 lastik 2 balans yok)
+                  if (key !== aracTuru) setPaketId(null);
+                  setAracTuru(key);
+                  setLocalError(null);
+                  // Tek seçimlik adım: seçimi kısa bir an gösterip lastik sayısı adımına geç
+                  setTimeout(() => setStepIndex(steps.indexOf("paket")), 250);
+                }}
+                className={`${cardBase} min-h-[110px] sm:min-h-[140px] ${aracTuru === key ? cardActive : cardIdle}`}
+              >
+                <p className="text-xl font-black text-white">{ARAC_TURLERI[key].ad}</p>
+                <p className="mt-2 text-sm text-white/70">{ARAC_TURLERI[key].aciklama}</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* 3) Lastik sayısı (sadece değişim) */}
+        {step === "paket" && aracTuru && (
+          <div className="grid gap-3">
+            <p className="text-xs text-white/50">
+              {ARAC_TURLERI[aracTuru].ad} · Balans: lastiğin dengeli dönmesi için yapılan ayardır, direksiyonda titremeyi önler.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {DEGISIM_PAKETLERI[aracTuru].map((p) => {
+                const tamBalans = p.balans === p.lastik;
+                return (
                   <button
                     type="button"
-                    key={key}
+                    key={p.id}
                     onClick={() => {
-                      // Araç değişince paketler de değişir (ticaride 4 lastik 2 balans yok)
-                      if (key !== aracTuru) setPaketId(null);
-                      setAracTuru(key);
+                      setPaketId(p.id);
                       setLocalError(null);
+                      // Araç ve paket seçildi: seçimi kısa bir an gösterip sonraki adıma geç
+                      setTimeout(() => setStepIndex(steps.indexOf("iletisim")), 250);
                     }}
-                    className={`${cardBase} ${aracTuru === key ? cardActive : cardIdle}`}
+                    className={`${cardBase} gap-3 ${paketId === p.id ? cardActive : cardIdle}`}
                   >
-                    <p className="text-lg font-black text-white">{ARAC_TURLERI[key].ad}</p>
-                    <p className="mt-1 text-sm text-white/70">{ARAC_TURLERI[key].aciklama}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-lg font-black text-white">{lastikEtiketi(p.lastik)}</p>
+                      <p className="whitespace-nowrap text-2xl font-black text-brand-gold">{formatTL(p.fiyat)}</p>
+                    </div>
+                    <span
+                      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${
+                        tamBalans
+                          ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/40"
+                          : "bg-sky-500/15 text-sky-300 ring-1 ring-sky-400/40"
+                      }`}
+                    >
+                      <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {balansEtiketi(p)}
+                    </span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-
-            {aracTuru && (
-              <div>
-                <p className="mb-1 text-sm font-bold uppercase tracking-widest text-white/60">
-                  2. Kaç lastik değişecek?
-                </p>
-                <p className="mb-3 text-xs text-white/50">
-                  Balans: lastiğin dengeli dönmesi için yapılan ayardır, direksiyonda titremeyi önler.
-                </p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {DEGISIM_PAKETLERI[aracTuru].map((p) => {
-                    const tamBalans = p.balans === p.lastik;
-                    return (
-                      <button
-                        type="button"
-                        key={p.id}
-                        onClick={() => {
-                          setPaketId(p.id);
-                          setLocalError(null);
-                          // Araç ve paket seçildi: seçimi kısa bir an gösterip sonraki adıma geç
-                          setTimeout(() => setStepIndex(steps.indexOf("iletisim")), 250);
-                        }}
-                        className={`${cardBase} gap-3 ${paketId === p.id ? cardActive : cardIdle}`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="text-lg font-black text-white">{lastikEtiketi(p.lastik)}</p>
-                          <p className="whitespace-nowrap text-2xl font-black text-brand-gold">{formatTL(p.fiyat)}</p>
-                        </div>
-                        <span
-                          className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${
-                            tamBalans
-                              ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/40"
-                              : "bg-sky-500/15 text-sky-300 ring-1 ring-sky-400/40"
-                          }`}
-                        >
-                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
-                            <path
-                              fillRule="evenodd"
-                              d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          {balansEtiketi(p)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -601,7 +602,7 @@ export default function RandevuStepper({
               onClick={goNext}
               className="flex-1 rounded-full bg-brand-gold px-6 py-4 text-base font-bold tracking-tight text-brand-dark shadow-[0_4px_25px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95 sm:flex-none sm:px-10"
             >
-              {step === "paket" ? "İlerle" : "Devam Et"}
+              Devam Et
             </button>
           ) : (
             <button
