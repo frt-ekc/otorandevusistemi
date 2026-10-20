@@ -17,6 +17,7 @@ import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/authEdge";
 import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import RandevuSekmeleri from "@/components/admin/RandevuSekmeleri";
+import KazancOzeti from "@/components/admin/KazancOzeti";
 import LinkBekleme from "@/components/LinkBekleme";
 import SelectionWithOther from "@/components/admin/SelectionWithOther";
 import SmartTireSize from "@/components/admin/SmartTireSize";
@@ -540,7 +541,7 @@ export default async function AdminPage({
   // Sadece açık bölümün verisi çekilir; sorgular sırayla değil aynı anda çalışır
   const [lastikler, randevularRaw, urunler, hizmetler, ayarlar] = await Promise.all([
     activeView === "stok" ? getLastikler() : [],
-    activeView === "randevular" ? getRandevular() : [],
+    activeView === "randevular" || activeView === "kazanc" ? getRandevular() : [],
     activeView === "urunler" ? getUrunler() : [],
     activeView === "hizmetler" || activeView === "randevular" ? getHizmetler() : [],
     activeView === "ayarlar" ? getAyarlar() : null
@@ -548,6 +549,7 @@ export default async function AdminPage({
 
   const menu = [
     { label: "Randevular", view: "randevular" },
+    { label: "Kazanç", view: "kazanc" },
     { label: "Hizmetler", view: "hizmetler" },
     { label: "Stok", view: "stok" },
     { label: "Ürünler", view: "urunler" },
@@ -555,6 +557,7 @@ export default async function AdminPage({
   ];
   const baslik = {
     randevular: "Randevular",
+    kazanc: "Kazanç",
     hizmetler: "Hizmetler",
     stok: "Stok Yönetimi",
     urunler: "Ürünler",
@@ -665,6 +668,8 @@ export default async function AdminPage({
                 }
               />
             ) : null}
+
+            {activeView === "kazanc" ? <KazancOzeti randevular={randevularRaw} /> : null}
 
             {/* Stok sayfasında sadece stok bilgileri gösterilir. */}
 
