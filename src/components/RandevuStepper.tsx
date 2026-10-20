@@ -70,15 +70,15 @@ const STEP_HINTS: Record<StepId, { baslik: string; metin: string }> = {
   },
   iletisim: {
     baslik: "İletişim bilgilerinizi giriniz",
-    metin: "Randevuyu onaylamak için sizi bu numaradan arayacağız. Sendikanızı logosuna dokunarak seçin."
+    metin: "Randevunuz bu ad ve telefon numarasıyla kaydedilir. Sendikanızı logosuna dokunarak seçin."
   },
   tarih: {
     baslik: "Size uygun gün ve saati seçiniz",
     metin: "Önce tarihi, sonra boş saatlerden birini seçin. Dolu saatler seçilemez."
   },
   ozet: {
-    baslik: "Bilgilerinizi kontrol edip randevuyu onaylayınız",
-    metin: "Her şey doğruysa “Randevu Al” butonuna basın. Değiştirmek için “Geri” ile dönebilirsiniz."
+    baslik: "Bilgilerinizi kontrol edip randevunuzu alınız",
+    metin: "Her şey doğruysa “Randevu Al” butonuna basın; randevunuz hemen kesinleşir, ayrıca aranmazsınız. Değiştirmek için “Geri” ile dönebilirsiniz."
   }
 };
 
@@ -290,8 +290,27 @@ export default function RandevuStepper({
           </div>
           <div>
             <h2 className="text-2xl font-black text-white sm:text-3xl">Randevunuz alındı!</h2>
-            <p className="mt-2 text-sm text-white/70">Ekibimiz randevuyu onaylamak için sizi arayacak.</p>
+            <p className="mt-2 text-sm text-white/70">Randevunuz kesinleşti, ayrıca aranmayacaksınız.</p>
           </div>
+          {/* Arayıp teyit etmiyoruz: müşteri zamanında gelsin, gelemeyecekse saati boşaltsın */}
+          <ul className="grid gap-3 rounded-2xl border border-brand-gold/30 bg-brand-gold/[0.08] p-5 text-left text-sm text-white/90">
+            <li className="flex gap-3">
+              <span aria-hidden="true">⏰</span>
+              <span>
+                Lütfen randevu saatinizden <strong className="text-brand-gold">5-10 dakika önce</strong> işletmemizde bulununuz.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span aria-hidden="true">❌</span>
+              <span>
+                Randevunuza gelemeyecekseniz lütfen{" "}
+                <a href="/randevu-sorgula" className="font-bold text-brand-gold underline underline-offset-2">
+                  randevunuzu iptal ediniz
+                </a>
+                ; böylece o saati başka bir müşterimiz alabilir.
+              </span>
+            </li>
+          </ul>
           <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm text-white/80">
             <Row k="Tarih" v={tarih.label || tarih.value} />
             <Row k="Saat" v={`${saat} - ${dakikaToSaat(saatToDakika(saat) + sure)}`} />
@@ -584,6 +603,9 @@ export default function RandevuStepper({
               <span className="text-lg font-bold text-white">{formatTL(paket.fiyat)}</span>
             </div>
             <p className="text-xs text-white/50">Anlaşmalı sendika üyelerine özel fiyattır. Ödeme işlem sonrası dükkânda yapılır.</p>
+            <p className="text-xs text-white/50">
+              Randevunuz ayrıca aranmadan kesinleşir. Lütfen randevu saatinden 5-10 dakika önce işletmede olunuz; gelemeyecekseniz iptal ediniz.
+            </p>
           </div>
         )}
 
