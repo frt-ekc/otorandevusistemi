@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import RandevuCalendar from "@/components/admin/RandevuCalendar";
 import RandevuList from "@/components/admin/RandevuList";
 import { istanbulSimdi, saatToDakika } from "@/lib/calisma";
+import { formatTL } from "@/lib/lastikPaketleri";
 import type { HizmetRow, RandevuRow } from "@/lib/db";
 
-type Sekme = "aktif" | "iptal" | "gerceklesen" | "takvim";
-const SEKMELER: Sekme[] = ["aktif", "iptal", "gerceklesen", "takvim"];
+type Sekme = "bugun" | "aktif" | "gerceklesen" | "takvim" | "iptal";
+const SEKMELER: Sekme[] = ["bugun", "aktif", "gerceklesen", "takvim", "iptal"];
 
 // Saati gelmiş (başlamış) randevu "gerçekleşen" sayılır; İstanbul saatine göre
 function saatiGeldi(r: RandevuRow, simdi: { tarih: string; dakika: number }) {
@@ -15,7 +16,13 @@ function saatiGeldi(r: RandevuRow, simdi: { tarih: string; dakika: number }) {
   return saatToDakika(r.saat) <= simdi.dakika;
 }
 
-// Aktif / İptal / Gerçekleşen / Takvim aynı veriyi farklı süzer. Veri sayfa açılırken bir kez gelir,
+// "2026-10" -> "Ekim"
+function ayAdi(tarih: string) {
+  const [y, m] = tarih.split("-").map(Number);
+  return new Intl.DateTimeFormat("tr-TR", { timeZone: "UTC", month: "long" }).format(new Date(Date.UTC(y, m - 1, 1)));
+}
+
+// Bugün / Aktif / Gerçekleşen / Takvim / İptal aynı veriyi farklı süzer. Veri sayfa açılırken bir kez gelir,
 // sekmeler arası geçiş sunucuya gitmeden anında olur. Adres çubuğu da güncellenir ki
 // sayfa yenilenince aynı sekme açılsın.
 export default function RandevuSekmeleri({
@@ -34,20 +41,37 @@ export default function RandevuSekmeleri({
   onDelete: (id: string) => Promise<void>;
 }) {
   const [sekme, setSekme] = useState<Sekme>(
-    SEKMELER.includes(ilkSekme as Sekme) ? (ilkSekme as Sekme) : "aktif"
+    SEKMELER.includes(ilkSekme as Sekme) ? (ilkSekme as Sekme) : "bugun"
   );
 
-  const simdi = istanbulSimdi();
+  // Sayfa açık kalsa da saati gelen randevu Aktif'ten Gerçekleşenler'e geçsin ve kazanca eklensin
+  const [simdi, setSimdi] = useState(() => istanbulSimdi());
+  useEffect(() => {
+    const t = setInterval(() => setSimdi(istanbulSimdi()), 30_000);
+    return () => clearInterval(t);
+  }, []);
+
   const iptalOlmayanlar = randevular.filter((r) => r.durum !== "iptal");
+  const bugunkuler = iptalOlmayanlar.filter((r) => r.tarih === simdi.tarih);
   const aktifler = iptalOlmayanlar.filter((r) => !saatiGeldi(r, simdi));
   const gerceklesenler = iptalOlmayanlar.filter((r) => saatiGeldi(r, simdi));
   const iptaller = randevular.filter((r) => r.durum === "iptal");
 
+  // Kazanç sadece saati geçmiş (gerçekleşmiş) ve iptal edilmemiş randevulardan hesaplanır
+  const buAy = simdi.tarih.slice(0, 7);
+  const buAyGerceklesen = gerceklesenler.filter((r) => r.tarih.startsWith(buAy));
+  const toplamTutar = (liste: RandevuRow[]) => liste.reduce((t, r) => t + (r.fiyat ?? 0), 0);
+  const kazanclar = [
+    { label: `Bu ay kazanılan (${ayAdi(buAy)})`, tutar: toplamTutar(buAyGerceklesen), adet: buAyGerceklesen.length },
+    { label: "Toplam kazanılan", tutar: toplamTutar(gerceklesenler), adet: gerceklesenler.length }
+  ];
+
   const sekmeler: { slug: Sekme; label: string; count: number }[] = [
+    { slug: "bugun", label: "Bugünün Randevuları", count: bugunkuler.length },
     { slug: "aktif", label: "Aktif Randevular", count: aktifler.length },
-    { slug: "iptal", label: "İptal Edilenler", count: iptaller.length },
     { slug: "gerceklesen", label: "Gerçekleşenler", count: gerceklesenler.length },
-    { slug: "takvim", label: "Takvim Görünümü", count: iptalOlmayanlar.length }
+    { slug: "takvim", label: "Takvim Görünümü", count: iptalOlmayanlar.length },
+    { slug: "iptal", label: "İptal Edilenler", count: iptaller.length }
   ];
 
   const sec = (slug: Sekme) => {
@@ -57,7 +81,17 @@ export default function RandevuSekmeleri({
 
   return (
     <>
-      <section className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-2 sm:gap-4">
+        {kazanclar.map((k) => (
+          <div key={k.label} className="rounded-3xl border border-emerald-400/20 bg-emerald-500/[0.06] p-3 sm:p-6">
+            <p className="text-xs leading-tight text-brand-muted sm:text-sm">{k.label}</p>
+            <p className="mt-2 font-display text-2xl font-extrabold text-emerald-300 sm:mt-4 sm:text-4xl">{formatTL(k.tutar)}</p>
+            <p className="mt-1 text-xs text-brand-muted">{k.adet} gerçekleşen randevu</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {sekmeler.map((tab) => {
           const active = sekme === tab.slug;
           return (
@@ -92,7 +126,15 @@ export default function RandevuSekmeleri({
             <RandevuCalendar randevular={iptalOlmayanlar} hizmetler={hizmetler} onCancel={onCancel} />
           ) : (
             <RandevuList
-              randevular={sekme === "aktif" ? aktifler : sekme === "iptal" ? iptaller : gerceklesenler}
+              randevular={
+                sekme === "bugun"
+                  ? bugunkuler
+                  : sekme === "aktif"
+                    ? aktifler
+                    : sekme === "iptal"
+                      ? iptaller
+                      : gerceklesenler
+              }
               onCancel={onCancel}
               onDelete={onDelete}
             />
