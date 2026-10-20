@@ -14,3 +14,14 @@ export async function requireAdmin(): Promise<AuthUser> {
   }
   return user;
 }
+
+// Kazanç sayfasını görebilecek hesaplar: KAZANC_EMAILS="patron@x.com,ortak@y.com"
+// Depo herkese açık olduğu için liste kodda değil Vercel ortam değişkeninde tutulur.
+// Tanımlı değilse kimse göremez: çalışan hesabına yanlışlıkla açılmasın.
+export function kazancGorebilir(user: AuthUser) {
+  const list = (process.env.KAZANC_EMAILS ?? "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  return Boolean(user.email && list.includes(user.email.toLowerCase()));
+}

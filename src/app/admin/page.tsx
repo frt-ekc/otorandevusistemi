@@ -12,7 +12,7 @@ import {
   deleteLastik
 } from "@/lib/db";
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { requireAdmin } from "@/lib/auth";
+import { kazancGorebilir, requireAdmin } from "@/lib/auth";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/authEdge";
 import { revalidatePath } from "next/cache";
 import Image from "next/image";
@@ -524,7 +524,8 @@ export default async function AdminPage({
     tab?: string;
   }>;
 }) {
-  await requireAdmin();
+  const user = await requireAdmin();
+  const kazancAcik = kazancGorebilir(user);
   const resolvedParams = searchParams ? await searchParams : undefined;
   const lastikStatus = resolvedParams?.lastik;
   const randevuStatus = resolvedParams?.randevu;
@@ -535,7 +536,9 @@ export default async function AdminPage({
     ? decodeURIComponent(resolvedParams.error)
     : "";
   const insertedId = resolvedParams?.id ?? "";
-  const activeView = resolvedParams?.view ?? "randevular";
+  const istenenView = resolvedParams?.view ?? "randevular";
+  // Yetkisi olmayan hesap adres çubuğuna ?view=kazanc yazsa da randevulara düşer
+  const activeView = istenenView === "kazanc" && !kazancAcik ? "randevular" : istenenView;
   const isUrunFormOpen = resolvedParams?.urunEkle === "1";
   const activeTab = resolvedParams?.tab ?? "bugun";
   // Sadece açık bölümün verisi çekilir; sorgular sırayla değil aynı anda çalışır
@@ -549,7 +552,7 @@ export default async function AdminPage({
 
   const menu = [
     { label: "Randevular", view: "randevular" },
-    { label: "Kazanç", view: "kazanc" },
+    ...(kazancAcik ? [{ label: "Kazanç", view: "kazanc" }] : []),
     { label: "Hizmetler", view: "hizmetler" },
     { label: "Stok", view: "stok" },
     { label: "Ürünler", view: "urunler" },
