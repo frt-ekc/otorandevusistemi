@@ -12,6 +12,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [sifreGorunur, setSifreGorunur] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -67,13 +68,35 @@ function LoginForm() {
         </label>
         <label className="flex flex-col gap-2 text-sm text-white/70">
           Şifre
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="rounded-xl border border-white/10 bg-brand-dark px-4 py-3 text-brand-text outline-none transition-colors focus:border-brand-gold"
-            required
-          />
+          {/* Göz: yazılan şifreyi kontrol etmek için göster / gizle */}
+          <span className="relative">
+            <input
+              type={sifreGorunur ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              className="w-full rounded-xl border border-white/10 bg-brand-dark py-3 pl-4 pr-12 text-brand-text outline-none transition-colors focus:border-brand-gold"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setSifreGorunur((v) => !v)}
+              aria-label={sifreGorunur ? "Şifreyi gizle" : "Şifreyi göster"}
+              aria-pressed={sifreGorunur}
+              className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-white/50 transition-colors hover:text-brand-gold"
+            >
+              {sifreGorunur ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 8.5 4.5 9.5 7a12.6 12.6 0 0 1-2.9 4.1M6.1 6.1A12.4 12.4 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 4.3-1" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12C3.5 9.5 7 5 12 5s8.5 4.5 9.5 7c-1 2.5-4.5 7-9.5 7s-8.5-4.5-9.5-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </span>
         </label>
         <button
           type="submit"
