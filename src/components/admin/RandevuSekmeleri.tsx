@@ -45,8 +45,9 @@ export default function RandevuSekmeleri({
   }, []);
 
   const iptalOlmayanlar = randevular.filter((r) => r.durum !== "iptal");
-  const bugunkuler = iptalOlmayanlar.filter((r) => r.tarih === simdi.tarih);
   const aktifler = iptalOlmayanlar.filter((r) => !saatiGeldi(r, simdi));
+  // Bugün: saati henüz gelmemiş bugünkü randevular; saati gelen sadece Gerçekleşenler'de görünür
+  const bugunkuler = aktifler.filter((r) => r.tarih === simdi.tarih);
   const gerceklesenler = iptalOlmayanlar.filter((r) => saatiGeldi(r, simdi));
   const iptaller = randevular.filter((r) => r.durum === "iptal");
 
