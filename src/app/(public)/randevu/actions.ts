@@ -4,6 +4,8 @@ import { getSupabaseServerClient } from "@/lib/supabase";
 import { SENDIKA_SECENEKLERI, normalizePhone } from "@/lib/sendikalar";
 import { paketHesapla } from "@/lib/lastikPaketleri";
 import { getAyarlar } from "@/lib/db";
+import { randevuMesajiGonder } from "@/lib/whatsapp";
+import { after } from "next/server";
 import {
     ILERI_GUN,
     calismaSaatleri,
@@ -64,7 +66,8 @@ export async function createAppointment(
     if (!/^\d{4}-\d{2}-\d{2}$/.test(payload.tarih) || payload.tarih < simdi.tarih || payload.tarih > tarihEkle(simdi.tarih, ILERI_GUN)) {
         return { ok: false, message: "Lütfen geçerli bir tarih seçiniz." };
     }
-    const saatler = calismaSaatleri(await getAyarlar().catch(() => null));
+    const ayarlar = await getAyarlar().catch(() => null);
+    const saatler = calismaSaatleri(ayarlar);
     const gecerliSaatler = gununSaatleri(saatler, payload.tarih, sure).filter(
         (s) => payload.tarih !== simdi.tarih || saatToDakika(s) > simdi.dakika
     );
@@ -105,6 +108,13 @@ export async function createAppointment(
     if (error) {
         return { ok: false, message: error.message };
     }
+
+    // WhatsApp onayı yanıttan sonra gönderilir; gecikse ya da hata verse de randevu etkilenmez.
+    after(() =>
+        randevuMesajiGonder({ ...payload, adres: ayarlar?.adres }).catch((e) =>
+            console.error("WhatsApp mesajı gönderilemedi:", e)
+        )
+    );
     return { ok: true };
 }
 
