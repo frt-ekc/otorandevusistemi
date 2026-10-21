@@ -148,7 +148,7 @@ export default function RandevuStepper({
       .catch(() => setMevcutRandevular([]));
   }, [tarih.value, getReservedSlots]);
 
-  // Seçilen hizmetin dükkânda kapladığı süre: tek lastik / tamir 30 dk, 4 lastik 60 dk
+  // Seçilen hizmetin dükkânda kapladığı süre (her işlem 30 dk)
   const sure = hizmetSuresi({ hizmetKey: hizmet, lastik_adedi: paket?.lastikAdedi });
 
   // Süre değişirse (ör. geri dönüp 4 lastiğe geçilirse) seçili saat artık uymayabilir

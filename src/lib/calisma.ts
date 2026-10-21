@@ -39,10 +39,13 @@ export function calismaSaatleri(ayarlar: Pick<AyarlarRow, "hafta_ici" | "cumarte
   };
 }
 
-// Hizmetin dükkânda kapladığı süre. Tek/2 lastik ve tamir yarım saat, 4 lastik bir saat.
-export function hizmetSuresi(row: { hizmet?: string | null; hizmetKey?: string | null; lastik_adedi?: number | null }) {
-  const degisim = row.hizmetKey === "degisim" || /değişim|degisim/i.test(row.hizmet ?? "");
-  return degisim && Number(row.lastik_adedi) === 4 ? 60 : 30;
+// Hizmetin dükkânda kapladığı süre: her işlem (4 lastik dahil) yarım saat.
+// Parametre, ileride hizmete göre farklı süre gerekirse çağıranlar değişmesin diye duruyor.
+export const ISLEM_SURESI = 30;
+export function hizmetSuresi(
+  _row: { hizmet?: string | null; hizmetKey?: string | null; lastik_adedi?: number | null }
+) {
+  return ISLEM_SURESI;
 }
 
 export function dakikaToSaat(dk: number) {
