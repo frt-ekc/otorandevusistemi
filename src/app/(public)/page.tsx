@@ -3,6 +3,7 @@ import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import { getAyarlar } from "@/lib/db";
 import { SENDIKALAR, SENDIKA_LOGOLARI, sendikaBasHarfleri } from "@/lib/sendikalar";
+import { MARKALAR } from "@/lib/markalar";
 import {
   ARAC_TURLERI,
   DEGISIM_PAKETLERI,
@@ -172,6 +173,36 @@ export default async function HomePage() {
                 Hemen randevu al →
               </Link>
             </p>
+          </Reveal>
+        </section>
+
+        {/* MARKALAR */}
+        <section id="markalar" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-16 sm:px-6 lg:pt-24">
+          <Reveal>
+            <h2 className="text-3xl font-extrabold leading-tight text-brand-text sm:text-4xl">Çalıştığımız markalar</h2>
+            <p className="mt-4 max-w-xl text-brand-muted">
+              Dünyanın önde gelen lastik markaları dükkânımızda. Aradığınız ebat için bizi arayın.
+            </p>
+          </Reveal>
+          <Reveal delay={120}>
+            <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+              {MARKALAR.map((m) => (
+                <li
+                  key={m.ad}
+                  className="group flex h-24 items-center justify-center rounded-3xl border border-white/10 bg-brand-slate px-5 transition-colors hover:border-brand-gold/40 sm:h-28"
+                >
+                  <div className="relative h-12 w-full sm:h-14">
+                    <Image
+                      src={m.logo}
+                      alt={`${m.ad} logosu`}
+                      fill
+                      sizes="(min-width: 1024px) 160px, 45vw"
+                      className="object-contain opacity-80 transition-opacity group-hover:opacity-100"
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </section>
 
