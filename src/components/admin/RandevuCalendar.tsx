@@ -98,8 +98,8 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
     };
 
     return (
-        <div className="flex flex-col gap-6 lg:flex-row">
-            <div className="flex-1 flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-6 xl:flex-row">
+            <div className="flex min-w-0 flex-1 flex-col gap-4">
                 {/* Filtre Alanı */}
                 <div className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-brand-slate p-3 sm:p-4">
                     <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                     </div>
                 </div>
 
-                <div className="rounded-3xl border border-white/10 bg-brand-slate p-3 sm:p-4 min-h-[600px]">
+                <div className="min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-brand-slate p-3 sm:p-4 min-h-[600px]">
                     <style jsx global>{`
             /* Sitedeki tasarım: asfalt zemin, ince çizgiler, tabela sarısı vurgu */
             .rbc-calendar { color: #EEEAE3; font-family: inherit; }
@@ -136,6 +136,7 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
             .rbc-event, .rbc-event.rbc-selected { background: #FACC15; color: #141312; border: none; border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 1px 6px; }
             .rbc-show-more { color: #FACC15; background: transparent; font-weight: 700; }
             .rbc-toolbar { gap: 8px; flex-wrap: wrap; }
+            .rbc-event-content { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .rbc-toolbar button { color: #EEEAE3; border: 1px solid rgba(255, 255, 255, 0.15); background: transparent; font-weight: 600; font-size: 13px; border-radius: 999px !important; padding: 6px 14px; }
             .rbc-toolbar button:hover, .rbc-toolbar button:focus { background: rgba(255, 255, 255, 0.06); color: #EEEAE3; border-color: rgba(255, 255, 255, 0.3); }
             .rbc-toolbar button.rbc-active { background: #FACC15; color: #141312; border-color: #FACC15; box-shadow: none; }
@@ -176,8 +177,8 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
             </div>
 
             {/* Detay Paneli */}
-            <div className="w-full lg:w-96 flex flex-col gap-4">
-                <div className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6 lg:sticky lg:top-6">
+            <div className="flex w-full min-w-0 flex-col gap-4 xl:w-80 xl:shrink-0">
+                <div className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6 xl:sticky xl:top-6">
                     <h2 className="text-xl font-bold text-brand-text mb-1">
                         {format(selectedDate, "d MMMM yyyy", { locale: tr })}
                     </h2>
@@ -185,7 +186,7 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
                         Günün Randevuları
                     </p>
 
-                    <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                    <div className="space-y-4 max-h-[70vh] overflow-y-auto break-words pr-2">
                         {selectedDayAppointments.length > 0 ? (
                             selectedDayAppointments.map((r) => (
                                 <div key={r.id} className={`p-4 rounded-xl border transition-all ${r.durum === 'iptal' ? 'border-red-500/20 bg-red-500/5 opacity-60' : 'border-white/10 bg-white/5 hover:bg-white/10'
