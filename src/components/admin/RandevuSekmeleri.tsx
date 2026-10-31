@@ -92,7 +92,7 @@ export default function RandevuSekmeleri({
         })}
       </section>
 
-      <section id="randevular" className="rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6">
+      <section id="randevular" className="min-w-0 rounded-3xl border border-white/10 bg-brand-slate p-5 sm:p-6">
         <p className="text-sm font-semibold text-brand-gold">Randevular</p>
         <p className="mt-1 font-display text-xl font-extrabold text-brand-text [font-stretch:112%]">Gelen randevular</p>
         {bildirim}
