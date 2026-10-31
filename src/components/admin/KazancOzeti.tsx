@@ -16,6 +16,14 @@ function ayBasligi(ay: string) {
 
 const toplamTutar = (liste: RandevuRow[]) => liste.reduce((t, r) => t + (r.fiyat ?? 0), 0);
 
+// "2026-10-05" -> "5 Eki Paz"
+function kisaTarih(tarih: string) {
+  const [y, m, d] = tarih.split("-").map(Number);
+  return new Intl.DateTimeFormat("tr-TR", { timeZone: "UTC", day: "numeric", month: "short", weekday: "short" }).format(
+    new Date(Date.UTC(y, m - 1, d))
+  );
+}
+
 // Kazanç sadece saati geçmiş (gerçekleşmiş) ve iptal edilmemiş randevulardan hesaplanır.
 // Sayfa açık kalsa da saati gelen randevu 30 sn içinde tutara eklenir.
 export default function KazancOzeti({ randevular }: { randevular: RandevuRow[] }) {
@@ -24,6 +32,7 @@ export default function KazancOzeti({ randevular }: { randevular: RandevuRow[] }
     const t = setInterval(() => setSimdi(istanbulSimdi()), 30_000);
     return () => clearInterval(t);
   }, []);
+  const [acikAy, setAcikAy] = useState<string | null>(null);
 
   const gerceklesenler = randevular.filter((r) => r.durum !== "iptal" && saatiGeldi(r, simdi));
   const buAy = simdi.tarih.slice(0, 7);
@@ -62,17 +71,56 @@ export default function KazancOzeti({ randevular }: { randevular: RandevuRow[] }
           <p className="mt-6 text-sm italic text-brand-muted">Henüz gerçekleşen randevu yok.</p>
         ) : (
           <ul className="mt-4 divide-y divide-white/5">
-            {aylik.map(([ay, liste]) => (
-              <li key={ay} className="flex items-baseline justify-between gap-4 px-2 py-3">
-                <span className="font-bold text-brand-text">{ayBasligi(ay)}</span>
-                <span className="flex items-baseline gap-3">
-                  <span className="text-xs text-brand-muted">{liste.length} randevu</span>
-                  <span className="font-display text-lg font-extrabold tabular-nums text-emerald-300">
-                    {formatTL(toplamTutar(liste))}
-                  </span>
-                </span>
-              </li>
-            ))}
+            {aylik.map(([ay, liste]) => {
+              const acik = acikAy === ay;
+              const sirali = [...liste].sort((a, b) => (a.tarih + a.saat).localeCompare(b.tarih + b.saat));
+              return (
+                <li key={ay}>
+                  <button
+                    type="button"
+                    onClick={() => setAcikAy(acik ? null : ay)}
+                    aria-expanded={acik}
+                    className="flex w-full items-baseline justify-between gap-4 rounded-xl px-2 py-3 text-left transition hover:bg-white/[0.03]"
+                  >
+                    <span className="flex items-baseline gap-2 font-bold text-brand-text">
+                      <span className={`inline-block text-xs text-brand-muted transition-transform ${acik ? "rotate-90" : ""}`}>▶</span>
+                      {ayBasligi(ay)}
+                    </span>
+                    <span className="flex items-baseline gap-3">
+                      <span className="text-xs text-brand-muted">{liste.length} randevu</span>
+                      <span className="font-display text-lg font-extrabold tabular-nums text-emerald-300">
+                        {formatTL(toplamTutar(liste))}
+                      </span>
+                    </span>
+                  </button>
+                  {acik ? (
+                    <ul className="mb-3 ml-2 space-y-1.5 border-l border-white/10 pl-3 sm:ml-5">
+                      {sirali.map((r) => (
+                        <li
+                          key={r.id}
+                          className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 rounded-xl bg-white/[0.03] px-3 py-2 text-sm"
+                        >
+                          <span className="min-w-0">
+                            <span className="font-semibold text-brand-text">{r.ad}</span>
+                            <span className="ml-2 text-xs text-brand-muted">
+                              {kisaTarih(r.tarih)} · {r.saat.slice(0, 5)}
+                            </span>
+                            <span className="block text-xs text-brand-muted">
+                              {[r.hizmet, r.plaka].filter(Boolean).join(" · ")}
+                              {" · "}
+                              <a href={`tel:${r.telefon}`} className="hover:text-brand-gold">
+                                {r.telefon}
+                              </a>
+                            </span>
+                          </span>
+                          <span className="font-display font-bold tabular-nums text-emerald-300">{formatTL(r.fiyat ?? 0)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
