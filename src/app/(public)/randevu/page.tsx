@@ -23,6 +23,7 @@ export default async function RandevuPage({
   return (
     <div className="min-h-screen">
       <TopNav />
+      <KisLastigiUyarisi bugun={bugun} />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-3 py-4 sm:px-4 sm:py-8 lg:py-12">
         <section className="glass-card bg-haze overflow-hidden rounded-[2rem] p-1 shadow-2xl sm:rounded-[2.5rem]">
           <div className="w-full rounded-[2.3rem] bg-brand-slate/70 p-3 backdrop-blur-md border border-white/10 sm:p-6 lg:p-12">
@@ -35,7 +36,6 @@ export default async function RandevuPage({
                   <span className="text-brand-gold">Hızlı ve Güvenli</span> <br className="hidden sm:block" />
                   Randevu Sistemi
                 </h1>
-                <KisLastigiUyarisi bugun={bugun} />
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-lg lg:mx-0">
                   Anlaşmalı sendika üyelerine özel fiyatlarla lastik değişimi ve tamiri. Paketinizi seçin, fiyatı görün, randevunuzu alın.
                 </p>
