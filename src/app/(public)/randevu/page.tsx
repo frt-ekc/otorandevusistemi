@@ -2,6 +2,7 @@ import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import { createAppointment, getReservedSlots } from "./actions";
 import RandevuStepper from "@/components/RandevuStepper";
+import KisLastigiUyarisi from "@/components/KisLastigiUyarisi";
 import { hizmetKeyFromName } from "@/lib/lastikPaketleri";
 import { getAyarlar } from "@/lib/db";
 import { ILERI_GUN, calismaSaatleri, istanbulSimdi, tarihEkle } from "@/lib/calisma";
@@ -22,6 +23,7 @@ export default async function RandevuPage({
   return (
     <div className="min-h-screen">
       <TopNav />
+      <KisLastigiUyarisi bugun={bugun} />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-3 py-4 sm:px-4 sm:py-8 lg:py-12">
         <section className="glass-card bg-haze overflow-hidden rounded-[2rem] p-1 shadow-2xl sm:rounded-[2.5rem]">
           <div className="w-full rounded-[2.3rem] bg-brand-slate/70 p-3 backdrop-blur-md border border-white/10 sm:p-6 lg:p-12">
