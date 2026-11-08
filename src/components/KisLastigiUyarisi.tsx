@@ -64,11 +64,15 @@ export default function KisLastigiUyarisi({ bugun }: { bugun: string }) {
           ❄️
         </div>
         <h2 id="kis-lastigi-baslik" className="mt-4 text-xl font-black text-white sm:text-2xl">
-          Kış lastiği zorunluluğu
+          Müşterilerimizin Dikkatine
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
-          Malatya&apos;da kış lastiği zorunluluğu <strong className="text-white">15 Kasım 2026</strong> ile{" "}
-          <strong className="text-white">15 Nisan 2027</strong> tarihleri arasında geçerlidir.
+          Malatya&apos;da kış lastiği zorunluluğu <strong className="text-white">15 Kasım 2026</strong> itibarıyla
+          başlıyor ve <strong className="text-white">15 Nisan 2027</strong> tarihine kadar sürüyor.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
+          15 Kasım&apos;dan itibaren kış lastiği takılı olmayan araçlara trafik denetimlerinde{" "}
+          <strong className="text-white">idari para cezası</strong> uygulanmaktadır.
         </p>
       </div>
     </div>
