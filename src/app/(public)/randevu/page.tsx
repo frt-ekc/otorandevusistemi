@@ -2,6 +2,7 @@ import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import { createAppointment, getReservedSlots } from "./actions";
 import RandevuStepper from "@/components/RandevuStepper";
+import KisLastigiUyarisi from "@/components/KisLastigiUyarisi";
 import { hizmetKeyFromName } from "@/lib/lastikPaketleri";
 import { getAyarlar } from "@/lib/db";
 import { ILERI_GUN, calismaSaatleri, istanbulSimdi, tarihEkle } from "@/lib/calisma";
@@ -34,6 +35,7 @@ export default async function RandevuPage({
                   <span className="text-brand-gold">Hızlı ve Güvenli</span> <br className="hidden sm:block" />
                   Randevu Sistemi
                 </h1>
+                <KisLastigiUyarisi bugun={bugun} />
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-lg lg:mx-0">
                   Anlaşmalı sendika üyelerine özel fiyatlarla lastik değişimi ve tamiri. Paketinizi seçin, fiyatı görün, randevunuzu alın.
                 </p>
