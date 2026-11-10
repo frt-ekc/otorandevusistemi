@@ -1,6 +1,6 @@
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
-import { createAppointment, getReservedSlots } from "./actions";
+import { createAppointment, getReservedSlots, mevcutRandevular } from "./actions";
 import RandevuStepper from "@/components/RandevuStepper";
 import KisLastigiUyarisi from "@/components/KisLastigiUyarisi";
 import { hizmetKeyFromName } from "@/lib/lastikPaketleri";
@@ -61,6 +61,7 @@ export default async function RandevuPage({
                 <RandevuStepper
                   action={createAppointment}
                   getReservedSlots={getReservedSlots}
+                  mevcutRandevular={mevcutRandevular}
                   calismaSaatleri={saatler}
                   minDate={bugun}
                   maxDate={tarihEkle(bugun, ILERI_GUN)}

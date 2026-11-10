@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import DateGridPicker from "@/components/DateGridPicker";
 import TimeGridPicker from "@/components/TimeGridPicker";
+import MevcutRandevuUyarisi, { type MevcutRandevu } from "@/components/MevcutRandevuUyarisi";
 import Image from "next/image";
 import { SENDIKA_LOGOLARI, SENDIKA_SECENEKLERI, sendikaBasHarfleri } from "@/lib/sendikalar";
 import { WHATSAPP_LINK } from "@/components/site/contact";
@@ -36,6 +37,7 @@ type RandevuStepperProps = {
     formData: FormData
   ) => Promise<{ ok: boolean; message?: string }>;
   getReservedSlots: (date: string) => Promise<Aralik[]>;
+  mevcutRandevular: (ad: string, telefon: string) => Promise<MevcutRandevu[]>;
   calismaSaatleri: CalismaSaatleri;
   minDate: string;
   maxDate: string;
@@ -90,6 +92,7 @@ const cardActive = "border-brand-gold bg-brand-gold/20 scale-[1.02]";
 export default function RandevuStepper({
   action,
   getReservedSlots,
+  mevcutRandevular: mevcutRandevuSorgula,
   calismaSaatleri,
   minDate,
   maxDate,
@@ -125,6 +128,10 @@ export default function RandevuStepper({
   const submitIntentRef = useRef(false);
   const topRef = useRef<HTMLDivElement | null>(null);
   const firstRenderRef = useRef(true);
+  // Aynı kişinin (ad + telefon) zaten aktif randevusu varsa iletişim adımından sonra uyarı çıkar
+  const [uyariRandevulari, setUyariRandevulari] = useState<MevcutRandevu[] | null>(null);
+  const [kontrolEdiliyor, setKontrolEdiliyor] = useState(false);
+  const kontrolEdilenRef = useRef<string | null>(null);
 
   // Adım değişince formun başına kaydır: telefonda yeni adım ekranın dışında kalmasın
   useEffect(() => {
@@ -222,7 +229,32 @@ export default function RandevuStepper({
       return;
     }
     setLocalError(null);
+    if (step === "iletisim") {
+      // Aynı bilgilerle bir kez kontrol edilip karar verildiyse tekrar sorulmaz
+      const anahtar = `${iletisim.ad.trim().toLocaleLowerCase("tr-TR")}|${iletisim.telefon.replace(/\D/g, "")}`;
+      if (kontrolEdilenRef.current !== anahtar) {
+        setKontrolEdiliyor(true);
+        mevcutRandevuSorgula(iletisim.ad, iletisim.telefon)
+          .catch(() => [])
+          .then((liste) => {
+            setKontrolEdiliyor(false);
+            if (liste.length > 0) {
+              setUyariRandevulari(liste);
+              return;
+            }
+            kontrolEdilenRef.current = anahtar;
+            setStepIndex((i) => Math.min(i + 1, steps.length - 1));
+          });
+        return;
+      }
+    }
     setStepIndex((i) => Math.min(i + 1, steps.length - 1));
+  };
+
+  const uyaridanDevam = () => {
+    kontrolEdilenRef.current = `${iletisim.ad.trim().toLocaleLowerCase("tr-TR")}|${iletisim.telefon.replace(/\D/g, "")}`;
+    setUyariRandevulari(null);
+    setStepIndex(steps.indexOf("tarih"));
   };
 
   const goBack = () => {
@@ -622,9 +654,10 @@ export default function RandevuStepper({
             <button
               type="button"
               onClick={goNext}
+              disabled={kontrolEdiliyor}
               className="flex-1 rounded-full bg-brand-gold px-6 py-4 text-base font-bold tracking-tight text-brand-dark shadow-[0_4px_25px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95 sm:flex-none sm:px-10"
             >
-              Devam Et
+              {kontrolEdiliyor ? "Kontrol ediliyor..." : "Devam Et"}
             </button>
           ) : (
             <button
@@ -641,6 +674,15 @@ export default function RandevuStepper({
         </div>
       </form>
       )}
+      {uyariRandevulari ? (
+        <MevcutRandevuUyarisi
+          randevular={uyariRandevulari}
+          ad={iletisim.ad}
+          telefon={iletisim.telefon}
+          onDevam={uyaridanDevam}
+          onKapat={() => setUyariRandevulari(null)}
+        />
+      ) : null}
     </div>
   );
 }

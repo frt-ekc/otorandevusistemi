@@ -3,7 +3,8 @@
 import { getSupabaseServerClient } from "@/lib/supabase";
 import { SENDIKA_SECENEKLERI, normalizePhone } from "@/lib/sendikalar";
 import { paketHesapla } from "@/lib/lastikPaketleri";
-import { getAyarlar } from "@/lib/db";
+import { getAyarlar, searchRandevular } from "@/lib/db";
+import { iptalEdilebilirMi } from "@/app/(public)/randevu-sorgula/actions";
 import {
     ILERI_GUN,
     calismaSaatleri,
@@ -144,6 +145,24 @@ export async function getReservedSlots(date: string): Promise<Aralik[]> {
     try {
         return await doluAraliklar(date);
     } catch {
+        return [];
+    }
+}
+
+// Aynı ad + telefonla alınmış, henüz saati gelmemiş aktif randevular.
+// Randevu Sorgula sayfasındaki gibi ad ve telefon birlikte eşleşmeli; sadece telefonla bilgi verilmez.
+export async function mevcutRandevular(ad: string, telefon: string) {
+    try {
+        const bulunanlar = await searchRandevular(ad, telefon);
+        const aktifler = [];
+        for (const r of bulunanlar) {
+            if (r.durum === "iptal") continue;
+            if (!(await iptalEdilebilirMi(r.tarih, r.saat))) continue;
+            aktifler.push({ id: r.id, tarih: r.tarih, saat: String(r.saat).slice(0, 5), hizmet: r.hizmet });
+        }
+        return aktifler.sort((a, b) => `${a.tarih} ${a.saat}`.localeCompare(`${b.tarih} ${b.saat}`));
+    } catch {
+        // Kontrol yapılamazsa müşteri engellenmez; aynı gün kuralı kayıtta yine denetlenir
         return [];
     }
 }
