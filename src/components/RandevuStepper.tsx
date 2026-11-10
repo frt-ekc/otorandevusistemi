@@ -4,8 +4,9 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import DateGridPicker from "@/components/DateGridPicker";
 import TimeGridPicker from "@/components/TimeGridPicker";
 import MevcutRandevuUyarisi, { type MevcutRandevu } from "@/components/MevcutRandevuUyarisi";
+import type { RandevuSonucu } from "@/app/(public)/randevu/actions";
 import Image from "next/image";
-import { SENDIKA_LOGOLARI, SENDIKA_SECENEKLERI, sendikaBasHarfleri } from "@/lib/sendikalar";
+import { SENDIKA_LOGOLARI, SENDIKA_SECENEKLERI, adAnahtari, sendikaBasHarfleri, telefonAnahtari } from "@/lib/sendikalar";
 import { WHATSAPP_LINK } from "@/components/site/contact";
 import {
   dakikaToSaat,
@@ -32,10 +33,7 @@ import {
 } from "@/lib/lastikPaketleri";
 
 type RandevuStepperProps = {
-  action: (
-    prevState: { ok: boolean; message?: string },
-    formData: FormData
-  ) => Promise<{ ok: boolean; message?: string }>;
+  action: (prevState: RandevuSonucu, formData: FormData) => Promise<RandevuSonucu>;
   getReservedSlots: (date: string) => Promise<Aralik[]>;
   mevcutRandevular: (ad: string, telefon: string) => Promise<MevcutRandevu[]>;
   calismaSaatleri: CalismaSaatleri;
@@ -131,7 +129,22 @@ export default function RandevuStepper({
   // Aynı kişinin (ad + telefon) zaten aktif randevusu varsa iletişim adımından sonra uyarı çıkar
   const [uyariRandevulari, setUyariRandevulari] = useState<MevcutRandevu[] | null>(null);
   const [kontrolEdiliyor, setKontrolEdiliyor] = useState(false);
-  const kontrolEdilenRef = useRef<string | null>(null);
+  // Müşterinin uyarıda seçim yaptığı ad + telefon. Sunucu da bu onayı görmeden kaydı almaz.
+  const [onayAnahtari, setOnayAnahtari] = useState<string | null>(null);
+  const kisiAnahtari = `${adAnahtari(iletisim.ad)}|${telefonAnahtari(iletisim.telefon)}`;
+  const mevcutOnay = onayAnahtari === kisiAnahtari;
+
+  // Mevcut randevuları sorar; varsa uyarıyı açar, yoksa sonraki işi yapar
+  const mevcutKontrol = (yoksa: () => void) => {
+    setKontrolEdiliyor(true);
+    mevcutRandevuSorgula(iletisim.ad, iletisim.telefon)
+      .catch(() => [] as MevcutRandevu[])
+      .then((liste) => {
+        setKontrolEdiliyor(false);
+        if (liste.length > 0) setUyariRandevulari(liste);
+        else yoksa();
+      });
+  };
 
   // Adım değişince formun başına kaydır: telefonda yeni adım ekranın dışında kalmasın
   useEffect(() => {
@@ -185,6 +198,13 @@ export default function RandevuStepper({
       setLocalError(null);
       return;
     }
+    // Sunucu mevcut randevu buldu (ör. uyarıdan sonra başka randevu alınmış): uyarıyı yeniden göster
+    if (formState.kod === "mevcut_randevu") {
+      setLocalError(null);
+      setOnayAnahtari(null);
+      mevcutKontrol(() => setLocalError(formState.message ?? null));
+      return;
+    }
     if (formState.message) {
       setLocalError(formState.message);
       // Saat başkası tarafından alındıysa ya da o gün zaten randevusu varsa tarih adımına dön
@@ -229,32 +249,19 @@ export default function RandevuStepper({
       return;
     }
     setLocalError(null);
-    if (step === "iletisim") {
-      // Aynı bilgilerle bir kez kontrol edilip karar verildiyse tekrar sorulmaz
-      const anahtar = `${iletisim.ad.trim().toLocaleLowerCase("tr-TR")}|${iletisim.telefon.replace(/\D/g, "")}`;
-      if (kontrolEdilenRef.current !== anahtar) {
-        setKontrolEdiliyor(true);
-        mevcutRandevuSorgula(iletisim.ad, iletisim.telefon)
-          .catch(() => [])
-          .then((liste) => {
-            setKontrolEdiliyor(false);
-            if (liste.length > 0) {
-              setUyariRandevulari(liste);
-              return;
-            }
-            kontrolEdilenRef.current = anahtar;
-            setStepIndex((i) => Math.min(i + 1, steps.length - 1));
-          });
-        return;
-      }
+    // Aynı bilgilerle uyarıda zaten seçim yapıldıysa tekrar sorulmaz
+    if (step === "iletisim" && !mevcutOnay) {
+      mevcutKontrol(() => setStepIndex((i) => Math.min(i + 1, steps.length - 1)));
+      return;
     }
     setStepIndex((i) => Math.min(i + 1, steps.length - 1));
   };
 
   const uyaridanDevam = () => {
-    kontrolEdilenRef.current = `${iletisim.ad.trim().toLocaleLowerCase("tr-TR")}|${iletisim.telefon.replace(/\D/g, "")}`;
+    setOnayAnahtari(kisiAnahtari);
     setUyariRandevulari(null);
-    setStepIndex(steps.indexOf("tarih"));
+    // Tarih/saat zaten seçiliyse (uyarı onay adımında çıktıysa) onaya, değilse tarih seçimine
+    setStepIndex(steps.indexOf(tarih.value && saat ? "ozet" : "tarih"));
   };
 
   const goBack = () => {
@@ -393,6 +400,7 @@ export default function RandevuStepper({
         <input type="hidden" name="not" value={iletisim.not} />
         <input type="hidden" name="tarih" value={tarih.value} />
         <input type="hidden" name="saat" value={saat} />
+        <input type="hidden" name="mevcut_onay" value={mevcutOnay ? "1" : ""} />
 
         {!formState.ok && localError ? (
           <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4 text-sm text-rose-100">

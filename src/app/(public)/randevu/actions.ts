@@ -1,9 +1,9 @@
 "use server";
 
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { SENDIKA_SECENEKLERI, normalizePhone } from "@/lib/sendikalar";
+import { SENDIKA_SECENEKLERI, adAnahtari, normalizePhone, telefonAnahtari } from "@/lib/sendikalar";
 import { paketHesapla } from "@/lib/lastikPaketleri";
-import { getAyarlar, searchRandevular } from "@/lib/db";
+import { getAyarlar, telefonRandevulari } from "@/lib/db";
 import { iptalEdilebilirMi } from "@/app/(public)/randevu-sorgula/actions";
 import {
     ILERI_GUN,
@@ -17,10 +17,12 @@ import {
     type Aralik
 } from "@/lib/calisma";
 
+export type RandevuSonucu = { ok: boolean; message?: string; kod?: "mevcut_randevu" };
+
 export async function createAppointment(
-    _prevState: { ok: boolean; message?: string },
+    _prevState: RandevuSonucu,
     formData: FormData
-) {
+): Promise<RandevuSonucu> {
     // Fiyat tarayıcıdan alınmaz; seçimden sunucuda yeniden hesaplanır.
     const paket = paketHesapla(
         String(formData.get("hizmet_key") ?? ""),
@@ -75,6 +77,25 @@ export async function createAppointment(
 
     const supabase = getSupabaseServerClient();
 
+    // Bu telefonla gelecekte aktif randevu varsa müşteri uyarıyı görüp seçim yapmış olmalı
+    // (eski randevuyu iptal et ya da yakını için iptal etmeden devam et).
+    // Tarayıcıdaki uyarı atlansa bile kayıt burada durdurulur.
+    if (String(formData.get("mevcut_onay") ?? "") !== "1") {
+        let aktifler: MevcutRandevu[];
+        try {
+            aktifler = await aktifRandevular(payload.ad, payload.telefon);
+        } catch {
+            return { ok: false, message: "Doğrulama hatası oluştu. Lütfen tekrar deneyiniz." };
+        }
+        if (aktifler.length > 0) {
+            return {
+                ok: false,
+                kod: "mevcut_randevu",
+                message: "Bu telefon numarasıyla zaten bir randevunuz var. Lütfen mevcut randevunuzla ilgili seçiminizi yapınız."
+            };
+        }
+    }
+
     // Aynı telefonla aynı güne ikinci randevu alınamaz (iptal edilenler sayılmaz)
     let ayniGun: { saat: string } | null;
     try {
@@ -118,8 +139,8 @@ async function ayniGunRandevusu(date: string, telefon: string) {
         .eq("tarih", date)
         .neq("durum", "iptal");
     if (error) throw error;
-    const hedef = normalizePhone(telefon);
-    return (data || []).find((r) => normalizePhone(r.telefon) === hedef) ?? null;
+    const hedef = telefonAnahtari(telefon);
+    return (data || []).find((r) => telefonAnahtari(r.telefon) === hedef) ?? null;
 }
 
 // O günkü aktif randevuların dükkânda kapladığı zaman aralıkları (dakika)
@@ -149,20 +170,43 @@ export async function getReservedSlots(date: string): Promise<Aralik[]> {
     }
 }
 
-// Aynı ad + telefonla alınmış, henüz saati gelmemiş aktif randevular.
-// Randevu Sorgula sayfasındaki gibi ad ve telefon birlikte eşleşmeli; sadece telefonla bilgi verilmez.
-export async function mevcutRandevular(ad: string, telefon: string) {
+export type MevcutRandevu = {
+    id: string | null; // sadece ad da eşleşiyorsa dolu (iptal için gerekir)
+    tarih: string;
+    saat: string;
+    hizmet: string;
+    adEslesiyor: boolean;
+};
+
+// Bu telefon numarasıyla alınmış, iptal edilmemiş ve saati henüz gelmemiş randevular.
+// Telefon her biçimde (boşluklu, başında 0 / +90 olan) eşleşir. Ad da eşleşiyorsa
+// (büyük/küçük harf ve Türkçe karakter farkı gözetilmez) müşteri randevuyu buradan iptal edebilir;
+// eşleşmiyorsa sadece tarih ve saat söylenir, başkasının adı ve iptal yetkisi verilmez.
+async function aktifRandevular(ad: string, telefon: string): Promise<MevcutRandevu[]> {
+    const hedefAd = adAnahtari(ad);
+    const aktifler: MevcutRandevu[] = [];
+    for (const r of await telefonRandevulari(telefon)) {
+        if (r.durum === "iptal") continue;
+        if (!(await iptalEdilebilirMi(r.tarih, r.saat))) continue;
+        const adEslesiyor = adAnahtari(r.ad) === hedefAd;
+        aktifler.push({
+            id: adEslesiyor ? r.id : null,
+            tarih: r.tarih,
+            saat: String(r.saat).slice(0, 5),
+            hizmet: r.hizmet,
+            adEslesiyor
+        });
+    }
+    return aktifler.sort((a, b) => `${a.tarih} ${a.saat}`.localeCompare(`${b.tarih} ${b.saat}`));
+}
+
+// Randevu formu, iletişim adımından sonra bunu sorar. Hata olursa boş döner;
+// asıl kontrol kayıt sırasında createAppointment içinde yeniden yapılır.
+export async function mevcutRandevular(ad: string, telefon: string): Promise<MevcutRandevu[]> {
+    if (telefonAnahtari(telefon).length < 10) return [];
     try {
-        const bulunanlar = await searchRandevular(ad, telefon);
-        const aktifler = [];
-        for (const r of bulunanlar) {
-            if (r.durum === "iptal") continue;
-            if (!(await iptalEdilebilirMi(r.tarih, r.saat))) continue;
-            aktifler.push({ id: r.id, tarih: r.tarih, saat: String(r.saat).slice(0, 5), hizmet: r.hizmet });
-        }
-        return aktifler.sort((a, b) => `${a.tarih} ${a.saat}`.localeCompare(`${b.tarih} ${b.saat}`));
+        return await aktifRandevular(ad, telefon);
     } catch {
-        // Kontrol yapılamazsa müşteri engellenmez; aynı gün kuralı kayıtta yine denetlenir
         return [];
     }
 }

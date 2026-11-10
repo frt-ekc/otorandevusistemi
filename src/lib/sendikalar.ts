@@ -39,3 +39,22 @@ export function isAnlasmaliSendika(value: string | null | undefined) {
 export function normalizePhone(value: string | null | undefined) {
   return String(value ?? "").replace(/\D/g, "");
 }
+
+// Aynı numaranın farklı yazılışlarını eşler: "0532 775 30 44", "5327753044", "+90 532 775 30 44"
+// hepsi "5327753044" olur (son 10 rakam).
+export function telefonAnahtari(value: string | null | undefined) {
+  return normalizePhone(value).slice(-10);
+}
+
+// Ad soyadı karşılaştırma için sadeleştirir: büyük/küçük harf, Türkçe karakter
+// (ı/i/İ/I, ş, ğ, ü, ö, ç) ve fazla boşluk farkı yok sayılır.
+// "FIRAT EKİCİ", "fırat ekici", "Firat  Ekici" -> "firat ekici"
+export function adAnahtari(value: string | null | undefined) {
+  return String(value ?? "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/\s+/g, " ")
+    .trim();
+}
