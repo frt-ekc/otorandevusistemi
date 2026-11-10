@@ -1,5 +1,5 @@
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { normalizePhone } from "@/lib/sendikalar";
+import { adAnahtari, telefonAnahtari } from "@/lib/sendikalar";
 
 export const RANDEVU_KOLONLARI =
   "id, ad, telefon, email, plaka, sendika, arac_turu, lastik_adedi, balans_adedi, fiyat, hizmet, tarih, saat, not_metni, durum, created_at";
@@ -167,28 +167,33 @@ export async function getRandevular() {
   return (data ?? []) as RandevuRow[];
 }
 
-export async function searchRandevular(ad: string, telefon: string) {
-  const adTrim = ad.trim();
-  const telefonDigits = normalizePhone(telefon);
-  if (!adTrim || telefonDigits.length < 10) {
-    return [];
-  }
+// Bu telefon numarasıyla alınmış tüm randevular (numara hangi biçimde yazılmış olursa olsun).
+// Veritabanında rakamların arasına "%" koyarak ararız ("%5%3%2%7..."), böylece
+// "0532 775 30 44" gibi boşluklu kayıtlar da gelir; kesin eşleşme sonra burada yapılır.
+export async function telefonRandevulari(telefon: string): Promise<RandevuRow[]> {
+  const anahtar = telefonAnahtari(telefon);
+  if (anahtar.length < 10) return [];
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from("randevular")
-    .select(
-      RANDEVU_KOLONLARI
-    )
-    .ilike("ad", adTrim);
+    .select(RANDEVU_KOLONLARI)
+    .ilike("telefon", `%${anahtar.split("").join("%")}%`);
+  if (error) throw error;
+  return ((data ?? []) as RandevuRow[]).filter((r) => telefonAnahtari(r.telefon) === anahtar);
+}
 
-  if (error) {
+// Randevu Sorgula: ad + telefon birlikte eşleşmeli. Ad, büyük/küçük harf ve
+// Türkçe karakter farkı gözetmeden karşılaştırılır ("FIRAT EKİCİ" = "fırat ekici").
+export async function searchRandevular(ad: string, telefon: string) {
+  const hedefAd = adAnahtari(ad);
+  if (!hedefAd || telefonAnahtari(telefon).length < 10) {
     return [];
   }
-  // Telefon farklı biçimlerde yazılmış olabilir ("0538 706 1065" / "05387061065"),
-  // bu yüzden sadece rakamlarını karşılaştırıyoruz.
-  return ((data ?? []) as RandevuRow[]).filter(
-    (r) => normalizePhone(r.telefon) === telefonDigits
-  );
+  try {
+    return (await telefonRandevulari(telefon)).filter((r) => adAnahtari(r.ad) === hedefAd);
+  } catch {
+    return [];
+  }
 }
 
 export async function getAyarlar() {

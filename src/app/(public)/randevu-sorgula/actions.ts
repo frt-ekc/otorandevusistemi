@@ -1,7 +1,7 @@
 "use server";
 
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { normalizePhone } from "@/lib/sendikalar";
+import { adAnahtari, telefonAnahtari } from "@/lib/sendikalar";
 import { istanbulSimdi, saatToDakika } from "@/lib/calisma";
 
 // Randevu henüz başlamadıysa iptal edilebilir (İstanbul saatine göre)
@@ -24,9 +24,8 @@ export async function randevuIptalEt(id: string, ad: string, telefon: string) {
         return { ok: false, message: "Randevu bulunamadı." };
     }
 
-    const adEsit =
-        data.ad.trim().toLocaleLowerCase("tr-TR") === ad.trim().toLocaleLowerCase("tr-TR");
-    const telEsit = normalizePhone(data.telefon) === normalizePhone(telefon);
+    const adEsit = adAnahtari(data.ad) === adAnahtari(ad);
+    const telEsit = telefonAnahtari(data.telefon) === telefonAnahtari(telefon);
     if (!adEsit || !telEsit) {
         return { ok: false, message: "Randevu bilgileri eşleşmedi." };
     }

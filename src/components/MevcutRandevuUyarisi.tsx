@@ -3,8 +3,11 @@
 import { useEffect, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { randevuIptalEt } from "@/app/(public)/randevu-sorgula/actions";
+import type { MevcutRandevu } from "@/app/(public)/randevu/actions";
 
-export type MevcutRandevu = { id: string; tarih: string; saat: string; hizmet: string };
+export type { MevcutRandevu };
+
+const anahtar = (r: MevcutRandevu) => `${r.tarih} ${r.saat}`;
 
 type Props = {
   randevular: MevcutRandevu[];
@@ -27,12 +30,12 @@ export function tarihYazisi(tarih: string) {
   });
 }
 
-// Aynı ad + telefonla zaten aktif randevu varken yeni randevu alınmak istenirse çıkan pencere
+// Aynı telefonla zaten aktif randevu varken yeni randevu alınmak istenirse çıkan pencere
 export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam, onKapat }: Props) {
   const [kalanlar, setKalanlar] = useState(randevular);
   const [iptalEdilen, setIptalEdilen] = useState(0);
   const [hata, setHata] = useState<string | null>(null);
-  const [bekleyenId, setBekleyenId] = useState<string | null>(null);
+  const [bekleyen, setBekleyen] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -47,19 +50,21 @@ export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam,
   }, [onKapat, pending]);
 
   const iptalEt = (r: MevcutRandevu) => {
+    const id = r.id;
+    if (!id) return; // başka ad ile alınmış randevu buradan iptal edilemez
     setHata(null);
-    setBekleyenId(r.id);
+    setBekleyen(anahtar(r));
     startTransition(async () => {
-      const sonuc = await randevuIptalEt(r.id, ad, telefon);
-      setBekleyenId(null);
+      const sonuc = await randevuIptalEt(id, ad, telefon);
+      setBekleyen(null);
       if (!sonuc.ok) {
         setHata(sonuc.message ?? "İptal edilemedi. Lütfen bizi arayın.");
         return;
       }
-      const yeni = kalanlar.filter((k) => k.id !== r.id);
+      const yeni = kalanlar.filter((k) => anahtar(k) !== anahtar(r));
       setKalanlar(yeni);
       setIptalEdilen((n) => n + 1);
-      // Tek randevu vardıysa iptal edilince doğrudan yeni randevuya geç
+      // Hepsi iptal edildiyse doğrudan yeni randevuya geç
       if (yeni.length === 0) onDevam();
     });
   };
@@ -83,24 +88,42 @@ export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam,
           📅
         </div>
         <h2 id="mevcut-randevu-baslik" className="mt-4 text-xl font-black text-white sm:text-2xl">
-          {iptalEdilen > 0 ? "Randevunuz iptal edildi" : "Zaten bir randevunuz var"}
+          {iptalEdilen > 0
+            ? "Randevunuz iptal edildi"
+            : kalanlar.some((r) => r.adEslesiyor)
+              ? "Zaten bir randevunuz var"
+              : "Bu numarayla bir randevu var"}
         </h2>
 
-        {tek ? (
+        {tek && tek.adEslesiyor ? (
           <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
             <strong className="text-white">{tarihYazisi(tek.tarih)}</strong> günü saat{" "}
             <strong className="text-white">{tek.saat}</strong>&apos;da {tek.hizmet.toLocaleLowerCase("tr-TR")} randevunuz
             bulunuyor. Bu randevuyu iptal edip yeni randevu almak ister misiniz?
           </p>
+        ) : tek ? (
+          <>
+            <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
+              Bu telefon numarasıyla <strong className="text-white">{tarihYazisi(tek.tarih)}</strong> günü saat{" "}
+              <strong className="text-white">{tek.saat}</strong>&apos;da başka bir ad ile alınmış bir randevu bulunuyor.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-white/60">
+              O randevuyu iptal etmek isterseniz, randevuyu alan kişinin adıyla{" "}
+              <a href="/randevu-sorgula" className="font-bold text-brand-gold underline underline-offset-2">
+                Randevu Sorgula / İptal
+              </a>{" "}
+              sayfasından iptal edebilirsiniz.
+            </p>
+          </>
         ) : (
           <>
             <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
-              Bu ad ve telefon numarasıyla aşağıdaki randevularınız bulunuyor. İptal etmek istediğinizi seçebilirsiniz.
+              Bu telefon numarasıyla aşağıdaki randevular bulunuyor. İptal etmek istediğinizi seçebilirsiniz.
             </p>
             <ul className="mt-4 grid gap-2">
               {kalanlar.map((r) => (
                 <li
-                  key={r.id}
+                  key={anahtar(r)}
                   className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 p-3"
                 >
                   <div className="text-sm">
@@ -109,14 +132,18 @@ export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam,
                       Saat {r.saat} · {r.hizmet}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => iptalEt(r)}
-                    disabled={pending}
-                    className="shrink-0 rounded-full bg-rose-500 px-4 py-2 text-xs font-bold text-white hover:bg-rose-600 disabled:opacity-50"
-                  >
-                    {bekleyenId === r.id ? "İptal ediliyor..." : "İptal et"}
-                  </button>
+                  {r.adEslesiyor ? (
+                    <button
+                      type="button"
+                      onClick={() => iptalEt(r)}
+                      disabled={pending}
+                      className="shrink-0 rounded-full bg-rose-500 px-4 py-2 text-xs font-bold text-white hover:bg-rose-600 disabled:opacity-50"
+                    >
+                      {bekleyen === anahtar(r) ? "İptal ediliyor..." : "İptal et"}
+                    </button>
+                  ) : (
+                    <span className="shrink-0 text-right text-xs text-white/50">Başka ad ile alınmış</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -126,7 +153,7 @@ export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam,
         {hata ? <p className="mt-3 text-sm text-rose-200">{hata}</p> : null}
 
         <div className="mt-6 grid gap-3">
-          {tek ? (
+          {tek && tek.adEslesiyor ? (
             <button
               type="button"
               onClick={() => iptalEt(tek)}
