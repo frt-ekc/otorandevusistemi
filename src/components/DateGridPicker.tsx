@@ -145,7 +145,7 @@ export default function DateGridPicker({
           </button>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {days.map((slot) => {
             const isSelected = selected === slot.value;
             return (

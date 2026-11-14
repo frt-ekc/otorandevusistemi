@@ -52,7 +52,7 @@ export default async function HomePage() {
 
       <main>
         {/* HERO */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-10 pt-8 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:gap-14 lg:pb-16 lg:pt-14">
+        <section className="mx-auto grid grid-cols-1 max-w-6xl items-center gap-10 px-4 pb-10 pt-8 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:gap-14 lg:pb-16 lg:pt-14">
           <div>
             <p className="animate-rise text-sm font-semibold text-brand-gold" style={{ animationDelay: "50ms" }}>
               Malatya · Battalgazi
@@ -290,7 +290,7 @@ export default async function HomePage() {
                 Randevudan yola dört adım
               </h2>
             </Reveal>
-            <ol className="mt-10 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+            <ol className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
               {ADIMLAR.map((a, i) => (
                 <li key={a.baslik} className="bg-[#171614] p-6 sm:p-8">
                   <Reveal delay={i * 100}>
@@ -306,7 +306,7 @@ export default async function HomePage() {
 
         {/* KONUM */}
         <section id="konum" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:px-6 lg:py-24">
-          <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:items-stretch">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.3fr] lg:items-stretch">
             <Reveal>
               <div className="flex h-full flex-col">
                 <h2 className="text-3xl font-extrabold leading-tight text-brand-text sm:text-5xl">Dükkânımız</h2>

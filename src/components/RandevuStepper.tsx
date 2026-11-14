@@ -321,7 +321,7 @@ export default function RandevuStepper({
 
       {formState.ok && paket ? (
         // Randevu alındı: özet ekranda kalır ki müşteri gün ve saati not edebilsin
-        <div className="grid gap-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-5 text-center sm:p-8">
+        <div className="grid grid-cols-1 gap-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-5 text-center sm:p-8">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -332,7 +332,7 @@ export default function RandevuStepper({
             <p className="mt-2 text-sm text-white/70">Randevunuz kesinleşti, ayrıca aranmayacaksınız.</p>
           </div>
           {/* Arayıp teyit etmiyoruz: müşteri zamanında gelsin, gelemeyecekse saati boşaltsın */}
-          <ul className="grid gap-3 rounded-2xl border border-brand-gold/30 bg-brand-gold/[0.08] p-5 text-left text-sm text-white/90">
+          <ul className="grid grid-cols-1 gap-3 rounded-2xl border border-brand-gold/30 bg-brand-gold/[0.08] p-5 text-left text-sm text-white/90">
             <li className="flex gap-3">
               <span aria-hidden="true">⏰</span>
               <span>
@@ -350,7 +350,7 @@ export default function RandevuStepper({
               </span>
             </li>
           </ul>
-          <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm text-white/80">
+          <div className="grid grid-cols-1 gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm text-white/80">
             <Row k="Tarih" v={tarih.label || tarih.value} />
             <Row k="Saat" v={`${saat} - ${dakikaToSaat(saatToDakika(saat) + sure)}`} />
             <Row k="Hizmet" v={paket.hizmetAdi} />
@@ -388,7 +388,7 @@ export default function RandevuStepper({
             event.preventDefault();
           }
         }}
-        className="relative grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-6"
+        className="relative grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-6"
       >
         {/* Sunucuya gidecek değerler */}
         <input type="hidden" name="hizmet_key" value={hizmet ?? ""} />
@@ -415,7 +415,7 @@ export default function RandevuStepper({
 
         {/* 1) Hizmet */}
         {step === "hizmet" && (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {(Object.keys(HIZMETLER) as HizmetKey[]).map((key) => (
               <button
                 type="button"
@@ -437,7 +437,7 @@ export default function RandevuStepper({
 
         {/* 2) Araç türü (sadece değişim) */}
         {step === "arac" && (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {(Object.keys(ARAC_TURLERI) as AracTuru[]).map((key) => (
               <button
                 type="button"
@@ -461,11 +461,11 @@ export default function RandevuStepper({
 
         {/* 3) Lastik sayısı (sadece değişim) */}
         {step === "paket" && aracTuru && (
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <p className="text-xs text-white/50">
               {ARAC_TURLERI[aracTuru].ad} · Balans: lastiğin dengeli dönmesi için yapılan ayardır, direksiyonda titremeyi önler.
             </p>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {DEGISIM_PAKETLERI[aracTuru].map((p) => {
                 const tamBalans = p.balans === p.lastik;
                 return (
@@ -509,7 +509,7 @@ export default function RandevuStepper({
 
         {/* 4) İletişim */}
         {step === "iletisim" && (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm text-white/70">
               Ad Soyad
               <input
@@ -624,7 +624,7 @@ export default function RandevuStepper({
 
         {/* 6) Son onay */}
         {step === "ozet" && paket && (
-          <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/80">
+          <div className="grid grid-cols-1 gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/80">
             <Row k="Hizmet" v={paket.hizmetAdi} />
             {paket.aracTuru ? (
               <Row

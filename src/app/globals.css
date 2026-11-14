@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Form alanları kendi doğal genişlikleriyle (size=20, dosya seçici metni) kapsayıcıyı
+     genişletip yatay taşma yaratmasın; flex/grid içinde de daralabilsinler. */
+  input,
+  select,
+  textarea {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* iPhone Safari, yazı boyutu 16px'ten küçük bir alana dokunulunca sayfayı yakınlaştırır;
+     ekran sağa-sola taşmış gibi görünür. Telefonda alan yazısı en az 16px olur. */
+  @media (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea {
+      font-size: max(1rem, 100%);
+    }
+  }
+}
+
 :root {
   color-scheme: dark;
   --font-display: "Archivo Variable";
@@ -14,6 +35,8 @@ html {
 
 body {
   min-height: 100vh;
+  /* Boşluksuz uzun metin (e-posta, uzun ad) satıra sığmıyorsa kırılsın */
+  overflow-wrap: break-word;
   /* Asfalt dokusu: çok hafif, ışığın düştüğü sıcak bir leke */
   background-image:
     radial-gradient(1200px 600px at 85% -10%, rgba(250, 204, 21, 0.07), transparent 60%),
