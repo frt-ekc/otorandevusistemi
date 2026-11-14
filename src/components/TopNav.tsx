@@ -122,7 +122,7 @@ export default function TopNav() {
 
       {/* MOBİL MENÜ MODAL - DAHA KÜÇÜK VE DERLİ TOPLU */}
       <div
-        className={`fixed inset-0 z-[60] h-screen w-screen bg-brand-dark transition-all duration-300 ease-in-out lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0 translate-x-12"
+        className={`fixed inset-0 z-[60] bg-brand-dark transition-all duration-300 ease-in-out lg:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0 scale-95"
           }`}
       >
         <div className="flex h-full flex-col px-6 pb-10 pt-20 text-center overflow-y-auto">

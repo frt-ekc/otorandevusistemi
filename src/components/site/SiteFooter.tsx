@@ -15,7 +15,7 @@ const menu = [
 export default function SiteFooter({ ayarlar }: { ayarlar?: AyarlarRow | null }) {
   return (
     <footer className="border-t border-white/10 bg-[#100F0E] pb-28 pt-14 sm:pb-12">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Image src="/logo.svg" alt="Fırat Oto Lastik" width={170} height={42} className="h-10 w-auto" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-brand-muted">

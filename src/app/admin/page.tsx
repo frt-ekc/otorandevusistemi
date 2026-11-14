@@ -704,7 +704,7 @@ export default async function AdminPage({
                 ) : null}
                 <form
                   action={createLastik}
-                  className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-6"
+                  className="mt-6 grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-6"
                 >
                   <SmartTireSize />
                   <SelectionWithOther
@@ -750,14 +750,14 @@ export default async function AdminPage({
                     </button>
                   </div>
                 </form>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                   {lastikler.map((lastik) => (
                     <div
                       key={lastik.id}
                       className="group rounded-xl border border-white/10 bg-brand-dark/50 p-4 text-sm text-white/80 hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-all"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex flex-1 items-start gap-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex min-w-0 flex-1 items-start gap-4">
                           {lastik.image_url ? (
                             <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10">
                               <Image
@@ -774,7 +774,7 @@ export default async function AdminPage({
                               </svg>
                             </div>
                           )}
-                          <div>
+                          <div className="min-w-0 break-words">
                             <p className="text-base font-bold text-brand-text group-hover:text-brand-gold transition-colors">
                               {lastik.genislik}/{lastik.yanak} R{lastik.jant}
                             </p>
@@ -786,7 +786,7 @@ export default async function AdminPage({
                             </p>
                           </div>
                         </div>
-                        <form action={deleteLastikAction}>
+                        <form action={deleteLastikAction} className="shrink-0">
                           <input type="hidden" name="id" value={lastik.id} />
                           <input type="hidden" name="image_path" value={lastik.image_path ?? ""} />
                           <button
@@ -853,7 +853,7 @@ export default async function AdminPage({
                   </summary>
                   <form
                     action={createUrun}
-                    className="mt-4 grid gap-4 lg:grid-cols-3"
+                    className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3"
                   >
                     <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Ürün Adı
@@ -897,7 +897,7 @@ export default async function AdminPage({
                   </form>
                 </details>
 
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                   {urunler.map((urun) => (
                     <details
                       key={urun.id}
@@ -905,9 +905,9 @@ export default async function AdminPage({
                     >
                       <summary className="cursor-pointer list-none">
                         <div className="flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-3">
+                          <div className="flex min-w-0 items-center gap-3">
                             {urun.image_url ? (
-                              <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-white/10">
+                              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10">
                                 <Image
                                   src={urun.image_url}
                                   alt={urun.name}
@@ -916,9 +916,9 @@ export default async function AdminPage({
                                 />
                               </div>
                             ) : (
-                              <div className="h-14 w-14 rounded-lg border border-white/10 bg-white/5" />
+                              <div className="h-14 w-14 shrink-0 rounded-lg border border-white/10 bg-white/5" />
                             )}
-                            <div>
+                            <div className="min-w-0 break-words">
                               <p className="text-sm font-bold text-brand-text group-hover:text-brand-gold transition-colors">
                                 {urun.name}
                               </p>
@@ -927,13 +927,13 @@ export default async function AdminPage({
                               </p>
                             </div>
                           </div>
-                          <span className="text-xs font-bold uppercase tracking-widest text-white/30 group-hover:text-brand-gold transition-colors">Düzenle</span>
+                          <span className="shrink-0 text-xs font-bold uppercase tracking-widest text-white/30 group-hover:text-brand-gold transition-colors">Düzenle</span>
                         </div>
                       </summary>
 
                       <form
                         action={updateUrun}
-                        className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
+                        className="mt-4 grid grid-cols-1 gap-3 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
                       >
                         <input type="hidden" name="id" value={urun.id} />
                         <input
@@ -1027,7 +1027,7 @@ export default async function AdminPage({
                   ) : null}
                   <form
                     action={createHizmet}
-                    className="grid gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
+                    className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
                   >
                     <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Hizmet Adı
@@ -1069,7 +1069,7 @@ export default async function AdminPage({
                       </button>
                     </div>
                   </form>
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {hizmetler.map((hizmet) => (
                       <details
                         key={hizmet.id}
@@ -1077,7 +1077,7 @@ export default async function AdminPage({
                       >
                         <summary className="cursor-pointer list-none">
                           <div className="flex items-center justify-between gap-4">
-                            <div>
+                            <div className="min-w-0 break-words">
                               <p className="text-base font-bold text-brand-text group-hover:text-brand-gold transition-colors">
                                 {hizmet.name}
                               </p>
@@ -1087,7 +1087,7 @@ export default async function AdminPage({
                                 </p>
                               ) : null}
                             </div>
-                            <span className="text-xs font-bold uppercase tracking-widest text-white/30 group-hover:text-brand-gold transition-colors">Düzenle</span>
+                            <span className="shrink-0 text-xs font-bold uppercase tracking-widest text-white/30 group-hover:text-brand-gold transition-colors">Düzenle</span>
                           </div>
                         </summary>
 
@@ -1104,7 +1104,7 @@ export default async function AdminPage({
 
                         <form
                           action={updateHizmet}
-                          className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
+                          className="mt-4 grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-brand-dark/50 p-4 lg:grid-cols-2"
                         >
                           <input type="hidden" name="id" value={hizmet.id} />
                           <input
@@ -1203,7 +1203,7 @@ export default async function AdminPage({
                       {errorMessage}
                     </p>
                   ) : null}
-                  <form action={updateAyarlar} className="grid gap-4 lg:grid-cols-2">
+                  <form action={updateAyarlar} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     <label className="flex flex-col gap-2 text-sm text-brand-text/70">
                       Hafta içi (Pzt - Cuma)
                       <input
@@ -1267,6 +1267,6 @@ export default async function AdminPage({
           </div>
         </main>
       </div>
-      e    </div>
+    </div>
   );
 }

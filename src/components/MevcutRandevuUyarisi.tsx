@@ -120,7 +120,7 @@ export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam,
             <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
               Bu telefon numarasıyla aşağıdaki randevular bulunuyor. İptal etmek istediğinizi seçebilirsiniz.
             </p>
-            <ul className="mt-4 grid gap-2">
+            <ul className="mt-4 grid grid-cols-1 gap-2">
               {kalanlar.map((r) => (
                 <li
                   key={anahtar(r)}
@@ -152,7 +152,7 @@ export default function MevcutRandevuUyarisi({ randevular, ad, telefon, onDevam,
 
         {hata ? <p className="mt-3 text-sm text-rose-200">{hata}</p> : null}
 
-        <div className="mt-6 grid gap-3">
+        <div className="mt-6 grid grid-cols-1 gap-3">
           {tek && tek.adEslesiyor ? (
             <button
               type="button"

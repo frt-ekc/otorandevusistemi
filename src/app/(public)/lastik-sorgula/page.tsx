@@ -69,7 +69,7 @@ export default async function LastikSorgulaPage({
 
                         <form
                             method="get"
-                            className="mt-10 grid gap-6 rounded-2xl border border-white/10 bg-white/10 p-6 lg:grid-cols-3 backdrop-blur-md"
+                            className="mt-10 grid grid-cols-1 gap-6 rounded-2xl border border-white/10 bg-white/10 p-6 lg:grid-cols-3 backdrop-blur-md"
                         >
                             <label className="flex flex-col gap-2 text-sm text-white font-bold">
                                 Genişlik

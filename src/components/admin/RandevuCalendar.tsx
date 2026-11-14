@@ -102,12 +102,12 @@ export default function RandevuCalendar({ randevular, hizmetler, onCancel }: Pro
             <div className="flex min-w-0 flex-1 flex-col gap-4">
                 {/* Filtre Alanı */}
                 <div className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-brand-slate p-3 sm:p-4">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-white/70">Filtrele:</span>
+                    <div className="flex min-w-0 max-w-full items-center gap-2">
+                        <span className="shrink-0 text-sm text-white/70">Filtrele:</span>
                         <select
                             value={selectedHizmet}
                             onChange={(e) => setSelectedHizmet(e.target.value)}
-                            className="rounded-lg border border-white/10 bg-brand-dark px-3 py-1.5 text-xs text-brand-text outline-none focus:border-brand-gold"
+                            className="rounded-lg border border-white/10 bg-brand-dark min-w-0 px-3 py-1.5 text-base text-brand-text outline-none focus:border-brand-gold sm:text-xs"
                         >
                             <option value="all">Tüm Hizmetler</option>
                             {hizmetler.map((h) => (

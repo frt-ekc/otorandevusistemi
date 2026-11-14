@@ -17,7 +17,7 @@ export default function HizmetlerGrid({ services }: { services: ServiceCard[] })
 
   return (
     <>
-      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => (
           <button
             key={service.id}
