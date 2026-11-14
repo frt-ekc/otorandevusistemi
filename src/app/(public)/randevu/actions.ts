@@ -5,6 +5,7 @@ import { SENDIKA_SECENEKLERI, adAnahtari, normalizePhone, telefonAnahtari } from
 import { paketHesapla } from "@/lib/lastikPaketleri";
 import { getAyarlar, telefonRandevulari } from "@/lib/db";
 import { iptalEdilebilirMi } from "@/app/(public)/randevu-sorgula/actions";
+import { ONLINE_RANDEVU_ACIK, RANDEVU_KAPALI_MESAJI } from "@/lib/randevuDurumu";
 import {
     ILERI_GUN,
     calismaSaatleri,
@@ -23,6 +24,11 @@ export async function createAppointment(
     _prevState: RandevuSonucu,
     formData: FormData
 ): Promise<RandevuSonucu> {
+    // Online randevu kapalıyken sayfa formu göstermez; doğrudan gelen istekler de burada durur.
+    if (!ONLINE_RANDEVU_ACIK) {
+        return { ok: false, message: RANDEVU_KAPALI_MESAJI };
+    }
+
     // Fiyat tarayıcıdan alınmaz; seçimden sunucuda yeniden hesaplanır.
     const paket = paketHesapla(
         String(formData.get("hizmet_key") ?? ""),
